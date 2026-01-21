@@ -17,12 +17,12 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 # About Section
 subtitle: Data Science <span style="color:#f58506"> Portfolio </span>
 location: "Thornton, CO"
-resume_url: /docs/Stephanie Kriewall Resume Data Scientist.pdf
-avatar_image: /img/profile.JPG
+resume_url: /docs/Stephanie_Kriewall_Resume_Data_Scientist.pdf
+avatar_image: /img/profile.jpg
 
 #-------------------------------
 # Contact links
-linkedln: "https://linkedln.com/#" # Add your linkedln handle
+linkedln: "https://linkedin.com/in/skriewall" # Add your linkedln handle
 github: "https://github.com/#"  # Add your github handle
 
 paginate: 6
@@ -51,6 +51,7 @@ defaults:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
 
 
 
