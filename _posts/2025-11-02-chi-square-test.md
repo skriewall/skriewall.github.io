@@ -22,36 +22,37 @@ In this project I apply the Chi-Squared Test For Independence (a hypothesis test
 
 ___
 
-# Data Source <a name="data-source"></a>
+### Data Source <a name="data-source"></a>
 Dataset provided as part of a data science training program. The data is designed to reflect a real-world business scenario.
+
+___
 
 # Project Overview  <a name="overview-main"></a>
 
 ### Context <a name="overview-context"></a>
 
-Earlier in the year, our client, a grocery retailer, ran an ad campaign to promote their new "Delivery Club" - an initiative that costs $100/year for membership, but offers free grocery deliveries rather than the normal cost of $10 per delivery.
+Earlier in the year, our client, a grocery retailer, ran an ad campaign to promote their new "Delivery Club" -- an initiative that costs $100/year for membership, but offers free grocery deliveries rather than the normal cost of $10 per delivery.
 
 For the ad campaign, customers were randomly split into three groups. Customers in the first group received a low quality, low cost mailer; customers in the second group received a high quality, high cost mailer; and the third group was a control group, where customers received no mailer.
 
 The client knows that customers who were contacted signed up for the Delivery Club at a far higher rate than the control group, but the client now wants to understand if there is a significant difference in signup rate between the cheap and expensive mailers. This will enable them to make more informed decisions in the future, with the overall goal of optimizing their campaign return on investment (ROI).
 
 <br>
-<br>
+
 ### Actions <a name="overview-actions"></a>
 
 For this test, as it is focused on comparing the *rates* of two groups, we applied the Chi-Squared Test For Independence. Full details of this test can be found in the dedicated section below.
 
 From the *campaign_data* table in the client database, we isolated customers that received "Mailer 1" (low cost) and "Mailer 2" (high cost) for this campaign, and excluded customers who were in the control group.
 
-We set out our hypotheses and Significance Level for the test, as follows:
+We set out our hypotheses and significance level for the test, as follows:
 
-**Null Hypothesis:** There is no relationship between mailer type and signup rate. They are independent.
-**Alternative Hypothesis:** There is a relationship between mailer type and signup rate. They are not independent.
+**Null Hypothesis:** There is no relationship between mailer type and signup rate. They are independent.  
+**Alternative Hypothesis:** There is a relationship between mailer type and signup rate. They are not independent.  
 **Significance Level:** 0.05
 
-As a requirement of the Chi-Squared Test For Independence, we aggregated this data down to a 2x2 matrix for *signup_flag* by *mailer_type* and fed this into the algorithm (using the Python *scipy* library) to calculate the Chi-Squared statistic, p-value, degrees of freedom, and expected values.
+As a requirement of the Chi-Squared Test For Independence, we aggregated this data down to a 2x2 matrix for *signup_flag* by *mailer_type* and fed it into the algorithm (using the Python *scipy* library) to calculate the Chi-Squared statistic, p-value, degrees of freedom, and expected values.
 
-<br>
 <br>
 
 ### Results & Discussion <a name="overview-results"></a>
@@ -79,13 +80,11 @@ Our results here also do not say that there *definitely isn't a difference betwe
 Gathering more data and then re-running this test may provide us and the client more insight. Further A/B testing could also be performed on any new types of mailers the client wants to try out in the future.
 
 <br>
-<br>
 
 ___
 
 # Concept Overview  <a name="concept-overview"></a>
 
-<br>
 #### A/B Testing
 
 An A/B Test is a randomized experiment containing two groups, A and B, that receive different experiences. Within an A/B Test, we seek to understand and measure the response of each group. The information from this helps drive future business decisions.
@@ -93,6 +92,7 @@ An A/B Test is a randomized experiment containing two groups, A and B, that rece
 Applications of A/B testing can range from comparing different online ad strategies, to different email subject lines when contacting customers, to testing the effect of mailing customers a coupon versus a control group. Large companies can run these tests in an almost never-ending cycle, testing new website features or different images on randomized groups of customers, which helps them figure out what works best so that they can stay ahead of their competition.
 
 <br>
+
 #### Hypothesis Testing
 
 A Hypothesis Test is used to assess the likelihood of our assumed viewpoint based on available evidence (sample data).
@@ -100,16 +100,19 @@ A Hypothesis Test is used to assess the likelihood of our assumed viewpoint base
 There are many different scenarios we can run Hypothesis Tests on, and they all have slightly different techniques and formulas - however they all have some shared, fundamental steps and logic that underpin how they work.
 
 <br>
+
 **The Null Hypothesis**
 
 In any Hypothesis Test, we start with the Null Hypothesis. The Null Hypothesis is where we state our initial viewpoint. In statistics our initial viewpoint or Null Hypothesis is always that the result is purely by chance, i.e., that there is no relationship or association between two outcomes or groups.
 
 <br>
+
 **The Alternative Hypothesis**
 
 The aim of the Hypothesis Test is to look for evidence to either support or reject the Null Hypothesis. If we reject the Null Hypothesis, that would mean we have found enough evidence to support the Alternative Hypothesis. The Alternative Hypothesis is essentially the opposite viewpoint to the Null Hypothesis - that the result is *not* by chance, or that there *is* a relationship between two outcomes or groups. If we reject the Null Hypothesis, we do not accept the Alternative Hypothesis outright, but conclude the weight of the evidence supports the Alternative Hypothesis.
 
 <br>
+
 **The Significance Level**
 
 In a Hypothesis Test, before we collect any data or run any numbers - we decide on a Significance Level. This is a p-value threshold at which we’ll decide to reject or fail to reject the null hypothesis. It is essentially a line we draw in the sand, saying, "If I was to run this test many many times, what proportion of those times would I want to see different results come out in order to feel confident that my results are not just some unusual occurrence?"
@@ -119,6 +122,7 @@ Conventionally, we set our Significance Level to 0.05. If we need to be more con
 To summarize, in a Hypothesis Test we test the Null Hypothesis using a p-value and then make a decision about the Null Hypothesis based on the Significance Level.
 
 <br>
+
 **Types Of Hypothesis Tests**
 
 There are many different types of Hypothesis Tests, each of which is appropriate for use in different scenarios - depending on a) the type of data that you’re testing, and b) the question that you’re asking of that data.
@@ -126,6 +130,7 @@ There are many different types of Hypothesis Tests, each of which is appropriate
 In the case of our task here, where we are looking to understand the difference in sign-up *rate* between two groups, we use the Chi-Squared Test For Independence.
 
 <br>
+
 #### Chi-Squared Test For Independence
 
 The Chi-Squared Test For Independence is a type of Hypothesis Test that assumes observed frequencies for categorical variables (as opposed to numerical variables) will match the expected frequencies.
@@ -144,7 +149,6 @@ The *expected frequencies* are essentially what we would *expect* to see based o
 
 ___
 
-<br>
 # Data Overview & Preparation  <a name="data-overview"></a>
 
 In the client database, we have a *campaign_data* table which shows us which customers received each type of "Delivery Club" mailer, which customers were in the control group, and which customers joined the club as a result.
@@ -158,6 +162,7 @@ In the code below, we:
 * Exclude customers in the control group, giving us a dataset with Mailer 1 & Mailer 2 customers only.
 
 <br>
+
 ```python
 
 # install the required python libraries
@@ -171,7 +176,9 @@ campaign_data = ...
 campaign_data = campaign_data.loc[campaign_data["mailer_type"] != "Control"]
 
 ```
+
 <br>
+
 A sample of this data (the first 10 rows) can be seen below:
 <br>
 <br>
@@ -200,10 +207,10 @@ In the DataFrame we have:
 
 ___
 
-<br>
 # Applying the Chi-Squared Test For Independence <a name="chi-squared-application"></a>
 
 <br>
+
 #### State Hypotheses and Significance Level for the Test
 
 In the code below we code these in explicitly and clearly so we can use them later to explain the results. We specify the common Significance Level value of 0.05.
@@ -218,6 +225,7 @@ significance_level = 0.05
 ```
 
 <br>
+
 #### Calculate Observed Frequencies & Expected Frequencies
 
 As mentioned in the section above, in a Chi-Squared Test For Independence, the *observed frequencies* are the actual rates per group in the data itself. The *expected frequencies* are what we would *expect* to see based on *all* of the data combined.
@@ -258,7 +266,9 @@ print(critical_value)
 >> 3.84
 
 ```
+
 <br>
+
 Based upon our observed values, we can give this all some context with the sign-up rate of each group. We get:
 
 * Mailer 1 (Low Cost): **32.8%** signup rate
@@ -272,7 +282,6 @@ We have a Chi-Squared Statistic of **1.94** and a p-value of **0.16**. The criti
 
 ___
 
-<br>
 # Analysing The Results <a name="chi-squared-results"></a>
 
 At this point we have everything we need to understand the results of our Chi-Squared test - and just from the results above we can see that, since our resulting p-value of **0.16** is *greater* than our Significance Level of 0.05 then we will _retain_ the Null Hypothesis and conclude that there is no significant difference between the signup rates of Mailer 1 and Mailer 2.
@@ -301,18 +310,19 @@ else:
 >> As our chi-squared statistic of 1.9414 is lower than our critical value of 3.841458820694124 - we retain the null hypothesis, and conclude that: There is no relationship between mailer type and signup rate. They are independent
 
 ```
+
 <br>
+
 As we can see from the outputs of these print statements, we do indeed retain the null hypothesis. We could not find enough evidence that the signup rates for Mailer 1 and Mailer 2 were different - and thus conclude that there was no significant difference.
 
 ___
 
-<br>
 # Discussion <a name="discussion"></a>
 
-While we saw that the higher cost Mailer 2 had a higher signup rate (37.8%) than the lower cost Mailer 1 (32.8%) it appears that this difference is not significant, at least at our Significance Level of 0.05.
+While the higher cost Mailer 2 had a higher signup rate (37.8%) than the lower cost Mailer 1 (32.8%) it appears that this difference is not significant, at least at our Significance Level of 0.05.
 
-Without running this Hypothesis Test, the client may have concluded that they should always look to go with higher cost mailers - and from what we've seen in this test, that may not be a great decision. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result
+Without running this Hypothesis Test, the client may have concluded that they should always look to go with higher cost mailers. From what we've seen in this test, that may not be a great decision. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result
 
-Our results here also do not say that there *definitely isn't a difference between the two mailers* - we are only advising that we should not make any rigid conclusions *at this point*. 
+Our results here also do not say that there *definitely isn't a difference between the two mailers* -- we are only advising that we should not make any rigid conclusions *at this point*. 
 
 Running more A/B Tests like this, gathering more data, and then re-running this test may provide us, and the client more insight!
