@@ -16,13 +16,13 @@ Our client, a grocery retailer, hired a market research consultancy to append ma
     - [Growth/Next Steps](#overview-growth)
     - [Key Definition](#overview-definition)
 - [01. Data Overview](#data-overview)
-- [02. Modelling Overview](#modelling-overview)
+- [02. Modeling Overview](#modeling-overview)
 - [03. Linear Regression](#linreg-title)
 - [04. Decision Tree](#regtree-title)
 - [05. Random Forest](#rf-title)
-- [06. Modelling Summary](#modelling-summary)
-- [07. Predicting Missing Loyalty Scores](#modelling-predictions)
-- [08. Growth & Next Steps](#growth-next-steps)
+- [06. Modeling Summary](#modeling-summary)
+- [07. Predicting Missing Loyalty Scores](#modeling-predictions)
+- [08. Growth and Next Steps](#growth-next-steps)
 
 ___
 
@@ -41,7 +41,7 @@ To achieve this, we looked to build out a predictive model that will find relati
 
 We firstly needed to compile the necessary data from tables in the database, gathering key customer metrics that may help predict *loyalty score*, appending on the dependent variable, and separating out those who did and did not have this dependent variable present.
 
-As we are predicting a numeric output, we tested three regression modelling approaches, namely:
+As we are predicting a numeric output, we tested three regression modeling approaches, namely:
 
 * Linear Regression
 * Decision Tree
@@ -72,7 +72,7 @@ As the most important outcome for this project was predictive accuracy, rather t
 <br>
 ### Growth/Next Steps <a name="overview-growth"></a>
 
-While predictive accuracy was relatively high - other modelling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
+While predictive accuracy was relatively high - other modeling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available for predicting customer loyalty
 <br>
@@ -94,7 +94,7 @@ We will be predicting the *loyalty_score* metric.  This metric exists (for half 
 
 The key variables hypothesised to predict the missing loyalty scores will come from the client database, namely the *transactions* table, the *customer_details* table, and the *product_areas* table.
 
-Using pandas in Python, we merged these tables together for all customers, creating a single dataset that we can use for modelling.
+Using pandas in Python, we merged these tables together for all customers, creating a single dataset that we can use for modeling.
 
 ```python
 
@@ -125,22 +125,22 @@ sales_summary["average_basket_value"] = sales_summary["total_sales"] / sales_sum
 # merge the sales summary with the overall customer data
 data_for_regression = pd.merge(data_for_regression, sales_summary, how = "inner", on = "customer_id")
 
-# split out data for modelling (loyalty score is present)
-regression_modelling = data_for_regression.loc[data_for_regression["customer_loyalty_score"].notna()]
+# split out data for modeling (loyalty score is present)
+regression_modeling = data_for_regression.loc[data_for_regression["customer_loyalty_score"].notna()]
 
-# split out data for scoring post-modelling (loyalty score is missing)
+# split out data for scoring post-modeling (loyalty score is missing)
 regression_scoring = data_for_regression.loc[data_for_regression["customer_loyalty_score"].isna()]
 
 # for scoring set, drop the loyalty score column (as it is blank/redundant)
 regression_scoring.drop(["customer_loyalty_score"], axis = 1, inplace = True)
 
 # save our datasets for future use
-pickle.dump(regression_modelling, open("data/customer_loyalty_modelling.p", "wb"))
+pickle.dump(regression_modeling, open("data/customer_loyalty_modeling.p", "wb"))
 pickle.dump(regression_scoring, open("data/customer_loyalty_scoring.p", "wb"))
 
 ```
 <br>
-After this data pre-processing in Python, we have a dataset for modelling that contains the following fields...
+After this data pre-processing in Python, we have a dataset for modeling that contains the following fields...
 <br>
 <br>
 
@@ -158,13 +158,13 @@ After this data pre-processing in Python, we have a dataset for modelling that c
 
 ___
 <br>
-# Modelling Overview
+# Modeling Overview
 
 We will build a model that looks to accurately predict the “loyalty_score” metric for those customers that were able to be tagged, based upon the customer metrics listed above.
 
 If that can be achieved, we can use this model to predict the customer loyalty score for the customers that were unable to be tagged by the agency.
 
-As we are predicting a numeric output, we tested three regression modelling approaches, namely:
+As we are predicting a numeric output, we tested three regression modeling approaches, namely:
 
 * Linear Regression
 * Decision Tree
@@ -184,7 +184,7 @@ We utilise the scikit-learn library within Python to model our data using Linear
 <br>
 ### Data Import <a name="linreg-import"></a>
 
-Since we saved our modelling data as a pickle file, we import it.  We ensure we remove the id column, and we also ensure our data is shuffled.
+Since we saved our modeling data as a pickle file, we import it.  We ensure we remove the id column, and we also ensure our data is shuffled.
 
 ```python
 
@@ -199,8 +199,8 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_selection import RFECV
 
-# import modelling data
-data_for_model = pickle.load(open("data/customer_loyalty_modelling.p", "rb"))
+# import modeling data
+data_for_model = pickle.load(open("data/customer_loyalty_modeling.p", "rb"))
 
 # drop uneccessary columns
 data_for_model.drop("customer_id", axis = 1, inplace = True)
@@ -217,7 +217,7 @@ For Linear Regression we have certain data preprocessing steps that need to be a
 * Missing values in the data
 * The effect of outliers
 * Encoding categorical variables to numeric form
-* Multicollinearity & Feature Selection
+* Multicollinearity and feature selection
 
 <br>
 ##### Missing Values
@@ -286,7 +286,7 @@ for column in outlier_columns:
 ```
 
 <br>
-##### Split Out Data For Modelling
+##### Split Out Data For Modeling
 
 In the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
 
@@ -295,7 +295,7 @@ Once we have done this, we split our data into training and test sets to ensure 
 <br>
 ```python
 
-# split data into X and y objects for modelling
+# split data into X and y objects for modeling
 X = data_for_model.drop(["customer_loyalty_score"], axis = 1)
 y = data_for_model["customer_loyalty_score"]
 
@@ -355,11 +355,11 @@ Feature Selection is the process used to select the input variables that are mos
 
 * **Improved Model Accuracy** - eliminating noise can help true relationships stand out
 * **Lower Computational Cost** - our model becomes faster to train, and faster to make predictions
-* **Explainability** - understanding & explaining outputs for stakeholder & customers becomes much easier
+* **Explainability** - understanding and explaining outputs for stakeholder and customers becomes much easier
 
 There are many, many ways to apply Feature Selection.  These range from simple methods such as a *Correlation Matrix* showing variable relationships, to *Univariate Testing* which helps us understand statistical relationships between variables, and then to even more powerful approaches like *Recursive Feature Elimination (RFE)* which is an approach that starts with all input variables, and then iteratively removes those with the weakest relationships with the output variable.
 
-For our task we applied a variation of Recursive Feature Elimination called *Recursive Feature Elimination With Cross Validation (RFECV)* where we split the data into many "chunks" and iteratively trains & validates models on each "chunk" separately.  This means that each time we assess different models with different variables included, or eliminated, the algorithm also knows how accurate each of those models was.  From the suite of model scenarios that are created, the algorithm can determine which provided the best accuracy, and thus can infer the best set of input variables to use!
+For our task we applied a variation of Recursive Feature Elimination called *Recursive Feature Elimination With Cross Validation (RFECV)* where we split the data into many "chunks" and iteratively trains and validates models on each "chunk" separately.  This means that each time we assess different models with different variables included, or eliminated, the algorithm also knows how accurate each of those models was.  From the suite of model scenarios that are created, the algorithm can determine which provided the best accuracy, and thus can infer the best set of input variables to use!
 
 <br>
 ```python
@@ -455,7 +455,7 @@ An even more powerful and reliable way to assess model performance is to utilise
 
 Instead of simply dividing our data into a single training set, and a single test set, with Cross Validation we break our data into a number of "chunks" and then iteratively train the model on all but one of the "chunks", test the model on the remaining "chunk" until each has had a chance to be the test set.
 
-The result of this is that we are provided a number of test set validation results - and we can take the average of these to give a much more robust & reliable view of how our model will perform on new, un-seen data!
+The result of this is that we are provided a number of test set validation results - and we can take the average of these to give a much more robust and reliable view of how our model will perform on new, un-seen data!
 
 In the code below, we put this into place.  We first specify that we want 4 "chunks" and then we pass in our regressor object, training set, and test set.  We also specify the metric we want to assess with, in this case, we stick with r-squared.
 
@@ -544,7 +544,7 @@ We will again utilise the scikit-learn library within Python to model our data u
 <br>
 ### Data Import <a name="regtree-import"></a>
 
-Since we saved our modelling data as a pickle file, we import it.  We ensure we remove the id column, and we also ensure our data is shuffled.
+Since we saved our modeling data as a pickle file, we import it.  We ensure we remove the id column, and we also ensure our data is shuffled.
 
 ```python
 
@@ -558,8 +558,8 @@ from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
 
-# import modelling data
-data_for_model = pickle.load(open("data/customer_loyalty_modelling.p", "rb"))
+# import modeling data
+data_for_model = pickle.load(open("data/customer_loyalty_modeling.p", "rb"))
 
 # drop uneccessary columns
 data_for_model.drop("customer_id", axis = 1, inplace = True)
@@ -590,7 +590,7 @@ data_for_model.dropna(how = "any", inplace = True)
 ```
 
 <br>
-##### Split Out Data For Modelling
+##### Split Out Data For Modeling
 
 In exactly the same way we did for Linear Regression, in the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
 
@@ -599,7 +599,7 @@ Once we have done this, we split our data into training and test sets to ensure 
 <br>
 ```python
 
-# split data into X and y objects for modelling
+# split data into X and y objects for modeling
 X = data_for_model.drop(["customer_loyalty_score"], axis = 1)
 y = data_for_model["customer_loyalty_score"]
 
@@ -695,7 +695,7 @@ As we did when testing Linear Regression, we will again utilise Cross Validation
 
 Instead of simply dividing our data into a single training set, and a single test set, with Cross Validation we break our data into a number of "chunks" and then iteratively train the model on all but one of the "chunks", test the model on the remaining "chunk" until each has had a chance to be the test set.
 
-The result of this is that we are provided a number of test set validation results - and we can take the average of these to give a much more robust & reliable view of how our model will perform on new, un-seen data!
+The result of this is that we are provided a number of test set validation results - and we can take the average of these to give a much more robust and reliable view of how our model will perform on new, un-seen data!
 
 In the code below, we put this into place.  We again specify that we want 4 "chunks" and then we pass in our regressor object, training set, and test set.  We also specify the metric we want to assess with, in this case, we stick with r-squared.
 
@@ -731,7 +731,7 @@ The resulting *adjusted* r-squared score from this is **0.887** which as expecte
 <br>
 ### Decision Tree Regularisation <a name="regtree-model-regularisation"></a>
 
-Decision Tree's can be prone to over-fitting, in other words, without any limits on their splitting, they will end up learning the training data perfectly.  We would much prefer our model to have a more *generalised* set of rules, as this will be more robust & reliable when making predictions on *new* data.
+Decision Tree's can be prone to over-fitting, in other words, without any limits on their splitting, they will end up learning the training data perfectly.  We would much prefer our model to have a more *generalised* set of rules, as this will be more robust and reliable when making predictions on *new* data.
 
 One effective method of avoiding this over-fitting, is to apply a *max depth* to the Decision Tree, meaning we only allow it to split the data a certain number of times before it is required to stop.
 
@@ -825,7 +825,7 @@ We will again utilise the scikit-learn library within Python to model our data u
 <br>
 ### Data Import <a name="rf-import"></a>
 
-Again, since we saved our modelling data as a pickle file, we import it.  We ensure we remove the id column, and we also ensure our data is shuffled.
+Again, since we saved our modeling data as a pickle file, we import it.  We ensure we remove the id column, and we also ensure our data is shuffled.
 
 ```python
 
@@ -840,8 +840,8 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.inspection import permutation_importance
 
-# import modelling data
-data_for_model = pickle.load(open("data/customer_loyalty_modelling.p", "rb"))
+# import modeling data
+data_for_model = pickle.load(open("data/customer_loyalty_modeling.p", "rb"))
 
 # drop unnecessary columns
 data_for_model.drop("customer_id", axis = 1, inplace = True)
@@ -872,7 +872,7 @@ data_for_model.dropna(how = "any", inplace = True)
 ```
 
 <br>
-##### Split Out Data For Modelling
+##### Split Out Data For Modeling
 
 In exactly the same way we did for Linear Regression, in the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
 
@@ -881,7 +881,7 @@ Once we have done this, we split our data into training and test sets to ensure 
 <br>
 ```python
 
-# split data into X and y objects for modelling
+# split data into X and y objects for modeling
 X = data_for_model.drop(["customer_loyalty_score"], axis = 1)
 y = data_for_model["customer_loyalty_score"]
 
@@ -970,12 +970,12 @@ print(r_squared)
 
 ```
 
-The resulting r-squared score from this is **0.957** - higher than both Linear Regression & the Decision Tree.
+The resulting r-squared score from this is **0.957** - higher than both Linear Regression and the Decision Tree.
 
 <br>
 ##### Calculate Cross Validated R-Squared
 
-As we did when testing Linear Regression & our Decision Tree, we will again utilise Cross Validation (for more info on how this works, please refer to the Linear Regression section above)
+As we did when testing Linear Regression and our Decision Tree, we will again utilise Cross Validation (for more info on how this works, please refer to the Linear Regression section above)
 
 ```python
 
@@ -986,12 +986,12 @@ cv_scores.mean()
 
 ```
 
-The mean cross-validated r-squared score from this is **0.923** which agian is higher than we saw for both Linear Regression & our Decision Tree.
+The mean cross-validated r-squared score from this is **0.923** which agian is higher than we saw for both Linear Regression and our Decision Tree.
 
 <br>
 ##### Calculate Adjusted R-Squared
 
-Just like we did with Linear Regression & our Decision Tree, we will also calculate the *Adjusted R-Squared* which compensates for the addition of input variables, and only increases if the variable improves the model above what would be obtained by probability.
+Just like we did with Linear Regression and our Decision Tree, we will also calculate the *Adjusted R-Squared* which compensates for the addition of input variables, and only increases if the variable improves the model above what would be obtained by probability.
 
 ```python
 
@@ -1078,13 +1078,13 @@ That code gives us the below plots - the first being for *Feature Importance* an
 ![alt text](/img/posts/rf-regression-permutation-importance.png "Random Forest Permutation Importance Plot")
 
 <br>
-The overall story from both approaches is very similar, in that by far, the most important or impactful input variable is *distance_from_store* which is the same insights we derived when assessing our Linear Regression & Decision Tree models.
+The overall story from both approaches is very similar, in that by far, the most important or impactful input variable is *distance_from_store* which is the same insights we derived when assessing our Linear Regression and Decision Tree models.
 
 There are slight differences in the order or "importance" for the remaining variables but overall they have provided similar findings.
 
 ___
 <br>
-# Modelling Summary  <a name="modelling-summary"></a>
+# Modeling Summary  <a name="modeling-summary"></a>
 
 The most important outcome for this project was predictive accuracy, rather than explicitly understanding the drivers of prediction. Based upon this, we chose the model that performed the best when predicted on the test set - the Random Forest.
 
@@ -1103,10 +1103,10 @@ The most important outcome for this project was predictive accuracy, rather than
 * Linear Regression = 0.853
 
 <br>
-Even though we were not specifically interested in the drivers of prediction, it was interesting to see across all three modelling approaches, that the input variable with the biggest impact on the prediction was *distance_from_store* rather than variables such as *total sales*.  This is interesting information for the business, so discovering this as we went was worthwhile.
+Even though we were not specifically interested in the drivers of prediction, it was interesting to see across all three modeling approaches, that the input variable with the biggest impact on the prediction was *distance_from_store* rather than variables such as *total sales*.  This is interesting information for the business, so discovering this as we went was worthwhile.
 
 <br>
-# Predicting Missing Loyalty Scores <a name="modelling-predictions"></a>
+# Predicting Missing Loyalty Scores <a name="modeling-predictions"></a>
 
 We have selected the model to use (Random Forest) and now we need to make the *loyalty_score* predictions for those customers that the market research consultancy were unable to tag.
 
@@ -1116,7 +1116,7 @@ In the following code, we will
 
 * Import the required packages for preprocessing
 * Import the data for those customers who are missing a *loyalty_score* value
-* Import our model object & any preprocessing artifacts
+* Import our model object and any preprocessing artifacts
 * Drop columns that were not used when training the model (customer_id)
 * Drop rows with missing values
 * Apply One Hot Encoding to the gender column (using transform)
@@ -1159,10 +1159,10 @@ Just like that, we have made our *loyalty_score* predictions for these missing c
 
 ___
 <br>
-# Growth & Next Steps <a name="growth-next-steps"></a>
+# Growth and Next Steps <a name="growth-next-steps"></a>
 
-While predictive accuracy was relatively high - other modelling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
+While predictive accuracy was relatively high - other modeling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
 
 We could even look to tune the hyperparameters of the Random Forest, notably regularisation parameters such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
-From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available for predicting customer loyalty
+From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available for predicting customer loyalty.
