@@ -73,7 +73,7 @@ Based on these statistics, we fail to reject the null hypothesis, and conclude t
 
 In other words, while we saw that the higher cost Mailer 2 had a higher sign-up rate (37.8%) than the lower cost Mailer 1 (32.8%) it appears that this difference is not significant, at least at our Significance Level of 0.05.
 
-Without running this Hypothesis Test, the client may have concluded that they should always go with higher cost mailers, or that the higher quality mailer is worth the investment of the higher cost. From what we've seen in this test, those may not be great decisions. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result.
+Without running this test, the client may have concluded that they should always go with higher cost mailers, or that the higher quality mailer is worth the investment of the higher cost. From what we've seen in this test, those may not be great decisions. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result.
 
 Our results here also do not say that there *definitely isn't a difference between the two mailers* --- we are only advising that we should not make any rigid conclusions *at this point*. 
 
@@ -153,7 +153,7 @@ ___
 
 # Data Overview and Preparation  <a name="data-overview"></a>
 
-In the client database, we have a *campaign_data* table which shows us which customers received each type of Delivery Club mailer, which customers were in the control group, and which customers joined the club as a result.
+In the client database, we have a *campaign_data* table which shows us which customers received each type of Delivery Club mailer, which customers were in the control group, and which customers joined the club.
 
 For this task, we are looking to find evidence that the Delivery Club sign-up rate for customers that received "Mailer 1" (low cost) was different than the rate for those who received "Mailer 2" (high cost). Therefore, we will extract the entries for customers from those 2 groups from the *campaign_data* table, and we will exclude customers who were in the control group.
 
@@ -213,7 +213,7 @@ ___
 
 #### State Hypotheses and Significance Level for the Test
 
-In the code below we code these in explicitly and clearly so we can use them later to explain the results. We specify the common Significance Level value of 0.05.
+In the code below we code the hypotheses and significance level explicitly so that we can use them later to explain the results. We specify the common significance level value of 0.05.
 
 ```python
 
@@ -274,11 +274,11 @@ Based on the observed values, we get the following sign-up rates:
 * Mailer 1 (Low Cost): **32.8%** sign-up rate
 * Mailer 2 (High Cost): **37.8%** sign-up rate
 
-From this, we can see that the higher cost mailer has a higher sign-up rate. The results from our Chi-Squared Test will provide us more information about how confident we can be that this difference is significant, or whether it could have occurred by chance.
+We can see that the higher cost mailer has a higher sign-up rate. The results from our Chi-Squared Test will provide us more information about how confident we can be that this difference is significant, or whether it could have occurred by chance.
 
 We have a Chi-Squared Statistic of **1.94** and a p-value of **0.16**. The Critical Value for our specified Significance Level of 0.05 is **3.84**.
 
-**Note** When applying the Chi-Squared Test above, we use the parameter *correction = False*, which means we are not applying the *Yates' Correction*, which is applied when your degrees of freedom is equal to one. The Yates Correction helps to prevent overestimation of statistical significance, but for simplicity it was not used here.
+**Note** When applying the Chi-Squared Test above, we use the parameter *correction = False*, which means we are not applying the *Yates' Correction*, which is applied when the degrees of freedom is equal to one. The Yates Correction helps to prevent overestimation of statistical significance, but for simplicity it was not used here.
 
 ___
 
@@ -292,7 +292,7 @@ ___
 
 While the higher cost Mailer 2 had a higher sign-up rate (37.8%) than the lower cost Mailer 1 (32.8%) it appears that this difference is not significant, at least at our Significance Level of 0.05.
 
-Without running this Hypothesis Test, the client may have concluded that they should always go with higher cost mailers, or that the higher quality mailer is worth the investment of the higher cost. From what we've seen in this test, those may not be great decisions. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result.
+Without running this test, the client may have concluded that they should always go with higher cost mailers, or that the higher quality mailer is worth the investment of the higher cost. From what we've seen in this test, those may not be great decisions. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result.
 
 Our results here also do not say that there *definitely isn't a difference between the two mailers* --- we are only advising that we should not make any rigid conclusions *at this point*. 
 
