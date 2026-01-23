@@ -233,13 +233,13 @@ As mentioned in the section above, in a Chi-Squared Test For Independence, the *
 The below code:
 
 * Summarizes our dataset in a 2x2 matrix for *signup_flag* by *mailer_type*.
-* Based on this, calculates the:
+* Calculates the:
     * Chi-Squared Statistic
     * p-value
     * Degrees of Freedom
     * Expected Values
 * Prints out the Chi-Squared Statistic and p-value from the test.
-* Calculates the Critical Value based upon our Significance Level and the degrees of freedom.
+* Calculates the Critical Value based on the Significance Level and the degrees of freedom.
 * Prints out the Critical Value.
 
 ```python
@@ -278,7 +278,7 @@ From this, we can see that the higher cost mailer has a higher sign-up rate. The
 
 We have a Chi-Squared Statistic of **1.94** and a p-value of **0.16**. The Critical Value for our specified Significance Level of 0.05 is **3.84**.
 
-**Note** When applying the Chi-Squared Test above, we use the parameter *correction = False*, which means we are not applying the *Yates' Correction*, which is applied when your Degrees of Freedom is equal to one. The Yates Correction helps to prevent overestimation of statistical significance, but for simplicity it was not used here.
+**Note** When applying the Chi-Squared Test above, we use the parameter *correction = False*, which means we are not applying the *Yates' Correction*, which is applied when your degrees of freedom is equal to one. The Yates Correction helps to prevent overestimation of statistical significance, but for simplicity it was not used here.
 
 ___
 
