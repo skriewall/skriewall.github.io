@@ -45,7 +45,7 @@ For this test, as it is focused on comparing the *rates* of two groups, we appli
 
 From the *campaign_data* table in the client database, we isolated customers that received "Mailer 1" (low cost) and "Mailer 2" (high cost) for this campaign, and excluded customers who were in the control group.
 
-We set out our hypotheses and significance level for the test, as follows:
+We set our hypotheses and significance level for the test, as follows:
 
 **Null Hypothesis:** There is no relationship between mailer type and sign-up rate. They are independent.  
 **Alternative Hypothesis:** There is a relationship between mailer type and sign-up rate. They are not independent.  
@@ -55,7 +55,7 @@ As a requirement of the Chi-Squared Test For Independence, we aggregated this da
 
 <br>
 
-### Results & Discussion <a name="overview-results"></a>
+### Results and Discussion <a name="overview-results"></a>
 
 Based on the observed values, we get the following sign-up rates:
 
@@ -125,7 +125,7 @@ To summarize, in a Hypothesis Test we test the Null Hypothesis using a p-value a
 
 <br>
 
-**Types Of Hypothesis Tests**
+**Types of Hypothesis Tests**
 
 There are many different types of Hypothesis Tests, each of which is appropriate for use in different scenarios depending on a) the type of data that you’re testing, and b) the question that you’re asking of that data.
 
@@ -133,7 +133,7 @@ In the case of our task here, where we are looking to understand the difference 
 
 <br>
 
-#### Chi-Squared Test For Independence
+#### Chi-Squared Test for Independence
 
 The Chi-Squared Test For Independence is a type of Hypothesis Test that assumes observed frequencies for categorical variables (as opposed to numerical variables) will match the expected frequencies.
 
@@ -151,7 +151,7 @@ The *expected frequencies* are essentially what we would *expect* to see based o
 
 ___
 
-# Data Overview & Preparation  <a name="data-overview"></a>
+# Data Overview and Preparation  <a name="data-overview"></a>
 
 In the client database, we have a *campaign_data* table which shows us which customers received each type of Delivery Club mailer, which customers were in the control group, and which customers joined the club as a result.
 
@@ -209,7 +209,7 @@ In the DataFrame we have:
 
 ___
 
-# Applying the Chi-Squared Test For Independence <a name="chi-squared-application"></a>
+# Applying the Chi-Squared Test for Independence <a name="chi-squared-application"></a>
 
 #### State Hypotheses and Significance Level for the Test
 
@@ -226,7 +226,7 @@ significance_level = 0.05
 
 <br>
 
-#### Calculate Observed Frequencies & Expected Frequencies
+#### Calculate Observed Frequencies and Expected Frequencies
 
 As mentioned in the section above, in a Chi-Squared Test For Independence, the *observed frequencies* are the actual rates per group in the data itself. The *expected frequencies* are what we would *expect* to see based on *all* of the data combined.
 
@@ -282,7 +282,7 @@ We have a Chi-Squared Statistic of **1.94** and a p-value of **0.16**. The Criti
 
 ___
 
-# Analysing The Results <a name="chi-squared-results"></a>
+# Analyzing the Results <a name="chi-squared-results"></a>
 
 At this point we have everything we need to understand the results of our Chi-Squared test. Since our resulting p-value of **0.16** is *greater* than our Significance Level of 0.05, we will *fail to reject* the Null Hypothesis and conclude that there is no significant difference between the sign-up rates for customers receiving Mailer 1 versus Mailer 2. (We can make the same conclusion based on the Chi-Squared statistic of **1.94** being *lower* than our Critical Value of **3.84**.)
 
