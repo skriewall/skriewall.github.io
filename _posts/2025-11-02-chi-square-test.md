@@ -9,16 +9,16 @@ In this project I apply the Chi-Squared Test For Independence (a hypothesis test
 
 # Table of Contents
 
-- [00. Data Source](#data-source)
-- [01. Project Overview](#overview-main)
+- 00. [Data Source](#data-source)
+- 01. [Project Overview](#overview-main)
     - [Context](#overview-context)
     - [Actions](#overview-actions)
     - [Results and Discussion](#overview-results)
-- [02. Concept Overview](#concept-overview)
-- [03. Data Overview and Preparation](#data-overview)
-- [04. Applying the Chi-Squared Test For Independence](#chi-squared-application)
-- [05. Analyzing the Results](#chi-squared-results)
-- [06. Discussion](#discussion)
+- 02. [Concept Overview](#concept-overview)
+- 03. [Data Overview and Preparation](#data-overview)
+- 04. [Applying the Chi-Squared Test For Independence](#chi-squared-application)
+- 05. [Analyzing the Results](#chi-squared-results)
+- 06. [Discussion](#discussion)
 
 ___
 
