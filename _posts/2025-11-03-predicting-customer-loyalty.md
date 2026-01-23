@@ -91,9 +91,9 @@ From a data point of view, further variables could be collected, and further fea
 
 The *loyalty score* metric measures the % of grocery spend (market-level) that each customer allocates to the client vs. all of the client's competitors. 
 
-Example 1: Customer A has a total grocery spend of $100 and all of this is spent with our client. Customer A has a *loyalty score* of **1.0**.
+Example 1: Customer A has spent $100 total on groceries, and all of this was spent with our client. Customer A has a *loyalty score* of **1.0**.
 
-Example 2: Customer B has a total grocery spend of $200 but only 20% is spent with our client. The remaining 80% is spent with competitors. Customer B has a *customer loyalty score* of **0.2**.
+Example 2: Customer B has spent $200 total, but only 20% was spent with our client. The remaining 80% was spent with competitors. Customer B has a *customer loyalty score* of **0.2**.
 
 <br>
 ___
@@ -104,87 +104,85 @@ We will be predicting the *loyalty_score* metric. This metric exists (for half o
 
 The key variables hypothesized to predict the missing loyalty scores will come from the client database, namely the *transactions* table, the *customer_details* table, and the *product_areas* table.
 
-Using pandas in Python, we merged these tables together for all customers, creating a single dataset that we can use for modeling.
+Using the Pandas library in Python, we merged these tables together for all customers, creating a single dataset that can be used for modeling
 
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 
-# import required data tables
+# Import the data
 loyalty_scores = ...
 customer_details = ...
 transactions = ...
 
-# merge loyalty score data and customer details data, at customer level
-data_for_regression = pd.merge(customer_details, loyalty_scores, how = "left", on = "customer_id")
+# Merge loyalty score data and customer details data, at the customer level
+data_for_regression = pd.merge(customer_details, loyalty_scores, how = 'left', on = 'customer_id')
 
-# aggregate sales data from transactions table
-sales_summary = transactions.groupby("customer_id").agg({"sales_cost" : "sum",
-                                                         "num_items" : "sum",
-                                                         "transaction_id" : "nunique",
-                                                         "product_area_id" : "nunique"}).reset_index()
+# Aggregate sales data from the transactions table
+sales_summary = transactions.groupby('customer_id').agg({'sales_cost': 'sum',
+                                                         'num_items': 'sum',
+                                                         'transaction_id': 'count',
+                                                         'product_area_id': 'nunique'}).reset_index()
 
-# rename columns for clarity
-sales_summary.columns = ["customer_id", "total_sales", "total_items", "transaction_count", "product_area_count"]
+# Rename columns for clarity
+sales_summary.columns = ['customer_id', 'total_sales', 'total_items', 'transaction_count', 'product_area_count']
 
-# engineer an average basket value column for each customer
-sales_summary["average_basket_value"] = sales_summary["total_sales"] / sales_summary["transaction_count"]
+# Add a column with the average cart value for each customer
+sales_summary['average_cart_value'] = sales_summary.total_sales / sales_summary.transaction_count
 
-# merge the sales summary with the overall customer data
-data_for_regression = pd.merge(data_for_regression, sales_summary, how = "inner", on = "customer_id")
+# Merge the sales summary with the overall customer data
+data_for_regression = pd.merge(data_for_regression, sales_summary, how = 'inner', on = 'customer_id')
 
-# split out data for modeling (loyalty score is present)
-regression_modeling = data_for_regression.loc[data_for_regression["customer_loyalty_score"].notna()]
+# Split out the data for modeling (customers with loyalty score) and for predicting (loyalty score is missing)
+regression_modeling = data_for_regression.loc[data_for_regression['customer_loyalty_score'].notna()]
+regression_scoring = data_for_regression.loc[data_for_regression['customer_loyalty_score'].isna()]
+regression_scoring.drop(['customer_loyalty_score'], axis = 1, inplace = True)
 
-# split out data for scoring post-modeling (loyalty score is missing)
-regression_scoring = data_for_regression.loc[data_for_regression["customer_loyalty_score"].isna()]
-
-# for scoring set, drop the loyalty score column (as it is blank/redundant)
-regression_scoring.drop(["customer_loyalty_score"], axis = 1, inplace = True)
-
-# save our datasets for future use
-pickle.dump(regression_modeling, open("data/customer_loyalty_modeling.p", "wb"))
-pickle.dump(regression_scoring, open("data/customer_loyalty_scoring.p", "wb"))
+# Save our datasets for future use
+pickle.dump(regression_modeling, open('data/abc_regression_modeling.p', 'wb'))
+pickle.dump(regression_scoring, open('data/abc_regression_scoring.p', 'wb'))
 
 ```
+
 <br>
-After this data pre-processing in Python, we have a dataset for modeling that contains the following fields...
-<br>
+
+After this data preprocessing in Python, we have a dataset for modeling that contains the following fields:
+
 <br>
 
 | **Variable Name** | **Variable Type** | **Description** |
 |---|---|---|
-| loyalty_score | Dependent | The % of total grocery spend that each customer allocates to ABC Grocery vs. competitors |
-| distance_from_store | Independent | "The distance in miles from the customers home address, and the store" |
+| loyalty_score | Dependent | The % of total grocery spending that each customer allocates to the client vs. competitors |
+| distance_from_store | Independent | The distance in miles from the customer's home address to the store |
 | gender | Independent | The gender provided by the customer |
-| credit_score | Independent | The customers most recent credit score |
-| total_sales | Independent | Total spend by the customer in ABC Grocery within the latest 6 months |
-| total_items | Independent | Total products purchased by the customer in ABC Grocery within the latest 6 months |
-| transaction_count | Independent | Total unique transactions made by the customer in ABC Grocery within the latest 6 months |
-| product_area_count | Independent | The number of product areas within ABC Grocery the customers has shopped into within the latest 6 months |
-| average_basket_value | Independent | The average spend per transaction for the customer in ABC Grocery within the latest 6 months |
+| credit_score | Independent | The customer's most recent credit score |
+| total_sales | Independent | Total spending by the customer with the client within the latest 6 months |
+| total_items | Independent | Total products purchased by the customer with the client within the latest 6 months |
+| transaction_count | Independent | Total unique transactions made by the customer with the client within the latest 6 months |
+| product_area_count | Independent | The number of product areas in the client's store that customers have shopped within the latest 6 months |
+| average_cart_value | Independent | The average amount spent per transaction for the customer with the client within the latest 6 months |
 
 ___
-<br>
+
 # Modeling Overview
 
-We will build a model that looks to accurately predict the “loyalty_score” metric for those customers that were able to be tagged, based upon the customer metrics listed above.
+We will build a model that accurately predicts the *loyalty_score* metric for customers that were able to be tagged, based on the customer metrics listed above.
 
-If that can be achieved, we can use this model to predict the customer loyalty score for the customers that were unable to be tagged by the agency.
+If an accurate model can be achieved, we will use the model to predict the customer loyalty score for the customers that were unable to be tagged by the agency.
 
-As we are predicting a numeric output, we tested three regression modeling approaches, namely:
+As the *loyalty score* is a numerical output, we tested three regression modeling approaches:
 
 * Linear Regression
 * Decision Tree
 * Random Forest
 
 ___
-<br>
+
 # Linear Regression <a name="linreg-title"></a>
 
-We utilise the scikit-learn library within Python to model our data using Linear Regression. The code sections below are broken up into 4 key sections:
+We use the scikit-learn library in Python to model the data using Linear Regression. The code sections below are broken up into 4 key sections:
 
 * Data Import
 * Data Preprocessing
@@ -192,16 +190,18 @@ We utilise the scikit-learn library within Python to model our data using Linear
 * Performance Assessment
 
 <br>
+
 ### Data Import <a name="linreg-import"></a>
 
-Since we saved our modeling data as a pickle file, we import it. We ensure we remove the id column, and we also ensure our data is shuffled.
+We import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
 
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+
 from sklearn.linear_model import LinearRegression
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
@@ -209,17 +209,19 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_selection import RFECV
 
-# import modeling data
-data_for_model = pickle.load(open("data/customer_loyalty_modeling.p", "rb"))
+# Import sample data
+data_for_model = pd.read_pickle('data/abc_regression_modeling.p')
 
-# drop uneccessary columns
-data_for_model.drop("customer_id", axis = 1, inplace = True)
+# Drop unnecessary columns
+data_for_model.drop('customer_id', axis = 1, inplace = True)
 
-# shuffle data
+# Shuffle data
 data_for_model = shuffle(data_for_model, random_state = 42)
 
 ```
+
 <br>
+
 ### Data Preprocessing <a name="linreg-preprocessing"></a>
 
 For Linear Regression we have certain data preprocessing steps that need to be addressed, including:
@@ -230,28 +232,30 @@ For Linear Regression we have certain data preprocessing steps that need to be a
 * Multicollinearity and feature selection
 
 <br>
+
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows
+The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows.
 
 ```python
 
-# remove rows where values are missing
+# Remove rows where values are missing
 data_for_model.isna().sum()
-data_for_model.dropna(how = "any", inplace = True)
+data_for_model.dropna(how = 'any', inplace = True)
 
 ```
 
 <br>
+
 ##### Outliers
 
-The ability for a Linear Regression model to generalise well across *all* data can be hampered if there are outliers present. There is no right or wrong way to deal with outliers, but it is always something worth very careful consideration - just because a value is high or low, does not necessarily mean it should not be there!
+The ability for a Linear Regression model to generalize well across *all* data can be negatively impacted if there are outliers present. There is no right or wrong way to deal with outliers, but it is something worth careful consideration on a case by case basis. The key thing to keep in mind is that a value being high or low does not automatically mean it should not be included.
 
-In this code section, we use **.describe()** from Pandas to investigate the spread of values for each of our predictors. The results of this can be seen in the table below.
+In this code section, we use **.describe()** from Pandas to investigate the spread of values for each of the predictor variables. The results of this can be seen in the table below.
 
 <br>
 
-| **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_basket_value** |
+| **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_cart_value** |
 |---|---|---|---|---|---|---|---|
 | mean | 2.02 | 0.60 | 1846.50 | 278.30 | 44.93 | 4.31 | 36.78 |
 | std | 2.57 | 0.10 | 1767.83 | 214.24 | 21.25 | 0.73 | 19.34 |
@@ -262,40 +266,37 @@ In this code section, we use **.describe()** from Pandas to investigate the spre
 | max | 44.37 | 0.88 | 9878.76 | 1187.00 | 109.00 | 5.00 | 102.34 |
 
 <br>
-Based on this investigation, we see some *max* column values for several variables to be much higher than the *median* value.
 
-This is for columns *distance_from_store*, *total_sales*, and *total_items*
+Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* to be much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 44 miles. 
 
-For example, the median *distance_to_store* is 1.645 miles, but the maximum is over 44 miles!
-
-Because of this, we apply some outlier removal in order to facilitate generalisation across the full dataset.
-
-We do this using the "boxplot approach" where we remove any rows where the values within those columns are outside of the interquartile range multiplied by 2.
+Therefore, we use the "boxplot approach" to remove any rows where the values within those predictor variable columns are outside of the interquartile range multiplied by 2.
 
 <br>
+
 ```python
 
+# Deal with outliers
 outlier_investigation = data_for_model.describe()
-outlier_columns = ["distance_from_store", "total_sales", "total_items"]
+outlier_columns = ['distance_from_store', 'total_sales', 'total_items']
 
-# boxplot approach
+# Boxplot approaach
 for column in outlier_columns:
-    
     lower_quartile = data_for_model[column].quantile(0.25)
     upper_quartile = data_for_model[column].quantile(0.75)
-    iqr = upper_quartile - lower_quartile
-    iqr_extended = iqr * 2
+    iq_range = upper_quartile - lower_quartile
+    iqr_extended = iq_range * 2
     min_border = lower_quartile - iqr_extended
     max_border = upper_quartile + iqr_extended
     
     outliers = data_for_model[(data_for_model[column] < min_border) | (data_for_model[column] > max_border)].index
-    print(f"{len(outliers)} outliers detected in column {column}")
+    print(f'{len(outliers)} outliers detected in column {column}')
     
     data_for_model.drop(outliers, inplace = True)
 
 ```
 
 <br>
+
 ##### Split Out Data For Modeling
 
 In the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
@@ -315,6 +316,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 ```
 
 <br>
+
 ##### Categorical Predictor Variables
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
@@ -332,6 +334,7 @@ In the code, we also make sure to apply *fit_transform* to the training set, but
 For ease, after we have applied One Hot Encoding, we turn our training and test objects back into Pandas Dataframes, with the column names applied.
 
 <br>
+
 ```python
 
 # list of categorical variables that need encoding
@@ -359,6 +362,7 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 ```
 
 <br>
+
 ##### Feature Selection
 
 Feature Selection is the process used to select the input variables that are most important to your Machine Learning task. It can be a very important addition or at least, consideration, in certain scenarios. The potential benefits of Feature Selection are:
@@ -392,7 +396,8 @@ X_test = X_test.loc[:, feature_selector.get_support()]
 ```
 
 <br>
-The below code then produces a plot that visualises the cross-validated accuracy with each potential number of features
+
+The below code then produces a plot that visualizes the cross-validated accuracy with each potential number of features
 
 ```python
 
@@ -407,12 +412,15 @@ plt.show()
 ```
 
 <br>
+
 This creates the below plot, which shows us that the highest cross-validated accuracy (0.8635) is actually when we include all eight of our original input variables. This is marginally higher than 6 included variables, and 7 included variables. We will continue on with all 8!
 
 <br>
+
 ![alt text](/img/posts/lin-reg-feature-selection-plot.png "Linear Regression Feature Selection Plot")
 
 <br>
+
 ### Model Training <a name="linreg-model-training"></a>
 
 Instantiating and training our Linear Regression model is done using the below code
@@ -428,6 +436,7 @@ regressor.fit(X_train, y_train)
 ```
 
 <br>
+
 ### Model Performance Assessment <a name="linreg-model-assessment"></a>
 
 ##### Predict On The Test Set
@@ -442,6 +451,7 @@ y_pred = regressor.predict(X_test)
 ```
 
 <br>
+
 ##### Calculate R-Squared
 
 R-Squared is a metric that shows the percentage of variance in our output variable *y* that is being explained by our input variable(s) *x*. It is a value that ranges between 0 and 1, with a higher value showing a higher level of explained variance. Another way of explaining this would be to say that, if we had an r-squared score of 0.8 it would suggest that 80% of the variation of our output variable is being explained by our input variables - and something else, or some other variables must account for the other 20%
@@ -459,9 +469,10 @@ print(r_squared)
 The resulting r-squared score from this is **0.78**
 
 <br>
+
 ##### Calculate Cross Validated R-Squared
 
-An even more powerful and reliable way to assess model performance is to utilise Cross Validation.
+An even more powerful and reliable way to assess model performance is to utilize Cross Validation.
 
 Instead of simply dividing our data into a single training set, and a single test set, with Cross Validation we break our data into a number of "chunks" and then iteratively train the model on all but one of the "chunks", test the model on the remaining "chunk" until each has had a chance to be the test set.
 
@@ -483,6 +494,7 @@ cv_scores.mean()
 The mean cross-validated r-squared score from this is **0.853**
 
 <br>
+
 ##### Calculate Adjusted R-Squared
 
 When applying Linear Regression with *multiple* input variables, the r-squared metric on it's own *can* end up being an overinflated view of goodness of fit. This is because each input variable will have an *additive* effect on the overall r-squared score. In other words, every input variable added to the model *increases* the r-squared value, and *never decreases* it, even if the relationship is by chance. 
@@ -501,6 +513,7 @@ print(adjusted_r_squared)
 The resulting *adjusted* r-squared score from this is **0.754** which as expected, is slightly lower than the score we got for r-squared on it's own.
 
 <br>
+
 ### Model Summary Statistics <a name="linreg-model-summary"></a>
 
 Although our overall goal for this project is predictive accuracy, rather than an explicit understanding of the relationships of each of the input variables and the output variable, it is always interesting to look at the summary statistics for these.
@@ -517,8 +530,11 @@ summary_stats.columns = ["input_variable", "coefficient"]
 regressor.intercept_
 
 ```
+
 <br>
+
 The information from that code block can be found in the table below:
+
 <br>
 
 | **input_variable** | **coefficient** |
@@ -530,10 +546,11 @@ The information from that code block can be found in the table below:
 | total_items | 0.001 |
 | transaction_count | -0.005 |
 | product_area_count | 0.062 |
-| average_basket_value | -0.004 |
+| average_cart_value | -0.004 |
 | gender_M | -0.013 |
 
 <br>
+
 The coefficient value for each of the input variables, along with that of the intercept would make up the equation for the line of best fit for this particular model (or more accurately, in this case it would be the plane of best fit, as we have multiple input variables).
 
 For each input variable, the coefficient value we see above tells us, with *everything else staying constant* how many units the output variable (loyalty score) would change with a *one unit change* in this particular input variable.
@@ -541,10 +558,10 @@ For each input variable, the coefficient value we see above tells us, with *ever
 To provide an example of this - in the table above, we can see that the *distance_from_store* input variable has a coefficient value of -0.201. This is saying that *loyalty_score* decreases by 0.201 (or 20% as loyalty score is a percentage, or at least a decimal value between 0 and 1) for *every additional mile* that a customer lives from the store. This makes intuitive sense, as customers who live a long way from this store, most likely live near *another* store where they might do some of their shopping as well, whereas customers who live near this store, probably do a greater proportion of their shopping at this store...and hence have a higher loyalty score!
 
 ___
-<br>
+
 # Decision Tree <a name="regtree-title"></a>
 
-We will again utilise the scikit-learn library within Python to model our data using a Decision Tree. The code sections below are broken up into 4 key sections:
+We will again utilize the scikit-learn library within Python to model our data using a Decision Tree. The code sections below are broken up into 4 key sections:
 
 * Data Import
 * Data Preprocessing
@@ -552,6 +569,7 @@ We will again utilise the scikit-learn library within Python to model our data u
 * Performance Assessment
 
 <br>
+
 ### Data Import <a name="regtree-import"></a>
 
 Since we saved our modeling data as a pickle file, we import it. We ensure we remove the id column, and we also ensure our data is shuffled.
@@ -578,7 +596,9 @@ data_for_model.drop("customer_id", axis = 1, inplace = True)
 data_for_model = shuffle(data_for_model, random_state = 42)
 
 ```
+
 <br>
+
 ### Data Preprocessing <a name="regtree-preprocessing"></a>
 
 While Linear Regression is susceptible to the effects of outliers, and highly correlated input variables - Decision Trees are not, so the required preprocessing here is lighter. We still however will put in place logic for:
@@ -587,6 +607,7 @@ While Linear Regression is susceptible to the effects of outliers, and highly co
 * Encoding categorical variables to numeric form
 
 <br>
+
 ##### Missing Values
 
 The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows
@@ -600,6 +621,7 @@ data_for_model.dropna(how = "any", inplace = True)
 ```
 
 <br>
+
 ##### Split Out Data For Modeling
 
 In exactly the same way we did for Linear Regression, in the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
@@ -607,6 +629,7 @@ In exactly the same way we did for Linear Regression, in the next code block we 
 Once we have done this, we split our data into training and test sets to ensure we can fairly validate the accuracy of the predictions on data that was not used in training. In this case, we have allocated 80% of the data for training, and the remaining 20% for validation.
 
 <br>
+
 ```python
 
 # split data into X and y objects for modeling
@@ -619,6 +642,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 ```
 
 <br>
+
 ##### Categorical Predictor Variables
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
@@ -628,6 +652,7 @@ Just like the Linear Regression algorithm, the Decision Tree cannot deal with da
 As *gender* doesn't have any explicit *order* to it, in other words, Male isn't higher or lower than Female and vice versa - we would again apply One Hot Encoding to the categorical column.
 
 <br>
+
 ```python
 
 # list of categorical variables that need encoding
@@ -655,6 +680,7 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 ```
 
 <br>
+
 ### Model Training <a name="regtree-model-training"></a>
 
 Instantiating and training our Decision Tree model is done using the below code. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
@@ -670,6 +696,7 @@ regressor.fit(X_train, y_train)
 ```
 
 <br>
+
 ### Model Performance Assessment <a name="regtree-model-assessment"></a>
 
 ##### Predict On The Test Set
@@ -684,6 +711,7 @@ y_pred = regressor.predict(X_test)
 ```
 
 <br>
+
 ##### Calculate R-Squared
 
 To calculate r-squared, we use the following code where we pass in our *predicted* outputs for the test set (y_pred), as well as the *actual* outputs for the test set (y_test)
@@ -699,9 +727,10 @@ print(r_squared)
 The resulting r-squared score from this is **0.898**
 
 <br>
+
 ##### Calculate Cross Validated R-Squared
 
-As we did when testing Linear Regression, we will again utilise Cross Validation.
+As we did when testing Linear Regression, we will again utilize Cross Validation.
 
 Instead of simply dividing our data into a single training set, and a single test set, with Cross Validation we break our data into a number of "chunks" and then iteratively train the model on all but one of the "chunks", test the model on the remaining "chunk" until each has had a chance to be the test set.
 
@@ -723,6 +752,7 @@ cv_scores.mean()
 The mean cross-validated r-squared score from this is **0.871** which is slighter higher than we saw for Linear Regression.
 
 <br>
+
 ##### Calculate Adjusted R-Squared
 
 Just like we did with Linear Regression, we will also calculate the *Adjusted R-Squared* which compensates for the addition of input variables, and only increases if the variable improves the model above what would be obtained by probability.
@@ -739,15 +769,17 @@ print(adjusted_r_squared)
 The resulting *adjusted* r-squared score from this is **0.887** which as expected, is slightly lower than the score we got for r-squared on it's own.
 
 <br>
-### Decision Tree Regularisation <a name="regtree-model-regularisation"></a>
 
-Decision Tree's can be prone to over-fitting, in other words, without any limits on their splitting, they will end up learning the training data perfectly. We would much prefer our model to have a more *generalized* set of rules, as this will be more robust and reliable when making predictions on *new* data.
+### Decision Tree Regularization <a name="regtree-model-regularization"></a>
+
+Decision Trees can be prone to over-fitting, in other words, without any limits on their splitting, they will end up learning the training data perfectly. We would much prefer our model to have a more *generalized* set of rules, as this will be more robust and reliable when making predictions on *new* data.
 
 One effective method of avoiding this over-fitting, is to apply a *max depth* to the Decision Tree, meaning we only allow it to split the data a certain number of times before it is required to stop.
 
 Unfortunately, we don't necessarily know the *best* number of splits to use for this - so below we will loop over a variety of values and assess which gives us the best predictive performance!
 
 <br>
+
 ```python
 
 # finding the best max_depth
@@ -781,7 +813,7 @@ plt.show()
 
 ```
 <br>
-That code gives us the below plot - which visualises the results!
+That code gives us the below plot - which visualizes the results!
 
 <br>
 ![alt text](/img/posts/regression-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
@@ -790,7 +822,7 @@ That code gives us the below plot - which visualises the results!
 In the plot we can see that the *maximum* classification accuracy on the test set is found when applying a *max_depth* value of 7. However, we lose very little accuracy back to a value of 4, but this would result in a simpler model, that generalized even better on new data. We make the executive decision to re-train our Decision Tree with a maximum depth of 4!
 
 <br>
-### Visualise Our Decision Tree <a name="regtree-visualise"></a>
+### Visualize Our Decision Tree <a name="regtree-visualize"></a>
 
 To see the decisions that have been made in the (re-fitted) tree, we can use the plot_tree functionality that we imported from scikit-learn. To do this, we use the below code:
 
@@ -825,7 +857,7 @@ ___
 <br>
 # Random Forest <a name="rf-title"></a>
 
-We will again utilise the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into 4 key sections:
+We will again utilize the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into 4 key sections:
 
 * Data Import
 * Data Preprocessing
@@ -985,7 +1017,7 @@ The resulting r-squared score from this is **0.957** - higher than both Linear R
 <br>
 ##### Calculate Cross Validated R-Squared
 
-As we did when testing Linear Regression and our Decision Tree, we will again utilise Cross Validation (for more info on how this works, please refer to the Linear Regression section above)
+As we did when testing Linear Regression and our Decision Tree, we will again utilize Cross Validation (for more info on how this works, please refer to the Linear Regression section above)
 
 ```python
 
@@ -1039,7 +1071,7 @@ These observations that were not randomly selected for each Decision Tree are kn
 
 For each Decision Tree, all of the *Out of Bag* observations are gathered and then passed through. Once all of these observations have been run through the Decision Tree, we obtain an accuracy score for these predictions, which in the case of a regression problem could be Mean Squared Error or r-squared.
 
-In order to understand the *importance*, we *randomise* the values within one of the input variables - a process that essentially destroys any relationship that might exist between that input variable and the output variable - and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
+In order to understand the *importance*, we *randomize* the values within one of the input variables - a process that essentially destroys any relationship that might exist between that input variable and the output variable - and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
 
 *Permutation Importance* is often preferred over *Feature Importance* which can at times inflate the importance of numerical features. Both are useful, and in most cases will give fairly similar results.
 
@@ -1173,7 +1205,8 @@ ___
 
 While predictive accuracy was relatively high - other modeling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
 
-We could even look to tune the hyperparameters of the Random Forest, notably regularisation parameters such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
+We could even look to tune the hyperparameters of the Random Forest, notably regularization parameters such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available for predicting customer loyalty.
+
 
