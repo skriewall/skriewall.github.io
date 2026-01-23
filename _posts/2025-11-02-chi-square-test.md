@@ -31,7 +31,7 @@ ___
 
 ### Context <a name="overview-context"></a>
 
-Earlier in the year, our client, a grocery retailer, ran an ad campaign to promote their new "Delivery Club" -- an initiative that costs $100/year for membership, but offers free grocery deliveries rather than the normal cost of $10 per delivery.
+Earlier in the year, our client, a grocery retailer, ran an ad campaign to promote their new "Delivery Club" --- an initiative that costs $100/year for membership, but offers free grocery deliveries rather than the normal cost of $10 per delivery.
 
 For the ad campaign, customers were randomly split into three groups. Customers in the first group received a low quality, low cost mailer; customers in the second group received a high quality, high cost mailer; and the third group was a control group, where customers received no mailer.
 
@@ -75,7 +75,7 @@ In other words, while we saw that the higher cost Mailer 2 had a higher sign-up 
 
 Without running this Hypothesis Test, the client may have concluded that they should always go with higher cost mailers, or that the higher quality mailer is worth the investment of the higher cost. From what we've seen in this test, those may not be great decisions. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result.
 
-Our results here also do not say that there *definitely isn't a difference between the two mailers* - we are only advising that we should not make any rigid conclusions *at this point*. 
+Our results here also do not say that there *definitely isn't a difference between the two mailers* --- we are only advising that we should not make any rigid conclusions *at this point*. 
 
 Gathering more data and then re-running this test may provide us and the client more insight. Further A/B testing could also be performed on any new types of mailers the client wants to try out in the future.
 
@@ -97,7 +97,7 @@ Applications of A/B testing can range from comparing different online ad strateg
 
 A Hypothesis Test is used to assess the likelihood of our assumed viewpoint based on available evidence (sample data).
 
-There are many different scenarios we can run Hypothesis Tests on, and they all have slightly different techniques and formulas - however they all have some shared, fundamental steps and logic that underpin how they work.
+There are many different scenarios we can run Hypothesis Tests on, and they all have slightly different techniques and formulas. However, they all have some shared, fundamental steps and logic that underpin how they work.
 
 <br>
 
@@ -109,15 +109,17 @@ In any Hypothesis Test, we start with the Null Hypothesis. The Null Hypothesis i
 
 **The Alternative Hypothesis**
 
-The aim of the Hypothesis Test is to look for evidence to either support or reject the Null Hypothesis. If we reject the Null Hypothesis, that would mean we have found enough evidence to support the Alternative Hypothesis. The Alternative Hypothesis is essentially the opposite viewpoint to the Null Hypothesis - that the result is *not* by chance, or that there *is* a relationship between two outcomes or groups. If we reject the Null Hypothesis, we do not accept the Alternative Hypothesis outright, but conclude the weight of the evidence supports the Alternative Hypothesis.
+The aim of the Hypothesis Test is to look for evidence to either support or reject the Null Hypothesis. If we reject the Null Hypothesis, that would mean we have found enough evidence to support the Alternative Hypothesis. The Alternative Hypothesis is essentially the opposite viewpoint to the Null Hypothesis --- that the result is *not* by chance, or that there *is* a relationship between two outcomes or groups. If we reject the Null Hypothesis, we do not accept the Alternative Hypothesis outright, but conclude the weight of the evidence supports the Alternative Hypothesis.
 
 <br>
 
-**The Significance Level**
+**The Significance Level and p-values**
 
-In a Hypothesis Test, before we collect any data or run any numbers - we decide on a Significance Level. This is a p-value threshold at which we’ll decide to reject or fail to reject the null hypothesis. It is essentially a line we draw in the sand, saying, "If I was to run this test many many times, what proportion of those times would I want to see different results come out in order to feel confident that my results are not just some unusual occurrence?"
+A p-value is the probability of obtaining results as extreme as the observed data, assuming that the null hypothesis is correct.
 
-Conventionally, we set our Significance Level to 0.05. If we need to be more confident that something did not occur through chance alone, we could lower this value down to something much smaller, meaning that we only come to the conclusion that the outcome was special or rare if the probability of getting the observed results by random chance is extremely small.
+In a Hypothesis Test, before collecting any data or running any numbers we decide on a Significance Level. This is a p-value threshold at which we’ll decide to reject or fail to reject the null hypothesis. We are essentially setting a limit, asking ourselves, "If I was to run this test many times over and over, what proportion of those times would I want to see different results come out in order to feel confident that my results are not just some unusual, random occurrence?"
+
+Conventionally, we set our Significance Level to 0.05. If we need to be more confident that something did not occur through chance alone, we could lower this value down to something even smaller, meaning that we only come to the conclusion that the outcome was special or rare if the probability of getting the observed results by random chance is extremely small.
 
 To summarize, in a Hypothesis Test we test the Null Hypothesis using a p-value and then make a decision about the Null Hypothesis based on the Significance Level.
 
@@ -125,7 +127,7 @@ To summarize, in a Hypothesis Test we test the Null Hypothesis using a p-value a
 
 **Types Of Hypothesis Tests**
 
-There are many different types of Hypothesis Tests, each of which is appropriate for use in different scenarios - depending on a) the type of data that you’re testing, and b) the question that you’re asking of that data.
+There are many different types of Hypothesis Tests, each of which is appropriate for use in different scenarios depending on a) the type of data that you’re testing, and b) the question that you’re asking of that data.
 
 In the case of our task here, where we are looking to understand the difference in sign-up *rate* between two groups, we use the Chi-Squared Test For Independence.
 
@@ -151,7 +153,7 @@ ___
 
 # Data Overview & Preparation  <a name="data-overview"></a>
 
-In the client database, we have a *campaign_data* table which shows us which customers received each type of "Delivery Club" mailer, which customers were in the control group, and which customers joined the club as a result.
+In the client database, we have a *campaign_data* table which shows us which customers received each type of Delivery Club mailer, which customers were in the control group, and which customers joined the club as a result.
 
 For this task, we are looking to find evidence that the Delivery Club sign-up rate for customers that received "Mailer 1" (low cost) was different than the rate for those who received "Mailer 2" (high cost). Therefore, we will extract the entries for customers from those 2 groups from the *campaign_data* table, and we will exclude customers who were in the control group.
 
@@ -165,15 +167,15 @@ In the code below, we:
 
 ```python
 
-# install the required python libraries
+# IMPORT REQUIRED PACKAGES
 import pandas as pd
 from scipy.stats import chi2_contingency, chi2
 
-# import campaign data
-campaign_data = ...
+# IMPORT DATA
+campaign_data = pd.read_excel('grocery_database.xlsx', sheet_name = 'campaign_data')
 
-# remove customers who were in the control group
-campaign_data = campaign_data.loc[campaign_data["mailer_type"] != "Control"]
+# FILTER OUR DATA TO REMOVE CUSTOMERS IN THE CONTROL GROUP
+campaign_data = campaign_data.loc[campaign_data['mailer_type'] != 'Control']
 
 ```
 
@@ -209,17 +211,15 @@ ___
 
 # Applying the Chi-Squared Test For Independence <a name="chi-squared-application"></a>
 
-<br>
-
 #### State Hypotheses and Significance Level for the Test
 
 In the code below we code these in explicitly and clearly so we can use them later to explain the results. We specify the common Significance Level value of 0.05.
 
 ```python
 
-# specify hypotheses & significance level for test
-null_hypothesis = "There is no relationship between mailer type and sign-up rate. They are independent."
-alternative_hypothesis = "There is a relationship between mailer type and sign-up rate. They are not independent."
+# STATE HYPOTHESES & SET ACCEPTANCE CRITERIA
+null_hypothesis = 'There is no relationship between mailer type and sign-up rate. They are independent.'
+alternative_hypothesis = 'There is a relationship between mailer type and sign-up rate. They are dependent.'
 significance_level = 0.05
 
 ```
@@ -239,29 +239,29 @@ The below code:
     * Degrees of Freedom
     * Expected Values
 * Prints out the Chi-Squared Statistic and p-value from the test.
-* Calculates the Critical Value based upon our Significance Level & the degrees of freedom
+* Calculates the Critical Value based upon our Significance Level and the degrees of freedom.
 * Prints out the Critical Value.
 
 ```python
 
-# aggregate our data to get observed values
-observed_values = pd.crosstab(campaign_data["mailer_type"], campaign_data["signup_flag"]).values
+# SUMMARISE TO GET OUR OBSERVED FREQUENCIES
+observed_values = pd.crosstab(campaign_data['mailer_type'], campaign_data['signup_flag']).values
 
-# run the chi-squared test
-chi2_statistic, p_value, dof, expected_values = chi2_contingency(observed_values, correction = False)
+# CALCULATE EXPECTED FREQUENCIES & CHI-SQUARED STATISTIC
+chi2_stat, p_value, dof, expected_values = chi2_contingency(observed_values, correction = False)
 
-# print chi-squared statistic
+# PRINT CHI-SQUARED STATISTIC
 print(chi2_statistic)
 >> 1.94
 
-# print p-value
+# PRINT P-VALUE
 print(p_value)
 >> 0.16
 
-# find the critical value for our test
+# FIND THE CRITICAL VALUE FOR OUR TEST
 critical_value = chi2.ppf(1 - acceptance_criteria, dof)
 
-# print critical value
+# PRINT CRITICAL VALUE
 print(critical_value)
 >> 3.84
 
@@ -274,19 +274,17 @@ Based on the observed values, we get the following sign-up rates:
 * Mailer 1 (Low Cost): **32.8%** sign-up rate
 * Mailer 2 (High Cost): **37.8%** sign-up rate
 
-From this, we can see that the higher cost mailer does lead to a higher sign-up rate. The results from our Chi-Squared Test will provide us more information about how confident we can be that this difference is significant, or if it could have occurred by chance.
+From this, we can see that the higher cost mailer has a higher sign-up rate. The results from our Chi-Squared Test will provide us more information about how confident we can be that this difference is significant, or whether it could have occurred by chance.
 
-We have a Chi-Squared Statistic of **1.94** and a p-value of **0.16**. The critical value for our specified Significance Level of 0.05 is **3.84**.
+We have a Chi-Squared Statistic of **1.94** and a p-value of **0.16**. The Critical Value for our specified Significance Level of 0.05 is **3.84**.
 
-**Note** When applying the Chi-Squared Test above, we use the parameter *correction = False* which means we are not applying what is known as the *Yates' Correction* which is applied when your Degrees of Freedom is equal to one. This correction helps to prevent overestimation of statistical signficance in this case.
+**Note** When applying the Chi-Squared Test above, we use the parameter *correction = False*, which means we are not applying the *Yates' Correction*, which is applied when your Degrees of Freedom is equal to one. The Yates Correction helps to prevent overestimation of statistical significance, but for simplicity it was not used here.
 
 ___
 
 # Analysing The Results <a name="chi-squared-results"></a>
 
-At this point we have everything we need to understand the results of our Chi-Squared test. From the results above we can see that, since our resulting p-value of **0.16** is *greater* than our Significance Level of 0.05 then we will *fail to reject* the Null Hypothesis and conclude that there is no significant difference between the sign-up rates of Mailer 1 and Mailer 2.
-
-We can make the same conclusion based on our resulting Chi-Squared statistic of **1.94** being *lower* than our Critical Value of **3.84**.
+At this point we have everything we need to understand the results of our Chi-Squared test. Since our resulting p-value of **0.16** is *greater* than our Significance Level of 0.05, we will *fail to reject* the Null Hypothesis and conclude that there is no significant difference between the sign-up rates for customers receiving Mailer 1 versus Mailer 2. (We can make the same conclusion based on the Chi-Squared statistic of **1.94** being *lower* than our Critical Value of **3.84**.)
 
 ___
 
@@ -296,6 +294,6 @@ While the higher cost Mailer 2 had a higher sign-up rate (37.8%) than the lower 
 
 Without running this Hypothesis Test, the client may have concluded that they should always go with higher cost mailers, or that the higher quality mailer is worth the investment of the higher cost. From what we've seen in this test, those may not be great decisions. It would result in them spending more, but not *necessarily* gaining any extra revenue as a result.
 
-Our results here also do not say that there *definitely isn't a difference between the two mailers* -- we are only advising that we should not make any rigid conclusions *at this point*. 
+Our results here also do not say that there *definitely isn't a difference between the two mailers* --- we are only advising that we should not make any rigid conclusions *at this point*. 
 
 Gathering more data and then re-running this test may provide us and the client more insight. Further A/B testing could also be performed on any new types of mailers the client wants to try out in the future.
