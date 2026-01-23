@@ -172,7 +172,7 @@ import pandas as pd
 from scipy.stats import chi2_contingency, chi2
 
 # IMPORT DATA
-campaign_data = pd.read_excel('grocery_database.xlsx', sheet_name = 'campaign_data')
+campaign_data = ...
 
 # FILTER OUR DATA TO REMOVE CUSTOMERS IN THE CONTROL GROUP
 campaign_data = campaign_data.loc[campaign_data['mailer_type'] != 'Control']
