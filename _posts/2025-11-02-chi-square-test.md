@@ -251,7 +251,7 @@ observed_values = pd.crosstab(campaign_data['mailer_type'], campaign_data['signu
 chi2_stat, p_value, dof, expected_values = chi2_contingency(observed_values, correction = False)
 
 # PRINT CHI-SQUARED STATISTIC
-print(chi2_statistic)
+print(chi2_stat)
 >> 1.94
 
 # PRINT P-VALUE
