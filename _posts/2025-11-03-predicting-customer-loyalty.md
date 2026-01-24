@@ -5,9 +5,9 @@ image: "../img/posts/regression-title-img.png"
 tags: [Customer Loyalty, Machine Learning, Regression, Python]
 ---
 
-Our client, a grocery retailer, hired a market research consultant to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present. In this project I use Machine Learning to predict the missing information.
+Our client, a grocery retailer, hired a market research consulting agency to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present. In this project I use Machine Learning to predict the missing information.
 
-# Table of contents
+# Table of Contents
 
 - [00. Data Source](#data-source)
 - [01. Project Overview](#overview-main)
@@ -37,13 +37,12 @@ ___
 
 ### Context <a name="overview-context"></a>
 
-Our client, a grocery retailer, hired a market research consultant to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present.
+Our client, a grocery retailer, hired a market research consulting agency to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present.
 
 The goal of this project is to accurately predict the *loyalty score* for those customers who could not be tagged. This will give our client a clearer understanding of true customer loyalty, regardless of total spend volume and will allow more accurate and relevant customer tracking, targeting, and communications.
 
 To achieve this, we built out a model that finds relationships between customer metrics and *loyalty score* for those customers who were tagged. This model is used to predict the loyalty score metric for customers who do not yet have a loyalty score in the database.
 
-<br>
 
 ### Actions <a name="overview-actions"></a>
 
@@ -55,20 +54,17 @@ As the *loyalty score* is a numerical output, we tested three regression modelin
 * Decision Tree
 * Random Forest
 
-<br>
 
 ### Results <a name="overview-results"></a>
 
 Our testing found that the Random Forest had the highest predictive accuracy.
 
-<br>
 **Metric 1: Adjusted R-Squared (Test Set)**
 
 * Random Forest = 0.955
 * Decision Tree = 0.886
 * Linear Regression = 0.754
 
-<br>
 **Metric 2: R-Squared (K-Fold Cross Validation, k = 4)**
 
 * Random Forest = 0.925
@@ -77,7 +73,6 @@ Our testing found that the Random Forest had the highest predictive accuracy.
 
 As the most important outcome for this project was predictive accuracy, rather than explicitly understanding weighted drivers of prediction, we chose the Random Forest as the model to use for making predictions for the customers who were missing a *loyalty score*.
 
-<br>
 
 ### Growth and Next Steps <a name="overview-growth"></a>
 
@@ -85,7 +80,6 @@ While predictive accuracy was relatively high, other modeling approaches could b
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
 
-<br>
 
 ### Key Definition  <a name="overview-definition"></a>
 
@@ -95,7 +89,6 @@ Example 1: Customer A has spent $100 total on groceries, and all of this was spe
 
 Example 2: Customer B has spent $200 total, but only 20% was spent with our client. The remaining 80% was spent with competitors. Customer B has a *customer loyalty score* of **0.2**.
 
-<br>
 ___
 
 # Data Overview  <a name="data-overview"></a>
@@ -104,7 +97,7 @@ We will be predicting the *loyalty_score* metric. This metric exists (for half o
 
 The key variables hypothesized to predict the missing loyalty scores will come from the client database, namely the *transactions* table, the *customer_details* table, and the *product_areas* table.
 
-Using the Pandas library in Python, we merged these tables together for all customers, creating a single dataset that can be used for modeling
+Using the Pandas library in Python, we merge these tables together for all customers, creating a single dataset that can be used for modeling.
 
 ```python
 
@@ -150,8 +143,6 @@ pickle.dump(regression_scoring, open('data/abc_regression_scoring.p', 'wb'))
 
 After this data preprocessing in Python, we have a dataset for modeling that contains the following fields:
 
-<br>
-
 | **Variable Name** | **Variable Type** | **Description** |
 |---|---|---|
 | loyalty_score | Dependent | The % of total grocery spending that each customer allocates to the client vs. competitors |
@@ -164,6 +155,7 @@ After this data preprocessing in Python, we have a dataset for modeling that con
 | product_area_count | Independent | The number of product areas in the client's store that customers have shopped within the latest 6 months |
 | average_cart_value | Independent | The average amount spent per transaction for the customer with the client within the latest 6 months |
 
+<br>
 ___
 
 # Modeling Overview
@@ -249,11 +241,9 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 ##### Outliers
 
-The ability for a Linear Regression model to generalize well across *all* data can be negatively impacted if there are outliers present. There is no right or wrong way to deal with outliers, but it is something worth careful consideration on a case by case basis. The key thing to keep in mind is that a value being high or low does not automatically mean it should not be included.
+The fit of a Linear Regression model can be negatively impacted if there are outliers present. There is no right or wrong way to deal with outliers, but it is something worth careful consideration on a case by case basis. The key thing to keep in mind is that a value being high or low does not automatically mean it should be excluded.
 
 In this code section, we use **.describe()** from Pandas to investigate the spread of values for each of the predictor variables. The results of this can be seen in the table below.
-
-<br>
 
 | **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_cart_value** |
 |---|---|---|---|---|---|---|---|
@@ -267,11 +257,9 @@ In this code section, we use **.describe()** from Pandas to investigate the spre
 
 <br>
 
-Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* to be much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 44 miles. 
+Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* to be much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 44 miles.
 
-Therefore, we use the "boxplot approach" to remove any rows where the values within those predictor variable columns are outside of the interquartile range multiplied by 2.
-
-<br>
+We use the "boxplot approach" to remove any rows where the values within those predictor variable columns are outside of the interquartile range multiplied by 2.
 
 ```python
 
@@ -299,18 +287,17 @@ for column in outlier_columns:
 
 ##### Split Out Data For Modeling
 
-In the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
+In the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can fairly validate the accuracy of the predictions on data that was not used in training. In this case, we have allocated 80% of the data for training, and the remaining 20% for validation.
+Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
-<br>
 ```python
 
-# split data into X and y objects for modeling
-X = data_for_model.drop(["customer_loyalty_score"], axis = 1)
-y = data_for_model["customer_loyalty_score"]
+# Split data into input variables & output variable (X & y) for modeling
+X = data_for_model.drop(['customer_loyalty_score'], axis = 1)
+y = data_for_model['customer_loyalty_score']
 
-# split out training & test sets
+# Split out training & test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
 
 ```
@@ -321,17 +308,15 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
 
-The Linear Regression algorithm can't deal with data in this format as it can't assign any numerical meaning to it when looking to assess the relationship between the variable and the dependent variable.
+The Linear Regression algorithm needs this variable to be in numerical form in order to assess the relationship with the dependent variable. We apply One Hot Encoding to the categorical column.
 
-As *gender* doesn't have any explicit *order* to it, in other words, Male isn't higher or lower than Female and vice versa - one appropriate approach is to apply One Hot Encoding to the categorical column.
+One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into our model as input variables, and the original column is discarded.
 
-One Hot Encoding can be thought of as a way to represent categorical variables as binary vectors, in other words, a set of *new* columns for each categorical value with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into our model as input variables, and the original column is discarded.
+We also drop one of the new columns using the parameter *drop = "first"*. We do this to avoid the "dummy variable trap" where our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for linear regression. Multicollinearity occurs when two or more input variables are *highly* correlated with each other, and it can make it difficult to trust the statistics around how well the model is performing and the effect each input variable is truly having.
 
-We also drop one of the new columns using the parameter *drop = "first"*. We do this to avoid the *dummy variable trap* where our newly created encoded columns perfectly predict each other - and we run the risk of breaking the assumption that there is no multicollinearity, a requirement or at least an important consideration for some models, Linear Regression being one of them! Multicollinearity occurs when two or more input variables are *highly* correlated with each other, it is a scenario we attempt to avoid as in short, while it won't necessarily affect the predictive accuracy of our model, it can make it difficult to trust the statistics around how well the model is performing, and how much each input variable is truly having.
+In the code, we also make sure to apply *fit_transform* to the training set, but only *transform* to the test set. This means the One Hot Encoding logic will *learn and apply* the rules from the training data, but only *apply* them to the test data. This is important in order to avoid *data leakage*, where the test set learns information about the training data. We can't trust model performance metrics when data leakage is occuring.
 
-In the code, we also make sure to apply *fit_transform* to the training set, but only *transform* to the test set. This means the One Hot Encoding logic will *learn and apply* the "rules" from the training data, but only *apply* them to the test data. This is important in order to avoid *data leakage* where the test set *learns* information about the training data, and means we can't fully trust model performance metrics!
-
-For ease, after we have applied One Hot Encoding, we turn our training and test objects back into Pandas Dataframes, with the column names applied.
+After we have applied One Hot Encoding, we turn our training and test objects back into Pandas dataframes, with the column names applied.
 
 <br>
 
@@ -1208,5 +1193,6 @@ While predictive accuracy was relatively high - other modeling approaches could 
 We could even look to tune the hyperparameters of the Random Forest, notably regularization parameters such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available for predicting customer loyalty.
+
 
 
