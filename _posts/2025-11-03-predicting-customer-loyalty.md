@@ -398,7 +398,7 @@ plt.show()
 
 This creates the following plot, which shows us that the highest cross-validated accuracy (0.8625) is achieved when we include all eight of our original input variables. This is marginally higher than six or seven included variables. We will continue on with all eight.
 
-![alt text](/img/posts/lin-reg-feature-selection-plot.png "Linear Regression Feature Selection Plot")
+![Linear Regression Feature Selection Plot](../img/posts/lin-reg-feature-selection-plot.png "Linear Regression Feature Selection Plot")
 
 <br>
 
@@ -789,7 +789,7 @@ plt.show()
 
 The code gives us the below plot to visualize the result:
 
-![alt text](/img/posts/regression-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
+![Decision Tree Max Depth Plot](../img/posts/regression-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
 
 <br>
 
@@ -821,7 +821,7 @@ tree = plot_tree(regressor,
 
 That code gives us the below plot:
 
-![alt text](/img/posts/regression-tree-nodes-plot.png "Decision Tree Max Depth Plot")
+![Decision Tree Nodes Plot](/img/posts/regression-tree-nodes-plot.png "Decision Tree Nodes Plot")
 
 <br>
 
@@ -1098,16 +1098,16 @@ plt.tight_layout()
 plt.show()
 
 ```
+
 <br>
+
 That code gives us the below plots - the first being for *Feature Importance* and the second for *Permutation Importance*!
 
-<br>
-![alt text](/img/posts/rf-regression-feature-importance.png "Random Forest Feature Importance Plot")
-<br>
-<br>
-![alt text](/img/posts/rf-regression-permutation-importance.png "Random Forest Permutation Importance Plot")
+![Random Forest Feature Importance Plot](../img/posts/rf-regression-feature-importance.png "Random Forest Feature Importance Plot")
+![Random Forest Permutation Importance Plot](../img/posts/rf-regression-permutation-importance.png "Random Forest Permutation Importance Plot")
 
 <br>
+
 The overall story from both approaches is very similar, in that by far, the most important or impactful input variable is *distance_from_store* which is the same insights we derived when assessing our Linear Regression and Decision Tree models.
 
 There are slight differences in the order or "importance" for the remaining variables but overall they have provided similar findings.
