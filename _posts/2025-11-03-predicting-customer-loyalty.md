@@ -39,7 +39,7 @@ ___
 
 Our client, a grocery retailer, hired a market research consulting agency to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present.
 
-The goal of this project is to accurately predict the *loyalty score* for those customers who could not be tagged. This will give our client a clearer understanding of true customer loyalty, regardless of total spend volume and will allow more accurate and relevant customer tracking, targeting, and communications.
+The goal of this project is to accurately predict the *loyalty score* for those customers who could not be tagged. This will give our client a clearer understanding of true customer loyalty, regardless of total spending, and will allow more accurate and relevant customer tracking, targeting, and communications.
 
 To achieve this, we built out a model that finds relationships between customer metrics and *loyalty score* for those customers who were tagged. This model is used to predict the loyalty score metric for customers who do not yet have a loyalty score in the database.
 
@@ -64,13 +64,13 @@ Our testing found that the Random Forest had the highest predictive accuracy.
 **Metric 1: Adjusted $R^2$ (Test Set)**
 
 * Random Forest = 0.955
-* Decision Tree = 0.886
+* Decision Tree = 0.887
 * Linear Regression = 0.754
 
 **Metric 2: $R^2$ (K-Fold Cross Validation, k = 4)**
 
 * Random Forest = 0.925
-* Decision Tree = 0.871
+* Decision Tree = 0.876
 * Linear Regression = 0.853
 
 As the most important outcome for this project was predictive accuracy, rather than explicitly understanding weighted drivers of prediction, we chose the Random Forest as the model to use for making predictions for the customers who were missing a *loyalty score*.
@@ -188,7 +188,7 @@ We use the scikit-learn library in Python to model the data using Linear Regress
 
 ### Data Import <a name="linreg-import"></a>
 
-We import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
+We import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data in case there was any particular order to the data in the database.
 
 ```python
 
@@ -536,7 +536,7 @@ ___
 
 # Decision Tree <a name="regtree-title"></a>
 
-We will again utilize the scikit-learn library within Python to model our data using a Decision Tree. The code sections below are broken up into four key sections:
+We will again use the scikit-learn library within Python to model our data using a Decision Tree. The code sections below are broken up into four key sections:
 
 * Data Import
 * Data Preprocessing
@@ -547,7 +547,7 @@ We will again utilize the scikit-learn library within Python to model our data u
 
 ### Data Import <a name="regtree-import"></a>
 
-We import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
+We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
 
 ```python
 
@@ -555,17 +555,15 @@ We import the modeling data from the pickle file we saved. We remove the id colu
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
-import numpy as np
 
-from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeRegressor, plot_tree
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
-from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.feature_selection import RFECV
 
 # Import modeling data
-data_for_model = pd.read_pickle('data/abc_classification_modeling.p')
+data_for_model = pd.read_pickle('data/abc_regression_modeling.p')
 
 # Drop unnecessary columns
 data_for_model.drop('customer_id', axis = 1, inplace = True)
@@ -700,7 +698,7 @@ The resulting $R^2$ score is **0.898**.
 
 <br>
 
-##### Calculate Cross Validated $R^2$
+##### Calculate Cross-Validated $R^2$
 
 As we did when testing Linear Regression, we will again use Cross Validation.
 
@@ -833,7 +831,7 @@ ___
 
 # Random Forest <a name="rf-title"></a>
 
-We will again utilize the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into four key sections:
+We will again use the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into four key sections:
 
 * Data Import
 * Data Preprocessing
@@ -844,14 +842,15 @@ We will again utilize the scikit-learn library within Python to model our data u
 
 ### Data Import <a name="rf-import"></a>
 
-Again, we import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
+We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
 
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
@@ -859,13 +858,13 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.inspection import permutation_importance
 
-# import modeling data
-data_for_model = pickle.load(open("data/customer_loyalty_modeling.p", "rb"))
+# Import modeling data
+data_for_model = pd.read_pickle('data/abc_regression_modeling.p')
 
-# drop unnecessary columns
-data_for_model.drop("customer_id", axis = 1, inplace = True)
+# Drop unnecessary columns
+data_for_model.drop('customer_id', axis = 1, inplace = True)
 
-# shuffle data
+# Shuffle data
 data_for_model = shuffle(data_for_model, random_state = 42)
 
 ```
@@ -887,9 +886,9 @@ The number of missing values in the data was extremely low, so instead of applyi
 
 ```python
 
-# remove rows where values are missing
+# Remove rows with missing values
 data_for_model.isna().sum()
-data_for_model.dropna(how = "any", inplace = True)
+data_for_model.dropna(how = 'any', inplace = True)
 
 ```
 
@@ -897,7 +896,7 @@ data_for_model.dropna(how = "any", inplace = True)
 
 ##### Split Out Data For Modeling
 
-In the same way we did for Linear Regression, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the same way we did for Linear Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
 Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
@@ -905,11 +904,11 @@ Once we have done this, we split our data into training and test sets to ensure 
 
 ```python
 
-# split data into X and y objects for modeling
-X = data_for_model.drop(["customer_loyalty_score"], axis = 1)
-y = data_for_model["customer_loyalty_score"]
+# Split input variables & output variable
+X = data_for_model.drop(['customer_loyalty_score'], axis = 1)
+y = data_for_model['customer_loyalty_score']
 
-# split out training & test sets
+# Split out training & test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42)
 
 ```
@@ -920,32 +919,30 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
 
-Just like the Linear Regression algorithm, Random Forests cannot deal with data in this format as it can't assign any numerical meaning to it when looking to assess the relationship between the variable and the dependent variable.
-
-As *gender* doesn't have any explicit *order* to it, in other words, Male isn't higher or lower than Female and vice versa - we would again apply One Hot Encoding to the categorical column.
+Just like Linear Regression and Decision Trees, Random Forests cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
 
 ```python
 
-# list of categorical variables that need encoding
-categorical_vars = ["gender"]
+# List of categorical variables
+categorical_vars = ['gender']
 
-# instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse=False, drop = "first")
+# Instantiate OHE class
+one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
 
-# apply OHE
+# Apply OHE
 X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
 X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
 
-# extract feature names for encoded columns
+# Extract feature names for encoded columns
 encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
 
-# turn objects back to pandas dataframe
+# Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
-X_train = pd.concat([X_train.reset_index(drop=True), X_train_encoded.reset_index(drop=True)], axis = 1)
+X_train = pd.concat([X_train.reset_index(drop = True), X_train_encoded.reset_index(drop = True)], axis = 1)
 X_train.drop(categorical_vars, axis = 1, inplace = True)
 
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
-X_test = pd.concat([X_test.reset_index(drop=True), X_test_encoded.reset_index(drop=True)], axis = 1)
+X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ```
@@ -954,16 +951,16 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="rf-model-training"></a>
 
-Instantiating and training our Random Forest model is done using the below code. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
+The code below instantiates and trains a Random Forest model. The *random_state* parameter ensures we get reproducible results and helps us understand any improvements in performance with changes to model hyperparameters.
 
 We leave the other parameters at their default values, meaning that we will just be building 100 Decision Trees in this Random Forest.
 
 ```python
 
-# instantiate our model object
+# Instantiate the model object
 regressor = RandomForestRegressor(random_state = 42)
 
-# fit our model using our training & test sets
+# Fit the model using the training set
 regressor.fit(X_train, y_train)
 
 ```
@@ -974,11 +971,11 @@ regressor.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well our model is predicting on new data - we use the trained model object (here called *regressor*) and ask it to predict the *loyalty_score* variable for the test set
+To assess how well our model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
 
 ```python
 
-# predict on the test set
+# Predict on the test set
 y_pred = regressor.predict(X_test)
 
 ```
@@ -987,113 +984,106 @@ y_pred = regressor.predict(X_test)
 
 ##### Calculate $R^2$
 
-To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (y_pred), as well as the *actual* outputs for the test set (y_test)
+To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (y_pred), as well as the *actual* outputs for the test set (y_test):
 
 ```python
 
-# calculate r-squared for our test set predictions
+# Calculate R-Squared
 r_squared = r2_score(y_test, y_pred)
 print(r_squared)
 
 ```
 
-The resulting $R^2$ score from this is **0.957** - higher than both Linear Regression and the Decision Tree.
+The resulting $R^2$ score from this is **0.960** --- higher than both Linear Regression and the Decision Tree.
 
 <br>
 
-##### Calculate Cross Validated $R^2$
+##### Calculate Cross-Validated $R^2$
 
-As we did when testing Linear Regression and our Decision Tree, we will again utilize Cross Validation (for more info on how this works, please refer to the Linear Regression section above)
+As we did when testing the Linear Regression and Decision Tree models, we again use Cross Validation (for more info on how this works, refer to the Linear Regression section above).
 
 ```python
 
-# calculate the mean cross validated r-squared for our test set predictions
+# Calculate the mean cross-validated r-squared for test set predictions
 cv = KFold(n_splits = 4, shuffle = True, random_state = 42)
-cv_scores = cross_val_score(regressor, X_train, y_train, cv = cv, scoring = "r2")
+cv_scores = cross_val_score(regressor, X_train, y_train, cv = cv, scoring = 'r2')
 cv_scores.mean()
 
 ```
 
 <br>
 
-The mean cross-validated $R^2$ score from this is **0.923** which agian is higher than we saw for both Linear Regression and our Decision Tree.
+The mean cross-validated $R^2$ score from this is **0.925** which is higher than we saw for both Linear Regression and our Decision Tree.
 
 <br>
+
 ##### Calculate Adjusted $R^2$
 
-Just like we did with Linear Regression and our Decision Tree, we will also calculate the *Adjusted $R^2$* which compensates for the addition of input variables, and only increases if the variable improves the model above what would be obtained by probability.
+Just like we did with Linear Regression and Decision Tree, we will also calculate the Adjusted $R^2$ which compensates for the addition of input variables and only increases if the variable improves the model above what would be obtained by probability.
 
 ```python
 
-# calculate adjusted r-squared for our test set predictions
-num_data_points, num_input_vars = X_test.shape
+# Calculate Adjusted R-Squared
+num_data_points, num_input_vars = X_test.shape       # number of rows and columns
 adjusted_r_squared = 1 - (1 - r_squared) * (num_data_points - 1) / (num_data_points - num_input_vars - 1)
 print(adjusted_r_squared)
 
 ```
 
-The resulting adjusted $R^2$ score from this is **0.955** which as expected, is slightly lower than the score we got for $R^2$ on its own - but again higher than for our other models.
+The resulting adjusted $R^2$ score from this is **0.955** which as expected is slightly lower than the score we got for $R^2$ but again higher than for the other models.
 
 <br>
+
 ### Feature Importance <a name="rf-model-feature-importance"></a>
 
-In our Linear Regression model, to understand the relationships between input variables and our output variable, loyalty score, we examined the coefficients. With our Decision Tree we looked at what the earlier splits were. These allowed us some insight into which input variables were having the most impact.
+In our Linear Regression model, to understand the relationships between input variables and the loyalty score, we examined the coefficients. With the Decision Tree we looked at what the earlier splits were. These allowed us some insight about which input variables were having the most impact.
 
-Random Forests are an ensemble model, made up of many, many Decision Trees, each of which is different due to the randomness of the data being provided, and the random selection of input variables available at each potential split point.
+Random Forests are an ensemble model, made up of many Decision Trees. Each Decision Tree is different due to the randomness of the data and the random selection of input variables available at each potential split point. Because of the random nature of all these Decision trees, the model gives us a unique insight into how important each of our input variables are to the overall model. Because we are using random samples of data and random input variables for each Decision Tree, there are many scenarios where certain input variables are being held back and this enables us a way to compare how accurate the model's predictions are if that variable is or is not present.
 
-Because of this, we end up with a powerful and robust model, but because of the random or different nature of all these Decision trees - the model gives us a unique insight into how important each of our input variables are to the overall model. 
+So, at a high level, in a Random Forest we can measure *importance* by asking, "How much would accuracy decrease if a specific input variable was removed or randomized?"
 
-As we’re using random samples of data, and input variables for each Decision Tree - there are many scenarios where certain input variables are being held back and this enables us a way to compare how accurate the models predictions are if that variable is or isn’t present.
+If the decrease in performance, or accuracy, is large, then we would consider that input variable to be quite important, and if the decrease in accuracy is small, then we would conclude that the variable is of less importance.
 
-So, at a high level, in a Random Forest we can measure *importance* by asking *How much would accuracy decrease if a specific input variable was removed or randomized?*
+There are two common ways to measure the performance. One is **Feature Importance**, in which we find all nodes in the Decision Trees of the forest where a particular input variable is used to split the data and compare the Mean Squared Error (for a Regression problem) before and after the split was made. We take the *average* of these improvements across all Decision Trees in the Random Forest to get a score that tells us how much better we are making the model by using that input variable. If we do this for each of the input variables, we can compare these scores and understand which is adding the most value to the predictive power of the model.
 
-If this decrease in performance, or accuracy, is large, then we’d deem that input variable to be quite important, and if we see only a small decrease in accuracy, then we’d conclude that the variable is of less importance.
-
-At a high level, there are two common ways to tackle this. The first, often just called **Feature Importance** is where we find all nodes in the Decision Trees of the forest where a particular input variable is used to split the data and assess what the Mean Squared Error (for a Regression problem) was before the split was made, and compare this to the Mean Squared Error after the split was made. We can take the *average* of these improvements across all Decision Trees in the Random Forest to get a score that tells us *how much better* we’re making the model by using that input variable.
-
-If we do this for *each* of our input variables, we can compare these scores and understand which is adding the most value to the predictive power of the model!
-
-The other approach, often called **Permutation Importance** cleverly uses some data that has gone *unused* at when random samples are selected for each Decision Tree (this stage is called "bootstrap sampling" or "bootstrapping")
-
-These observations that were not randomly selected for each Decision Tree are known as *Out of Bag* observations and these can be used for testing the accuracy of each particular Decision Tree.
-
-For each Decision Tree, all of the *Out of Bag* observations are gathered and then passed through. Once all of these observations have been run through the Decision Tree, we obtain an accuracy score for these predictions, which in the case of a regression problem could be Mean Squared Error or $R^2$.
+The other approach, **Permutation Importance**, uses some data that has gone *unused* when random samples were selected for each Decision Tree (this stage is called "bootstrap sampling" or "bootstrapping"). The observations that were not randomly selected for each Decision Tree are known as *Out of Bag* observations, and can be used for testing the accuracy of each particular Decision Tree. For each Decision Tree, all of the *Out of Bag* observations are gathered and then passed through the tree. Once all of these observations have been run through the Decision Tree, we obtain an accuracy score for these predictions, which in the case of a regression problem could be Mean Squared Error or $R^2$.
 
 In order to understand the *importance*, we *randomize* the values within one of the input variables - a process that essentially destroys any relationship that might exist between that input variable and the output variable - and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
 
 *Permutation Importance* is often preferred over *Feature Importance* which can at times inflate the importance of numerical features. Both are useful, and in most cases will give fairly similar results.
 
-Let's put them both in place, and plot the results...
+ The code below finds the feature importance and permutation importance and plots the results.
 
 <br>
+
 ```python
 
-# calculate feature importance
+# Calculate feature importance
 feature_importance = pd.DataFrame(regressor.feature_importances_)
 feature_names = pd.DataFrame(X.columns)
-feature_importance_summary = pd.concat([feature_names,feature_importance], axis = 1)
-feature_importance_summary.columns = ["input_variable","feature_importance"]
-feature_importance_summary.sort_values(by = "feature_importance", inplace = True)
+feature_importance_summary = pd.concat([feature_names, feature_importance], axis = 1)
+feature_importance_summary.columns = ['input_variable', 'feature_importance']
+feature_importance_summary.sort_values(by = 'feature_importance', inplace = True)
 
-# plot feature importance
-plt.barh(feature_importance_summary["input_variable"],feature_importance_summary["feature_importance"])
-plt.title("Feature Importance of Random Forest")
-plt.xlabel("Feature Importance")
+# Plot feature importance
+plt.barh(feature_importance_summary['input_variable'], feature_importance_summary['feature_importance'])
+plt.title('Feature Importance of Random Forest')
+plt.xlabel('Feature Importance')
 plt.tight_layout()
 plt.show()
 
-# calculate permutation importance
+# Calculate permutation importance
 result = permutation_importance(regressor, X_test, y_test, n_repeats = 10, random_state = 42)
-permutation_importance = pd.DataFrame(result["importances_mean"])
+permutation_importance = pd.DataFrame(result['importances_mean'])
 feature_names = pd.DataFrame(X.columns)
-permutation_importance_summary = pd.concat([feature_names,permutation_importance], axis = 1)
-permutation_importance_summary.columns = ["input_variable","permutation_importance"]
-permutation_importance_summary.sort_values(by = "permutation_importance", inplace = True)
+permutation_importance_summary = pd.concat([feature_names, permutation_importance], axis = 1)
+permutation_importance_summary.columns = ['input_variable', 'permutation_importance']
+permutation_importance_summary.sort_values(by = 'permutation_importance', inplace = True)
 
-# plot permutation importance
-plt.barh(permutation_importance_summary["input_variable"],permutation_importance_summary["permutation_importance"])
-plt.title("Permutation Importance of Random Forest")
-plt.xlabel("Permutation Importance")
+# Plot permutation importance
+plt.barh(permutation_importance_summary['input_variable'], permutation_importance_summary['permutation_importance'])
+plt.title('Permutation Importance of Random Forest')
+plt.xlabel('Permutation Importance')
 plt.tight_layout()
 plt.show()
 
@@ -1101,101 +1091,103 @@ plt.show()
 
 <br>
 
-That code gives us the below plots - the first being for *Feature Importance* and the second for *Permutation Importance*!
+The code gives the following plots for *Feature Importance* and *Permutation Importance*.
 
 ![Random Forest Feature Importance Plot](../img/posts/rf-regression-feature-importance.png "Random Forest Feature Importance Plot")
+<br>
 ![Random Forest Permutation Importance Plot](../img/posts/rf-regression-permutation-importance.png "Random Forest Permutation Importance Plot")
 
 <br>
 
-The overall story from both approaches is very similar, in that by far, the most important or impactful input variable is *distance_from_store* which is the same insights we derived when assessing our Linear Regression and Decision Tree models.
+Both approaches find that the most impactful input variable is *distance_from_store*, which is the same result we had when when assessing the Linear Regression and Decision Tree models.
 
-There are slight differences in the order or "importance" for the remaining variables but overall they have provided similar findings.
+There are slight differences in the order of importance for the remaining variables but overall the different modeling approaches have provided similar findings.
 
 ___
-<br>
+
 # Modeling Summary  <a name="modeling-summary"></a>
 
-The most important outcome for this project was predictive accuracy, rather than explicitly understanding the drivers of prediction. Based upon this, we chose the model that performed the best when predicted on the test set - the Random Forest.
+The most important outcome for this project was predictive accuracy, rather than explicitly understanding the drivers of prediction. Based upon this, we chose the model that performed the best when predicted on the test set --- the Random Forest.
 
-<br>
 **Metric 1: Adjusted $R^2$ (Test Set)**
 
 * Random Forest = 0.955
-* Decision Tree = 0.886
+* Decision Tree = 0.887
 * Linear Regression = 0.754
 
-<br>
 **Metric 2: $R^2$ (K-Fold Cross Validation, k = 4)**
 
 * Random Forest = 0.925
-* Decision Tree = 0.871
+* Decision Tree = 0.876
 * Linear Regression = 0.853
 
-<br>
-Even though we were not specifically interested in the drivers of prediction, it was interesting to see across all three modeling approaches, that the input variable with the biggest impact on the prediction was *distance_from_store* rather than variables such as *total sales*. This is interesting information for the business, so discovering this as we went was worthwhile.
+It was interesting to see across all three modeling approaches that the input variable with the biggest impact on the prediction was *distance_from_store* rather than variables such as *total sales*. This is interesting information for the business, so discovering this as we went was worthwhile.
 
 <br>
+
 # Predicting Missing Loyalty Scores <a name="modeling-predictions"></a>
 
-We have selected the model to use (Random Forest) and now we need to make the *loyalty_score* predictions for those customers that the market research consultancy were unable to tag.
+Now that the we have selected the Random Forest model, we can make the *loyalty_score* predictions for the customers that are missing scores.
 
-We cannot just pass the data for these customers into the model, as is - we need to ensure the data is in exactly the same format as what was used when training the model.
+We first need to ensure the data is in exactly the same format as what was used when training the model.
 
-In the following code, we will
+The code below does the following:
 
-* Import the required packages for preprocessing
-* Import the data for those customers who are missing a *loyalty_score* value
-* Import our model object and any preprocessing artifacts
-* Drop columns that were not used when training the model (customer_id)
-* Drop rows with missing values
-* Apply One Hot Encoding to the gender column (using transform)
-* Make the predictions using .predict()
+* Imports the required packages for preprocessing
+* Imports the data for those customers who are missing a *loyalty_score* value
+* Imports the model object and any preprocessing artifacts
+* Drops columns that were not used when training the model (*customer_id*)
+* Drops rows with missing values
+* Applies One Hot Encoding to the gender column
+* Makes the predictions using **.predict()**
 
 <br>
+
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 
-# import customers for scoring
+# Import customers for scoring
 to_be_scored = ...
 
-# import model and model objects
+# Import model and model objects
 regressor = ...
-one_hot_encoder = ...
+OHE = ...
 
-# drop unused columns
-to_be_scored.drop(["customer_id"], axis = 1, inplace = True)
+# Drop unused columns
+to_be_scored.drop(['customer_id'], axis = 1, inplace = True)
 
-# drop missing values
-to_be_scored.dropna(how = "any", inplace = True)
+# Drop missing values
+to_be_scored.dropna(how = 'any', inplace = True)
 
-# apply one hot encoding (transform only)
-categorical_vars = ["gender"]
-encoder_vars_array = one_hot_encoder.transform(to_be_scored[categorical_vars])
-encoder_feature_names = one_hot_encoder.get_feature_names(categorical_vars)
+# Apply One Hot Encoding
+categorical_vars = ['gender']
+encoder_vars_array = OHE.transform(to_be_scored[categorical_vars])
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 encoder_vars_df = pd.DataFrame(encoder_vars_array, columns = encoder_feature_names)
-to_be_scored = pd.concat([to_be_scored.reset_index(drop=True), encoder_vars_df.reset_index(drop=True)], axis = 1)
+to_be_scored = pd.concat([to_be_scored.reset_index(drop = True), encoder_vars_df.reset_index(drop = True)], axis = 1)
 to_be_scored.drop(categorical_vars, axis = 1, inplace = True)
 
-# make our predictions!
+# Make predictions
 loyalty_predictions = regressor.predict(to_be_scored)
 
 ```
+
 <br>
-Just like that, we have made our *loyalty_score* predictions for these missing customers. Due to the impressive metrics on the test set, we can be reasonably confident with these scores. This extra customer information will ensure our client can undertake more accurate and relevant customer tracking, targeting, and comms.
+
+Now the *loyalty_score* predictions for these missing customers are complete. Due to the impressive metrics on the test set, we can be reasonably confident with these scores. This extra customer information will enable more accurate and relevant customer tracking, targeting, and communications.
 
 ___
-<br>
+
 # Growth and Next Steps <a name="growth-next-steps"></a>
 
-While predictive accuracy was relatively high - other modeling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
+While predictive accuracy was relatively high, other modeling approaches could be tested, especially those somewhat similar to Random Forest, to see if even more accuracy could be gained.
 
-We could even look to tune the hyperparameters of the Random Forest, notably regularization parameters such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
+We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
-From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available for predicting customer loyalty.
+From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
 
 
 
