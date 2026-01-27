@@ -143,8 +143,6 @@ pickle.dump(regression_scoring, open('data/abc_regression_scoring.p', 'wb'))
 
 ```
 
-<br>
-
 After this data preprocessing in Python, we have a dataset for modeling that contains the following fields:
 
 | **Variable Name** | **Variable Type** | **Description** |
@@ -257,8 +255,6 @@ In this code section, we use **.describe()** from Pandas to investigate the spre
 | 50% | 1.65 | 0.59 | 1471.49 | 258.50 | 50.00 | 4.00 | 30.37 |
 | 75% | 2.91 | 0.66 | 2104.73 | 318.50 | 53.00 | 5.00 | 47.21 |
 | max | 44.37 | 0.88 | 9878.76 | 1187.00 | 109.00 | 5.00 | 102.34 |
-
-<br>
 
 Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 44 miles.
 
@@ -378,8 +374,6 @@ X_test = X_test.loc[:, feature_selector.get_support()]
 
 ```
 
-<br>
-
 The code below produces a plot that visualizes the cross-validated accuracy with each potential number of features.
 
 ```python
@@ -394,11 +388,9 @@ plt.show()
 
 ```
 
-<br>
-
 This creates the following plot, which shows us that the highest cross-validated accuracy (0.8625) is achieved when we include all eight of our original input variables. This is marginally higher than six or seven included variables. We will continue on with all eight.
 
-![Linear Regression Feature Selection Plot](../img/posts/lin-reg-feature-selection-plot.png "Linear Regression Feature Selection Plot")
+![Linear Regression Feature Selection Plot](/img/posts/lin-reg-feature-selection-plot.png "Linear Regression Feature Selection Plot")
 
 <br>
 
@@ -510,8 +502,6 @@ regressor.intercept_
 
 ```
 
-<br>
-
 The information from that code block can be found in the table below:
 
 | **input_variable** | **coefficient** |
@@ -525,8 +515,6 @@ The information from that code block can be found in the table below:
 | product_area_count | 0.062 |
 | average_cart_value | -0.004 |
 | gender_M | -0.013 |
-
-<br>
 
 The coefficient value for each of the input variables plus the intercept would make up the equation for the line of best fit for this particular model (or more accurately, the plane of best fit, as we have multiple input variables). For each input variable, the coefficient value we see above tells us how many units the output variable (loyalty score) would change with a *one unit change* in this particular input variable, if every other input variable remained constant.
 
@@ -718,7 +706,6 @@ cv_scores = cross_val_score(regressor, X_train, y_train, cv = cv, scoring = 'r2'
 cv_scores.mean()
 
 ```
-<br>
 
 The mean cross-validated $R^2$ score from this is **0.876** which is slighter higher than what we saw for Linear Regression.
 
@@ -736,7 +723,6 @@ adjusted_r_squared = 1 - (1 - r_squared) * (num_data_points - 1) / (num_data_poi
 print(adjusted_r_squared)
 
 ```
-<br>
 
 The resulting adjusted $R^2$ score from this is **0.887**, which is slightly lower than the score we got for $R^2$, as expected.
 
@@ -783,13 +769,9 @@ plt.show()
 
 ```
 
-<br>
-
 The code gives us the below plot to visualize the result:
 
-![Decision Tree Max Depth Plot](../img/posts/regression-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
-
-<br>
+![Decision Tree Max Depth Plot](/img/posts/regression-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
 
 In the plot we can see that the *maximum* classification accuracy on the test set is found when applying a *max_depth* value of 7. However, we lose very little accuracy with a value of 4, and this would result in a simpler model that can generalize even better on new data. We make the decision to re-train our Decision Tree with a maximum depth of 4.
 
@@ -815,13 +797,9 @@ tree = plot_tree(regressor,
 
 ```
 
-<br>
-
 That code gives us the below plot:
 
 ![Decision Tree Nodes Plot](/img/posts/regression-tree-nodes-plot.png "Decision Tree Nodes Plot")
-
-<br>
 
 This is a visual that can be shown to stakeholders in the business to ensure they understand exactly what is driving the predictions. For example, one thing that could be noted is that the very first split uses the variable *distance_from_store*, implying this is an important variable when it comes to predicting loyalty.
 
@@ -899,8 +877,6 @@ data_for_model.dropna(how = 'any', inplace = True)
 In the same way we did for Linear Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
 Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
-
-<br>
 
 ```python
 
@@ -1011,8 +987,6 @@ cv_scores.mean()
 
 ```
 
-<br>
-
 The mean cross-validated $R^2$ score from this is **0.925** which is higher than we saw for both Linear Regression and our Decision Tree.
 
 <br>
@@ -1052,9 +1026,7 @@ In order to understand the *importance*, we *randomize* the values within one of
 
 *Permutation Importance* is often preferred over *Feature Importance* which can at times inflate the importance of numerical features. Both are useful, and in most cases will give fairly similar results.
 
- The code below finds the feature importance and permutation importance and plots the results.
-
-<br>
+The code below finds the feature importance and permutation importance and plots the results.
 
 ```python
 
@@ -1089,15 +1061,11 @@ plt.show()
 
 ```
 
-<br>
-
 The code gives the following plots for *Feature Importance* and *Permutation Importance*.
 
-![Random Forest Feature Importance Plot](../img/posts/rf-regression-feature-importance.png "Random Forest Feature Importance Plot")
+![Random Forest Feature Importance Plot](/img/posts/rf-regression-feature-importance.png "Random Forest Feature Importance Plot")
 <br>
-![Random Forest Permutation Importance Plot](../img/posts/rf-regression-permutation-importance.png "Random Forest Permutation Importance Plot")
-
-<br>
+![Random Forest Permutation Importance Plot](/img/posts/rf-regression-permutation-importance.png "Random Forest Permutation Importance Plot")
 
 Both approaches find that the most impactful input variable is *distance_from_store*, which is the same result we had when when assessing the Linear Regression and Decision Tree models.
 
@@ -1123,7 +1091,7 @@ The most important outcome for this project was predictive accuracy, rather than
 
 It was interesting to see across all three modeling approaches that the input variable with the biggest impact on the prediction was *distance_from_store* rather than variables such as *total sales*. This is interesting information for the business, so discovering this as we went was worthwhile.
 
-<br>
+___
 
 # Predicting Missing Loyalty Scores <a name="modeling-predictions"></a>
 
@@ -1140,8 +1108,6 @@ The code below does the following:
 * Drops rows with missing values
 * Applies One Hot Encoding to the gender column
 * Makes the predictions using **.predict()**
-
-<br>
 
 ```python
 
@@ -1175,8 +1141,6 @@ loyalty_predictions = regressor.predict(to_be_scored)
 
 ```
 
-<br>
-
 Now the *loyalty_score* predictions for these missing customers are complete. Due to the impressive metrics on the test set, we can be reasonably confident with these scores. This extra customer information will enable more accurate and relevant customer tracking, targeting, and communications.
 
 ___
@@ -1188,6 +1152,7 @@ While predictive accuracy was relatively high, other modeling approaches could b
 We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
+
 
 
 
