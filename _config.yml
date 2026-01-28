@@ -11,11 +11,10 @@ markdown: kramdown
 kramdown:
   math_engine: mathjax
   math_engine_opts:
-    preview: true           # optional – shows $$   [...]   $$ while loading
-    tex:                    # optional but recommended
-      inlineMath: [['$$   ', '   $$'], ['\$$   ', '\   $$']]
-      displayMath: [['$$    ', '    $$'], ['\$$   ', '\   $$']]
-  syntax_highlighter: rouge   # or whatever you use
+    preview: true
+    tex:
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
   
 #-------------------------------
 # General Site Settings
@@ -62,6 +61,7 @@ defaults:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
 
 
 
