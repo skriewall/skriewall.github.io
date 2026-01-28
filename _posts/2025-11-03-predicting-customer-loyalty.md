@@ -448,7 +448,7 @@ print(r_squared)
 
 <br>
 
-The resulting $R^2$ score from this is **0.78**.
+The resulting $R^2$ score is **0.78**.
 
 <br>
 
@@ -475,7 +475,7 @@ cv_scores.mean()
 
 <br>
 
-The mean cross-validated $R^2$ score from this is **0.853**.
+The mean cross-validated $R^2$ score is **0.853**.
 
 <br>
 
@@ -496,7 +496,7 @@ print(adjusted_r_squared)
 
 <br>
 
-The resulting adjusted $R^2$ score from this is **0.754**. As expected, this is slightly lower than the $R^2$.
+The resulting adjusted $R^2$ score is **0.754**. As expected, this is slightly lower than the $R^2$.
 
 <br>
 
@@ -728,7 +728,7 @@ cv_scores.mean()
 
 <br>
 
-The mean cross-validated $R^2$ score from this is **0.876** which is slighter higher than what we saw for Linear Regression.
+The mean cross-validated $R^2$ score is **0.876** which is slighter higher than what we saw for Linear Regression.
 
 <br>
 
@@ -747,7 +747,7 @@ print(adjusted_r_squared)
 
 <br>
 
-The resulting adjusted $R^2$ score from this is **0.887**, which is slightly lower than the score we got for $R^2$, as expected.
+The resulting adjusted $R^2$ score is **0.887**, which is slightly lower than the score we got for $R^2$, as expected.
 
 <br>
 
@@ -1003,7 +1003,7 @@ print(r_squared)
 
 <br>
 
-The resulting $R^2$ score from this is **0.960** --- higher than both Linear Regression and the Decision Tree.
+The resulting $R^2$ score is **0.960** --- higher than both Linear Regression and the Decision Tree.
 
 <br>
 
@@ -1022,7 +1022,7 @@ cv_scores.mean()
 
 <br>
 
-The mean cross-validated $R^2$ score from this is **0.925** which is higher than we saw for both Linear Regression and our Decision Tree.
+The mean cross-validated $R^2$ score is **0.925** which is higher than we saw for both Linear Regression and our Decision Tree.
 
 <br>
 
@@ -1041,7 +1041,7 @@ print(adjusted_r_squared)
 
 <br>
 
-The resulting adjusted $R^2$ score from this is **0.955** which as expected is slightly lower than the score we got for $R^2$ but again higher than for the other models.
+The resulting adjusted $R^2$ score is **0.955** which as expected is slightly lower than the score we got for $R^2$ but again higher than for the other models.
 
 <br>
 
@@ -1196,6 +1196,7 @@ While predictive accuracy was relatively high, other modeling approaches could b
 We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
+
 
 
 
