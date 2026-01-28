@@ -2,8 +2,16 @@
 layout: post
 title: Predicting Customer Loyalty Using Machine Learning
 image: "../img/posts/regression-title-img.png"
+mathjax: true     # this triggers the {% if %} condition
 tags: [Customer Loyalty, Machine Learning, Regression, Python]
 ---
+
+Inline: $E=mc^2$
+
+Block:
+$$
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+$$
 
 Our client, a grocery retailer, hired a market research consulting agency to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present. In this project I use Machine Learning to predict the missing information.
 
@@ -1195,6 +1203,7 @@ While predictive accuracy was relatively high, other modeling approaches could b
 We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
+
 
 
 
