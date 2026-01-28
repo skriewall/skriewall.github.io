@@ -11,22 +11,38 @@
     <!-- Ionicons -->
     <link href="https://unpkg.com/ionicons@4.2.2/dist/css/ionicons.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ "/assets/css/main.css" | relative_url }}">
-    {% if page.mathjax or page.use_mathjax or page.math %}
+    {% if page.mathjax %}
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$$   ', '   $$'], ['\$$   ', '\   $$']],
-          displayMath: [['$$    ', '    $$'], ['\$$   ', '\   $$']],
-          processEscapes: true,          // allows \$ for literal dollar
+          inlineMath: [['$', '$'], ['\\(', '\\)']],
+          displayMath: [['$$', '$$'], ['\\[', '\\]']],
+          processEscapes: true,       // allows \$ for literal $
           processEnvironments: true
         },
         options: {
-          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+          skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+          renderActions: {
+            findScript: [10, doc => {
+              for (const node of document.querySelectorAll('script[type^="math/tex"]')) {
+                const display = !!node.type.match(/; *mode=display/);
+                const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+                const text = document.createTextNode('');
+                node.parentNode.replaceChild(text, node);
+                math.start = {node: text, delim: '', n: 0};
+                math.end = {node: text, delim: '', n: 0};
+                doc.math.push(math);
+              }
+            }, '', false],
+          }
         }
       };
+    
+      // Force re-typeset after load (helps on GH Pages)
+      window.addEventListener('load', () => {
+        MathJax.typesetPromise().catch(err => console.error('MathJax error:', err));
+      });
     </script>
-    <script id="MathJax-script" async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
-    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     {% endif %}
 </head>
