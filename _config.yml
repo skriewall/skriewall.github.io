@@ -5,6 +5,13 @@ plugins:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-remote-theme
+
+markdown: kramdown
+
+kramdown:
+  math_engine: mathjax
+  math_engine_opts:
+    preview: true
   
 #-------------------------------
 # General Site Settings
@@ -51,6 +58,7 @@ defaults:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
 
 
 
