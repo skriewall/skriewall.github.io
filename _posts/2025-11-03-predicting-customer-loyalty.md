@@ -6,16 +6,6 @@ mathjax: true
 tags: [Customer Loyalty, Machine Learning, Regression, Python]
 ---
 
-Inline math: $E = mc^2$ and also \( \int_a^b f(x)\,dx \)
-
-$$
-\sum_{n=1}^\infty \frac{1}{n^2} = \frac{\pi^2}{6}
-$$
-
-Or escaped version (if needed for some themes):
-
-\[ \nabla \cdot \mathbf{B} = 0 \]
-
 Our client, a grocery retailer, hired a market research consulting agency to append market-level customer loyalty information to the database. However, only around half of the client's customer base could be tagged, thus the other half did not have this information present. In this project I use Machine Learning to predict the missing information.
 
 # Table of Contents
@@ -1206,6 +1196,7 @@ While predictive accuracy was relatively high, other modeling approaches could b
 We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
+
 
 
 
