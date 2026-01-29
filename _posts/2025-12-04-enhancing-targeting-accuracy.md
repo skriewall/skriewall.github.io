@@ -465,50 +465,46 @@ Since the proportion of signups was around 30:70 we will next analyze not only C
 
 Classification Accuracy is a metric that tells us what proportion of predicted observations were correctly classified. This is very intuitive, but can be misleading when dealing with imbalanced classes.
 
-For example, consider a rare disease. A model with a 98% Classification Accuracy on might appear like a fantastic result, but if the data contained 98% of patients without the disease and 2% with the disease, then a 98% Classification Accuracy could be obtained simply by predicting that *no one* has the disease, which would not be a great model in the real world. So we also look to other metrics.
+For example, consider a rare disease. A model with a 98% Classification Accuracy on might appear like a fantastic result, but if data of 100 patients contained 98% of patients without the disease and 2% with the disease, then a 98% Classification Accuracy could be obtained simply by predicting that *no one* has the disease (we would correctly classify 98 patients as not having the disease, but incorrectly classify the other 2), which would not be a great model in the real world. So we also look to other metrics.
 
 <br>
 
 **Precision and Recall**
 
-Precision is a metric that tells us *of all observations that were predicted as positive, how many actually were positive*
+Precision is a metric that tells us *of all observations that were predicted as positive, how many actually were positive*. Continuing with the rare disease example, Precision would tell us *of all patients we predicted to have the disease, how many actually did*.
 
-Keeping with the rare disease example, Precision would tell us *of all patients we predicted to have the disease, how many actually did*
+Sensitivity is a metric that tells us *of all positive observations, how many did we predict as positive*. Again referring to the rare disease example, Sensitivity would tell us *of all patients who actually had the disease, how many did we correctly predict*.
 
-Recall is a metric that tells us *of all positive observations, how many did we predict as positive*
+It is impossible to optimize both Precision and Sensitivity. If you try to increase Precision, Sensitivity decreases, and vice versa. Sometimes it will make more sense to try to elevate one of them at the expense of the other. In the case of the rare disease example, perhaps it would be more important to optimize for Sensitivity as we want to classify as many positive cases as possible. However, we do not want to just classify every patient as having the disease, as that is not useful or precise.
 
-Again, referring to the rare disease example, Recall would tell us *of all patients who actually had the disease, how many did we correctly predict*
-
-The tricky thing about Precision and Recall is that it is impossible to optimize both - it's a zero-sum game. If you try to increase Precision, Recall decreases, and vice versa. Sometimes however it will make more sense to try and elevate one of them, in spite of the other. In the case of our rare-disease prediction like we've used in our example, perhaps it would be more important to optimize for Recall as we want to classify as many positive cases as possible. In saying this however, we don't want to just classify every patient as having the disease, as that isn't a great outcome either!
-
-So - there is one more metric we will discuss and calculate, which is actually a *combination* of both...
+There is one more metric that is actually a *combination* of both Precision and Sensitivity.
 
 <br>
 
 **F1 Score**
 
-F1-Score is a metric that essentially "combines" both Precision and Recall. Technically speaking, it is the harmonic mean of these two metrics. A good, or high, F1-Score comes when there is a balance between Precision and Recall, rather than a disparity between them.
+F1-Score is a metric that takes into account both Precision and Recall. Technically speaking, it is the harmonic mean of these two metrics. A good, or high, F1-Score comes when there is a balance between Precision and Recall, rather than a disparity between them.
 
-Overall, optimizing your model for F1-Score means that you'll get a model that is working well for both positive and negative classifications rather than skewed towards one or the other. To return to the rare disease predictions, a high F1-Score would mean we've got a good balance between successfully predicting the disease when it's present, and not predicting cases where it's not present.
+Optimizing the model for the F1-Score means that the model will work well for both positive and negative classifications rather than skewing towards one or the other. To return to the rare disease example, a high F1-Score would mean there is a good balance between successfully predicting the disease when it is present, and not predicting cases when it is not present.
 
-Using all of these metrics in combination gives a really good overview of the performance of a classification model, and gives us an understanding of the different scenarios and considerations!
+Using all of these metrics together gives a good overview of the performance of a classification model.
 
 <br>
 
-In the code below, we utilize in-built functionality from scikit-learn to calculate these four metrics.
+In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
 
-# classification accuracy
+# Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
-# precision
+# Precision (how many of our positive predictions were correct?)
 precision_score(y_test, y_pred_class)
 
-# recall
+# Sensitivity (how many of all positive observations did we predict to be positive?)
 recall_score(y_test, y_pred_class)
 
-# f1-score
+# F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
 
 ```
@@ -517,36 +513,33 @@ f1_score(y_test, y_pred_class)
 
 Running this code gives us:
 
-* Classification Accuracy = **0.866** meaning we correctly predicted the class of 86.6% of test set observations
-* Precision = **0.784** meaning that for our *predicted* delivery club signups, we were correct 78.4% of the time
-* Recall = **0.69** meaning that of all *actual* delivery club signups, we predicted correctly 69% of the time
-* F1-Score = **0.734** 
+* Classification Accuracy = **0.866** --- meaning we correctly predicted the class of 86.6% of test set observations
+* Precision = **0.784** --- meaning that for our *predicted* delivery club signups, we were correct 78.4% of the time
+* Recall = **0.690** --- meaning that of all *actual* delivery club signups, we predicted correctly 69.0% of the time
+* F1-Score = **0.734**
 
-Since our data is *somewhat* imbalanced, looking at these metrics rather than just Classification Accuracy on its own - is a good idea, and gives us a much better understanding of what our predictions mean. We will use these same metrics when applying other models for this task, and can compare how they stack up.
+Since our data is somewhat imbalanced, looking at these metrics rather than Classification Accuracy alone gives us a much better understanding of what our predictions mean. We will use these same metrics when applying other models for this task and can compare how they stack up.
 
 <br>
 
 ### Finding The Optimal Classification Threshold <a name="logreg-opt-threshold"></a>
 
-By default, most pre-built classification models and algorithms will just use a 50% probability to discern between a positive class prediction (delivery club signup) and a negative class prediction (delivery club non-signup).
+By default, most pre-built classification models and algorithms use a 50% probability to discern between a positive class prediction (delivery club signup) and a negative class prediction (delivery club non-signup). But this is not necessarily the best threshold for our task.
 
-Just because 50% is the default threshold *does not mean* it is the best one for our task.
-
-Here, we will test many potential classification thresholds, and plot the Precision, Recall and F1-Score, and find an optimal solution!
+The code below tests many potential classification probability thresholds, plots the Precision, Recall and F1-Score, and finds the optimal threshold.
 
 ```python
 
-# set up the list of thresholds to loop through
+# Set up the list of thresholds to loop through
 thresholds = np.arange(0, 1, 0.01)
 
-# create empty lists to append the results to
+# Empty lists to store the results
 precision_scores = []
 recall_scores = []
 f1_scores = []
 
-# loop through each threshold - fit the model - append the results
+# For each possible threshold (stepped by 0.01 from 0 to 1), fit the model and record the results
 for threshold in thresholds:
-    
     pred_class = (y_pred_prob >= threshold) * 1
     
     precision = precision_score(y_test, pred_class, zero_division = 0)
@@ -557,8 +550,8 @@ for threshold in thresholds:
     
     f1 = f1_score(y_test, pred_class)
     f1_scores.append(f1)
-    
-# extract the optimal f1-score (and it's index)
+
+# Find the optimal f1-score and its index
 max_f1 = max(f1_scores)
 max_f1_idx = f1_scores.index(max_f1)
 
@@ -566,19 +559,18 @@ max_f1_idx = f1_scores.index(max_f1)
 
 <br>
 
-Now we have run this, we can use the below code to plot the results!
+The code below plots the results.
 
 ```python
 
-# plot the results
-plt.style.use("seaborn-poster")
-plt.plot(thresholds, precision_scores, label = "Precision", linestyle = "--")
-plt.plot(thresholds, recall_scores, label = "Recall", linestyle = "--")
-plt.plot(thresholds, f1_scores, label = "F1", linewidth = 5)
-plt.title(f"Finding the Optimal Threshold for Classification Model \n Max F1: {round(max_f1,2)} (Threshold = {round(thresholds[max_f1_idx],2)})")
-plt.xlabel("Threshold")
-plt.ylabel("Assessment Score")
-plt.legend(loc = "lower left")
+plt.style.use('seaborn-v0_8-poster')
+plt.plot(thresholds, precision_scores, label = 'Precision', linestyle = '--')
+plt.plot(thresholds, recall_scores, label = 'Recall', linestyle = '--')
+plt.plot(thresholds, f1_scores, label = 'F1', linewidth = 5)
+plt.title(f'Finding the Optimal Threshold for Classification Model \n Max F1: {round(max_f1,2)} (Threshold = {round(thresholds[max_f1_idx], 2)})')
+plt.xlabel('Threshold')
+plt.ylabel('Assessment Score')
+plt.legend(loc = 'lower left')
 plt.tight_layout()
 plt.show()
 
@@ -590,9 +582,9 @@ plt.show()
 
 <br>
 
-Along the x-axis of the above plot we have the different classification thresholds that were testing. Along the y-axis we have the performance score for each of our three metrics. As per the legend, we have Precision as a blue dotted line, Recall as an orange dotted line, and F1-Score as a thick green line. You can see the interesting "zero-sum" relationship between Precision and Recall *and* you can see that the point where Precision and Recall meet is where F1-Score is maximized.
+Along the *x*-axis of the above plot we have the different classification thresholds that we are testing. Along the *y*-axis we have the performance score for each of the three metrics. In the plot we can see the trade-offs between Precision and Recall and that the point where Precision and Recall meet is where the F1-Score is maximized.
 
-As you can see at the top of the plot, the optimal F1-Score for this model 0.78 and this is obtained at a classification threshold of 0.44. This is higher than the F1-Score of 0.734 that we achieved at the default classification threshold of 0.50!
+The optimal F1-Score for this model is *0.78*, and this is obtained at a classification threshold of *0.44*. This is higher than the F1-Score of 0.734 that we achieved at the default classification threshold of 0.50. Therefore, in order to balance the tradeoffs between Precision and Sensitivity we would actually predict that customers will sign up if their predicted probability is greater than or equal to 0.44, and predict that they will not sign up if the predicted probability is less than 0.44.
 
 ___
 
