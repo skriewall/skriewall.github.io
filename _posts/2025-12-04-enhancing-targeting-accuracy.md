@@ -132,7 +132,7 @@ After this data pre-processing in Python, we have a dataset for modeling that co
 | total_items | Independent | Total products purchased by the customer with the client for 3 months pre-campaign |
 | transaction_count | Independent | Total unique transactions made by the customer with the client for 3 months pre-campaign |
 | product_area_count | Independent | The number of product areas in the client's store that customers have shopped within the 3 months pre-campaign |
-| average_basket_value | Independent | The average amount spent per transaction for the customer with the client for 3-months pre campaign |
+| average_cart_value | Independent | The average amount spent per transaction for the customer with the client for 3-months pre campaign |
 
 ___
 
@@ -234,7 +234,7 @@ The fit of a Logistic Regression model can be negatively impacted if there are o
 
 In this code section, we use **.describe()** from Pandas to investigate the spread of values for each of the predictor variables. The results of this can be seen in the table below.
 
-| **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_basket_value** |
+| **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_cart_value** |
 |---|---|---|---|---|---|---|---|
 | mean | 2.61 | 0.60 | 968.17 | 143.88 | 22.21 | 4.18 | 38.03  |
 | std | 14.40 | 0.10 | 1073.65 | 125.34 | 11.72 | 0.92 | 24.24  |
@@ -340,7 +340,6 @@ Feature Selection is the process used to select the input variables that are mos
 * **Improved Model Accuracy** - eliminating noise can help true relationships stand out
 * **Lower Computational Cost** - the model becomes faster to train, and faster to make predictions
 * **Explainability** - understanding and explaining outputs for stakeholder and customers becomes much easier
-
 
 There are many ways to apply Feature Selection, ranging from simple methods such as a *Correlation Matrix* showing variable relationships, to *Univariate Testing* which helps us understand statistical relationships between variables, to more powerful approaches like *Recursive Feature Elimination (RFE)* --- an approach that starts with all input variables, and then iteratively removes variables with the weakest relationships with the output variable.
 
@@ -473,11 +472,11 @@ For example, consider a rare disease. A model with a 98% Classification Accuracy
 
 Precision is a metric that tells us *of all observations that were predicted as positive, how many actually were positive*. Continuing with the rare disease example, Precision would tell us *of all patients we predicted to have the disease, how many actually did*.
 
-Sensitivity is a metric that tells us *of all positive observations, how many did we predict as positive*. Again referring to the rare disease example, Sensitivity would tell us *of all patients who actually had the disease, how many did we correctly predict*.
+Recall is a metric that tells us *of all positive observations, how many did we predict as positive*. Again referring to the rare disease example, Recall would tell us *of all patients who actually had the disease, how many did we correctly predict*.
 
-It is impossible to optimize both Precision and Sensitivity. If you try to increase Precision, Sensitivity decreases, and vice versa. Sometimes it will make more sense to try to elevate one of them at the expense of the other. In the case of the rare disease example, perhaps it would be more important to optimize for Sensitivity as we want to classify as many positive cases as possible. However, we do not want to just classify every patient as having the disease, as that is not useful or precise.
+It is impossible to optimize both Precision and Recall. If you try to increase Precision, Recall decreases, and vice versa. Sometimes it will make more sense to try to elevate one of them at the expense of the other. In the case of the rare disease example, perhaps it would be more important to optimize for Recall as we want to classify as many positive cases as possible. However, we do not want to just classify every patient as having the disease, as that is not useful or precise.
 
-There is one more metric that is actually a *combination* of both Precision and Sensitivity.
+There is one more metric that is actually a *combination* of both Precision and Recall.
 
 <br>
 
@@ -501,7 +500,7 @@ accuracy_score(y_test, y_pred_class)
 # Precision (how many of our positive predictions were correct?)
 precision_score(y_test, y_pred_class)
 
-# Sensitivity (how many of all positive observations did we predict to be positive?)
+# Recall (how many of all positive observations did we predict to be positive?)
 recall_score(y_test, y_pred_class)
 
 # F1 Score (harmonic mean of precision and recall)
@@ -584,13 +583,13 @@ plt.show()
 
 Along the *x*-axis of the above plot we have the different classification thresholds that we are testing. Along the *y*-axis we have the performance score for each of the three metrics. In the plot we can see the trade-offs between Precision and Recall and that the point where Precision and Recall meet is where the F1-Score is maximized.
 
-The optimal F1-Score for this model is *0.78*, and this is obtained at a classification threshold of *0.44*. This is higher than the F1-Score of 0.734 that we achieved at the default classification threshold of 0.50. Therefore, in order to balance the tradeoffs between Precision and Sensitivity we would actually predict that customers will sign up if their predicted probability is greater than or equal to 0.44, and predict that they will not sign up if the predicted probability is less than 0.44.
+The optimal F1-Score for this model is *0.78*, and this is obtained at a classification threshold of *0.44*. This is higher than the F1-Score of 0.734 that we achieved at the default classification threshold of 0.50. Therefore, in order to balance the tradeoffs between Precision and Recall we would actually predict that customers will sign up if their predicted probability is greater than or equal to 0.44, and predict that they will not sign up if the predicted probability is less than 0.44.
 
 ___
 
 # Decision Tree <a name="clftree-title"></a>
 
-We will again utilize the scikit-learn library within Python to model our data using a Decision Tree. The code sections below are broken up into 6 key sections:
+We will again use the scikit-learn library in Python to model our data using a Decision Tree. The code sections below are broken up into six key sections:
 
 * Data Import
 * Data Preprocessing
@@ -603,34 +602,33 @@ We will again utilize the scikit-learn library within Python to model our data u
 
 ### Data Import <a name="clftree-import"></a>
 
-Since we saved our modeling data as a pickle file, we import it. We ensure we remove the id column, and we also ensure our data is shuffled.
-
-Just like we did for Logistic Regression - our code also investigates the class balance of our dependent variable.
+We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data. As we did in the Logistic Regression approach above, the code also investigates the class balance of the dependent variable *signup_flag*.
 
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+
 from sklearn.tree import DecisionTreeClassifier, plot_tree
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
 from sklearn.preprocessing import OneHotEncoder
 
-# import modeling data
-data_for_model = pickle.load(open("data/delivery_club_modeling.p", "rb"))
+# Import data
+data_for_model = pd.read_pickle('data/delivery_club_modeling.p')
 
-# drop unnecessary columns
-data_for_model.drop("customer_id", axis = 1, inplace = True)
+# Drop unnecessary columns
+data_for_model.drop('customer_id', axis = 1, inplace = True)
 
-# shuffle data
+# Shuffle data
 data_for_model = shuffle(data_for_model, random_state = 42)
 
-# assess class balance of dependent variable
-data_for_model["signup_flag"].value_counts(normalize = True)
+# Class balance - proportions of 1s and 0s
+data_for_model['signup_flag'].value_counts(normalize = True)
 
 ```
 
@@ -638,7 +636,7 @@ data_for_model["signup_flag"].value_counts(normalize = True)
 
 ### Data Preprocessing <a name="clftree-preprocessing"></a>
 
-While Logistic Regression is susceptible to the effects of outliers, and highly correlated input variables - Decision Trees are not, so the required preprocessing here is lighter. We still however will put in place logic for:
+While Logistic Regression is susceptible to the effects of outliers and highly correlated input variables, Decision Trees are not, so the required preprocessing here is lighter. We still, however, put in place logic for:
 
 * Missing values in the data
 * Encoding categorical variables to numeric form
@@ -647,13 +645,13 @@ While Logistic Regression is susceptible to the effects of outliers, and highly 
 
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows
+The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows.
 
 ```python
 
-# remove rows where values are missing
+# Remove rows with missing values
 data_for_model.isna().sum()
-data_for_model.dropna(how = "any", inplace = True)
+data_for_model.dropna(how = 'any', inplace = True)
 
 ```
 
@@ -661,17 +659,17 @@ data_for_model.dropna(how = "any", inplace = True)
 
 ##### Split Out Data For Modeling
 
-In exactly the same way we did for Logistic Regression, in the next code block we do two things, we firstly split our data into an **X** object which contains only the predictor variables, and a **y** object that contains only our dependent variable.
+In the same way we did for Logistic Regression, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can fairly validate the accuracy of the predictions on data that was not used in training. In this case, we have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that both our training and test sets have the same proportion of customers who did, and did not, sign up for the Delivery Club - meaning we can be more confident in our assessment of predictive performance.
+Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
-# split data into X and y objects for modeling
-X = data_for_model.drop(["signup_flag"], axis = 1)
-y = data_for_model["signup_flag"]
+# Split data into X and y objects for modeling
+X = data_for_model.drop(['signup_flag'], axis = 1)
+y = data_for_model['signup_flag']
 
-# split out training & test sets
+# Split out training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
 
 ```
@@ -682,33 +680,32 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
 
-Just like the Logistic Regression algorithm, the Decision Tree cannot deal with data in this format as it can't assign any numerical meaning to it when looking to assess the relationship between the variable and the dependent variable.
-
-As *gender* doesn't have any explicit *order* to it, in other words, Male isn't higher or lower than Female and vice versa - we would again apply One Hot Encoding to the categorical column.
+Just like the Logistic Regression algorithm, the Decision Tree cannot deal with data in this format as it can't assign any numerical meaning to it when assessing the relationship between the variable and the dependent variable. We again apply One Hot Encoding to the categorical column.
 
 ```python
 
-# list of categorical variables that need encoding
-categorical_vars = ["gender"]
+# List of categorical variables
+categorical_vars = ['gender']
 
-# instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse=False, drop = "first")
+# Instantiate OHE class
+one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
 
-# apply OHE
+# Apply OHE
 X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
 X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
 
-# extract feature names for encoded columns
+# Extract feature names for encoded columns
 encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
 
-# turn objects back to pandas dataframe
+# Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
-X_train = pd.concat([X_train.reset_index(drop=True), X_train_encoded.reset_index(drop=True)], axis = 1)
+X_train = pd.concat([X_train.reset_index(drop = True), X_train_encoded.reset_index(drop = True)], axis = 1)
 X_train.drop(categorical_vars, axis = 1, inplace = True)
 
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
-X_test = pd.concat([X_test.reset_index(drop=True), X_test_encoded.reset_index(drop=True)], axis = 1)
+X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
+
 
 ```
 
@@ -716,14 +713,14 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="clftree-model-training"></a>
 
-Instantiating and training our Decision Tree model is done using the below code. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
+The below code instantiates and trains the Decision Tree model. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
 
 ```python
 
-# instantiate our model object
+# Instantiate the model object
 clf = DecisionTreeClassifier(random_state = 42, max_depth = 5)
 
-# fit our model using our training & test sets
+# Fit the model using training sets
 clf.fit(X_train, y_train)
 
 ```
@@ -734,15 +731,15 @@ clf.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-Just like we did with Logistic Regression, to assess how well our model is predicting on new data - we use the trained model object (here called *clf*) and ask it to predict the *signup_flag* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object to predict the *signup_flag* variable for the test set.
 
-In the code below we create one object to hold the binary 1/0 predictions, and another to hold the actual prediction probabilities for the positive class.
+In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up.
 
 ```python
 
-# predict on the test set
-y_pred_class = clf.predict(X_test)
-y_pred_prob = clf.predict_proba(X_test)[:,1]
+# Predict on the test set
+y_pred_class = clf.predict(X_test)                      # predicts 0s or 1s
+y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it being a 1
 
 ```
 
@@ -750,24 +747,24 @@ y_pred_prob = clf.predict_proba(X_test)[:,1]
 
 ##### Confusion Matrix
 
-As we discussed in the above section applying Logistic Regression - a Confusion Matrix provides us a visual way to understand how our predictions match up against the actual values for those test set observations.
+As mentioned in the above section on Logistic Regression, a Confusion Matrix provides us a visual way to understand how the predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from within scikit-learn and then plots it using matplotlib.
+The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 
-# create the confusion matrix
+# Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
-# plot the confusion matrix
-plt.style.use("seaborn-poster")
-plt.matshow(conf_matrix, cmap = "coolwarm")
+# Plot the confusion matrix
+plt.style.use('seaborn-v0_8-poster')
+plt.matshow(conf_matrix, cmap = 'coolwarm')
 plt.gca().xaxis.tick_bottom()
-plt.title("Confusion Matrix")
-plt.ylabel("Actual Class")
-plt.xlabel("Predicted Class")
+plt.title('Confusion Matrix')
+plt.ylabel('Actual Class')
+plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
-    plt.text(j, i, corr_value, ha = "center", va = "center", fontsize = 20)
+    plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
 
 ```
@@ -778,9 +775,9 @@ plt.show()
 
 <br>
 
-The aim is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
+The goal is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
 
-Since the proportion of signups in our data was around 30:70 we will again analyze not only Classification Accuracy, but also Precision, Recall, and F1-Score as they will help us assess how well our model has performed from different points of view.
+Since the proportion of signups was around 30:70 we will next analyze not only Classification Accuracy, but also Precision, Recall, and F1-Score to assess how well the model has performed in reality.
 
 <br>
 
@@ -788,22 +785,22 @@ Since the proportion of signups in our data was around 30:70 we will again analy
 
 **Accuracy, Precision, Recall, F1-Score**
 
-For details on these performance metrics, please see the above section on Logistic Regression. Using all four of these metrics in combination gives a really good overview of the performance of a classification model, and gives us an understanding of the different scenarios and considerations!
+For details on these performance metrics, please see the above section on Logistic Regression. Using all four of these metrics together gives a good overview of the performance of a classification model.
 
-In the code below, we utilize in-built functionality from scikit-learn to calculate these four metrics.
+In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
 
-# classification accuracy
+# Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
-# precision
+# Precision (how many of our positive predictions were correct?)
 precision_score(y_test, y_pred_class)
 
-# recall
+# Recall (how many of all positive observations did we predict to be positive?)
 recall_score(y_test, y_pred_class)
 
-# f1-score
+# F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
 
 ```
@@ -817,19 +814,19 @@ Running this code gives us:
 * Recall = **0.885** meaning that of all *actual* delivery club signups, we predicted correctly 88.5% of the time
 * F1-Score = **0.885**
 
-These are all higher than what we saw when applying Logistic Regression, even after we had optimized the classification threshold!
+These are all higher than what we saw when applying Logistic Regression, even after we had optimized the classification threshold.
 
 <br>
 
-### Visualize Our Decision Tree <a name="clftree-visualize"></a>
+### Visualize the Decision Tree <a name="clftree-visualize"></a>
 
-To see the decisions that have been made in the tree, we can use the plot_tree functionality that we imported from scikit-learn. To do this, we use the below code:
+To see the decisions that have been made in the tree, we can use the **plot_tree** functionality that we imported from scikit-learn. To do this, we use the below code:
 
 ```python
 
-# plot the nodes of the decision tree
-plt.figure(figsize=(25,15))
-tree = plot_tree(clf,
+# Plot the nodes of the decision tree
+plt.figure(figsize=(25, 15))
+tree = plot_tree(clf, 
                  feature_names = X.columns,
                  filled = True,
                  rounded = True,
@@ -845,48 +842,45 @@ That code gives us the below plot:
 
 <br>
 
-This is a very powerful visual, and one that can be shown to stakeholders in the business to ensure they understand exactly what is driving the predictions.
-
-One interesting thing to note is that the *very first split* appears to be using the variable *distance from store* so it would seem that this is a very important variable when it comes to predicting signups to the delivery club!
+This is a visual that can be shown to stakeholders in the business to ensure they understand exactly what is driving the predictions. For example, one thing that could be noted is that the very first split uses the variable *distance_from_store*, implying this is an important variable when it comes to predicting signups to the delivery club.
 
 <br>
 
 ### Decision Tree Regularization <a name="clftree-model-regularization"></a>
 
-Decision Tree's can be prone to over-fitting, in other words, without any limits on their splitting, they will end up learning the training data perfectly. We would much prefer our model to have a more *generalized* set of rules, as this will be more robust and reliable when making predictions on *new* data.
+Decision Trees can be prone to over-fitting --- without any limits on their splitting, they will learn the training data perfectly. It is better to have a model with a more generalized set of rules, as this will be more robust and reliable when making predictions on new data.
 
-One effective method of avoiding this over-fitting, is to apply a *max depth* to the Decision Tree, meaning we only allow it to split the data a certain number of times before it is required to stop.
+One effective method of avoiding this over-fitting is to apply a *max depth* to the Decision Tree, meaning we only allow it to split the data a certain number of times before it is required to stop.
 
-We initially trained our model with a placeholder depth of 5, but unfortunately, we don't necessarily know the *optimal* number for this. Below we will loop over a variety of values and assess which gives us the best predictive performance!
+The model was initially trained with a placeholder depth of 5, but to find the best number of splits to use, the below code over a variety of values for max depth. We will assess which gives us the best predictive performance.
 
 ```python
 
-# finding the best max_depth
+# Finding the best max_depth
 
-# set up range for search, and empty list to append accuracy scores to
-max_depth_list = list(range(1,15))
+# Set up range for search, and empty list to append accuracy scores to
+max_depth_list = list(range(1, 15))
 accuracy_scores = []
 
-# loop through each possible depth, train and validate model, append test set f1-score
+# Loop through each possible depth, train and validate the model, and append the accuracy
 for depth in max_depth_list:
-    
     clf = DecisionTreeClassifier(max_depth = depth, random_state = 42)
-    clf.fit(X_train,y_train)
+    clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
-    accuracy = f1_score(y_test,y_pred)
+    accuracy = f1_score(y_test, y_pred)
     accuracy_scores.append(accuracy)
-    
-# store max accuracy, and optimal depth    
+
+# Get max accuracy and optimal depth
 max_accuracy = max(accuracy_scores)
 max_accuracy_idx = accuracy_scores.index(max_accuracy)
 optimal_depth = max_depth_list[max_accuracy_idx]
 
-# plot accuracy by max depth
-plt.plot(max_depth_list,accuracy_scores)
-plt.scatter(optimal_depth, max_accuracy, marker = "x", color = "red")
-plt.title(f"Accuracy (F1 Score) by Max Depth \n Optimal Tree Depth: {optimal_depth} (F1 Score: {round(max_accuracy,4)})")
-plt.xlabel("Max Depth of Decision Tree")
-plt.ylabel("Accuracy (F1 Score)")
+# Plot accuracy by max depth
+plt.plot(max_depth_list, accuracy_scores)
+plt.scatter(optimal_depth, max_accuracy, marker = 'x', color = 'red')
+plt.title(f'Accuracy by Max Depth \nOptimalTree Depth: {optimal_depth} (Accuracy: {round(max_accuracy, 4)})')
+plt.xlabel('Max Depth')
+plt.ylabel('Accuracy')
 plt.tight_layout()
 plt.show()
 
@@ -894,13 +888,13 @@ plt.show()
 
 <br>
 
-That code gives us the below plot - which visualizes the results!
+The code gives us the below plot to visualize the result:
 
 ![Decision Tree Max Depth Plot](/img/posts/clf-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
 
 <br>
 
-In the plot we can see that the *maximum* F1-Score on the test set is found when applying a *max_depth* value of 9 which takes our F1-Score up to 0.925
+In the plot we can see that the *maximum* F1-Score on the test set is found when applying a *max_depth* value of 9, which takes our F1-Score up to 0.925. So we would actually increase the max_depth from above to further improve the model.
 
 ___
 
@@ -1209,7 +1203,7 @@ That code gives us the below plots - the first being for *Feature Importance* an
 
 The overall story from both approaches is very similar, in that by far, the most important or impactful input variables are *distance_from_store* and *transaction_count*
 
-Surprisingly, *average_basket_size* was not as important as hypothesized.
+Surprisingly, *average_cart_value* was not as important as hypothesized.
 
 There are slight differences in the order or "importance" for the remaining variables but overall they have provided similar findings.
 
@@ -1301,7 +1295,7 @@ We don't want any variables to be "bunched up" due to a single outlier value, as
 
 In this code section, just like we saw when applying Logistic Regression, we use **.describe()** from Pandas to investigate the spread of values for each of our predictors. The results of this can be seen in the table below.
 
-| **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_basket_value** |
+| **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_cart_value** |
 |---|---|---|---|---|---|---|---|
 | mean | 2.61 | 0.60 | 968.17 | 143.88 | 22.21 | 4.18 | 38.03  |
 | std | 14.40 | 0.10 | 1073.65 | 125.34 | 11.72 | 0.92 | 24.24  |
