@@ -665,7 +665,7 @@ Once we have done this, we split our data into training and test sets to ensure 
 
 ```python
 
-# Split data into X and y objects for modeling
+# Split input variables & output variable
 X = data_for_model.drop(['signup_flag'], axis = 1)
 y = data_for_model['signup_flag']
 
@@ -900,7 +900,7 @@ ___
 
 # Random Forest <a name="rf-title"></a>
 
-We will again utilize the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into 4 key sections:
+We will again use the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into four key sections:
 
 * Data Import
 * Data Preprocessing
@@ -911,17 +911,16 @@ We will again utilize the scikit-learn library within Python to model our data u
 
 ### Data Import <a name="rf-import"></a>
 
-Again, since we saved our modeling data as a pickle file, we import it. We ensure we remove the id column, and we also ensure our data is shuffled.
-
-As this is the exact same process we ran for both Logistic Regression and the Decision Tree - our code also investigates the class balance of our dependent variable
+We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data. As this is the exact same process we ran for both Logistic Regression and the Decision Tree, the code also investigates the class balance of the dependent variable *signup_flag*.
 
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
@@ -929,14 +928,17 @@ from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, r
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.inspection import permutation_importance
 
-# import modeling data
-data_for_model = pickle.load(open("data/delivery_club_modeling.p", "rb"))
+# Import data
+data_for_model = pd.read_pickle('data/delivery_club_modeling.p')
 
-# drop unnecessary columns
-data_for_model.drop("customer_id", axis = 1, inplace = True)
+# Drop unnecessary columns
+data_for_model.drop('customer_id', axis = 1, inplace = True)
 
-# shuffle data
+# Shuffle data
 data_for_model = shuffle(data_for_model, random_state = 42)
+
+# Class balance - proportions of 1s and 0s
+data_for_model['signup_flag'].value_counts(normalize = True)
 
 ```
 
@@ -944,7 +946,7 @@ data_for_model = shuffle(data_for_model, random_state = 42)
 
 ### Data Preprocessing <a name="rf-preprocessing"></a>
 
-While Linear Regression is susceptible to the effects of outliers, and highly correlated input variables - Random Forests, just like Decision Trees, are not, so the required preprocessing here is lighter. We still however will put in place logic for:
+While Logistic Regression is susceptible to the effects of outliers and highly correlated input variables, Random Forests (like Decision Trees) are not, so the required preprocessing here is lighter. We still, however, put in place logic for:
 
 * Missing values in the data
 * Encoding categorical variables to numeric form
@@ -953,13 +955,13 @@ While Linear Regression is susceptible to the effects of outliers, and highly co
 
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows. Again, this is exactly the same process we ran for Logistic Regression and the Decision Tree.
+The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows. This is exactly the same process that was done for Logistic Regression and the Decision Tree.
 
 ```python
 
-# remove rows where values are missing
+# Remove rows with missing values
 data_for_model.isna().sum()
-data_for_model.dropna(how = "any", inplace = True)
+data_for_model.dropna(how = 'any', inplace = True)
 
 ```
 
@@ -967,15 +969,15 @@ data_for_model.dropna(how = "any", inplace = True)
 
 ##### Split Out Data For Modeling
 
-In exactly the same way we did for both Logistic Regression and our Decision Tree, in the next code block we do two things, we firstly split our data into an X object which contains only the predictor variables, and a y object that contains only our dependent variable.
+In the same way we did for Logistic Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can fairly validate the accuracy of the predictions on data that was not used in training. In this case, we have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the stratify parameter to ensure that both our training and test sets have the same proportion of customers who did, and did not, sign up for the delivery club - meaning we can be more confident in our assessment of predictive performance.
+Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
-# split data into X and y objects for modeling
-X = data_for_model.drop(["signup_flag"], axis = 1)
-y = data_for_model["signup_flag"]
+# Split input variables & output variable
+X = data_for_model.drop(['signup_flag'], axis = 1)
+y = data_for_model['signup_flag']
 
 # split out training & test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
@@ -988,32 +990,30 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
 
-Just like the Logistic Regression algorithm, Random Forests cannot deal with data in this format as it can't assign any numerical meaning to it when looking to assess the relationship between the variable and the dependent variable.
-
-As *gender* doesn't have any explicit *order* to it, in other words, Male isn't higher or lower than Female and vice versa - we would again apply One Hot Encoding to the categorical column.
+Just like Linear Regression and Decision Trees, Random Forests cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
 
 ```python
 
-# list of categorical variables that need encoding
-categorical_vars = ["gender"]
+# List of categorical variables
+categorical_vars = ['gender']
 
-# instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse=False, drop = "first")
+# Instantiate OHE class
+one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
 
-# apply OHE
+# Apply OHE
 X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
 X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
 
-# extract feature names for encoded columns
+# Extract feature names for encoded columns
 encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
 
-# turn objects back to pandas dataframe
+# Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
-X_train = pd.concat([X_train.reset_index(drop=True), X_train_encoded.reset_index(drop=True)], axis = 1)
+X_train = pd.concat([X_train.reset_index(drop = True), X_train_encoded.reset_index(drop = True)], axis = 1)
 X_train.drop(categorical_vars, axis = 1, inplace = True)
 
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
-X_test = pd.concat([X_test.reset_index(drop=True), X_test_encoded.reset_index(drop=True)], axis = 1)
+X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ```
@@ -1022,18 +1022,18 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="rf-model-training"></a>
 
-Instantiating and training our Random Forest model is done using the below code. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
+The code below instantiates and trains a Random Forest model. The *random_state* parameter ensures we get reproducible results and helps us understand any improvements in performance with changes to model hyperparameters.
 
-We also look to build more Decision Trees in the Random Forest (500) than would be done using the default value of 100.
+We specify that we are building 500 Decision Trees in this Random Forest (more than the default of 100).
 
-Lastly, since the default scikit-learn implementation of Random Forests does not limit the number of randomly selected variables offered up for splitting at each split point in each Decision Tree - we put this in place using the *max_features* parameter. This can always be refined later through testing, or through an approach such as gridsearch.
+Lastly, since the default scikit-learn implementation of Random Forests does not limit the number of randomly selected variables for splitting at each split point in each Decision Tree, we put a limit in place using the *max_features* parameter. This can always be refined later through testing, or through an approach such as gridsearch.
 
 ```python
 
-# instantiate our model object
+# Instantiate the model object
 clf = RandomForestClassifier(random_state = 42, n_estimators = 500, max_features = 5)
 
-# fit our model using our training & test sets
+# Fit the model using training sets
 clf.fit(X_train, y_train)
 
 ```
@@ -1044,15 +1044,15 @@ clf.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-Just like we did with Logistic Regression and our Decision Tree, to assess how well our model is predicting on new data - we use the trained model object (here called *clf*) and ask it to predict the *signup_flag* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object to predict the *signup_flag* variable for the test set.
 
-In the code below we create one object to hold the binary 1/0 predictions, and another to hold the actual prediction probabilities for the positive class.
+In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up.
 
 ```python
 
-# predict on the test set
-y_pred_class = clf.predict(X_test)
-y_pred_prob = clf.predict_proba(X_test)[:,1]
+# Predict on the test set
+y_pred_class = clf.predict(X_test)                      # predicts 0s or 1s
+y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it being a 1
 
 ```
 
@@ -1060,24 +1060,24 @@ y_pred_prob = clf.predict_proba(X_test)[:,1]
 
 ##### Confusion Matrix
 
-As we discussed in the above sections - a Confusion Matrix provides us a visual way to understand how our predictions match up against the actual values for those test set observations.
+As discussed in the above sections, a Confusion Matrix provides us a visual way to understand how the predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from within scikit-learn and then plots it using matplotlib.
+The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 
-# create the confusion matrix
+# Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
-# plot the confusion matrix
-plt.style.use("seaborn-poster")
-plt.matshow(conf_matrix, cmap = "coolwarm")
+# Plot the confusion matrix
+plt.style.use('seaborn-v0_8-poster')
+plt.matshow(conf_matrix, cmap = 'coolwarm')
 plt.gca().xaxis.tick_bottom()
-plt.title("Confusion Matrix")
-plt.ylabel("Actual Class")
-plt.xlabel("Predicted Class")
+plt.title('Confusion Matrix')
+plt.ylabel('Actual Class')
+plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
-    plt.text(j, i, corr_value, ha = "center", va = "center", fontsize = 20)
+    plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
 
 ```
@@ -1086,9 +1086,9 @@ plt.show()
 
 ![Random Forest Confusion Matrix](/img/posts/rf-confusion-matrix.png "Random Forest Confusion Matrix")
 
-The aim is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
+As in the Logistic Regression and Decision Tree sections above, the goal is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
 
-Since the proportion of signups in our data was around 30:70 we will again analyze not only Classification Accuracy, but also Precision, Recall, and F1-Score as they will help us assess how well our model has performed from different points of view.
+Since the proportion of signups was around 30:70 we will next analyze not only Classification Accuracy, but also Precision, Recall, and F1-Score to assess how well the model has performed in reality.
 
 <br>
 
@@ -1096,22 +1096,22 @@ Since the proportion of signups in our data was around 30:70 we will again analy
 
 **Accuracy, Precision, Recall, F1-Score**
 
-For details on these performance metrics, please see the above section on Logistic Regression. Using all four of these metrics in combination gives a really good overview of the performance of a classification model, and gives us an understanding of the different scenarios and considerations!
+For details on these performance metrics, please see the above section on Logistic Regression. Using all four of these metrics together gives a good overview of the performance of a classification model.
 
-In the code below, we utilize in-built functionality from scikit-learn to calculate these four metrics.
+In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
 
-# classification accuracy
+# Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
-# precision
+# Precision (how many of our positive predictions were correct?)
 precision_score(y_test, y_pred_class)
 
-# recall
+# Recall (how many of all positive observations did we predict to be positive?)
 recall_score(y_test, y_pred_class)
 
-# f1-score
+# F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
 
 ```
@@ -1125,66 +1125,54 @@ Running this code gives us:
 * Recall = **0.904** meaning that of all *actual* delivery club signups, we predicted correctly 90.4% of the time
 * F1-Score = **0.895**
 
-These are all higher than what we saw when applying Logistic Regression, and marginally higher than what we got from our Decision Tree. If we are after out-and-out accuracy then this would be the best model to choose. If we were happier with a simpler, easier explain model, but that had almost the same performance - then we may choose the Decision Tree instead!
+These are all higher than what we saw when applying Logistic Regression, and marginally higher than what we got from the Decision Tree. If the highest possible accuracy is our goal, then this would be the best model to choose. If we prefer a simpler, easier-to-explain model, with almost the same performance, then we may choose the Decision Tree instead.
 
 <br>
 
 ### Feature Importance <a name="rf-model-feature-importance"></a>
 
-Random Forests are an ensemble model, made up of many, many Decision Trees, each of which is different due to the randomness of the data being provided, and the random selection of input variables available at each potential split point.
+Random Forests are an ensemble model, made up of many Decision Trees. Each Decision Tree is different due to the randomness of the data and the random selection of input variables available at each potential split point. Because of the random nature of all these Decision trees, the model gives us a unique insight into how important each of our input variables are to the overall model. Because we are using random samples of data and random input variables for each Decision Tree, there are many scenarios where certain input variables are being held back and this enables us a way to compare how accurate the model's predictions are if that variable is or is not present.
 
-Because of this, we end up with a powerful and robust model, but because of the random or different nature of all these Decision trees - the model gives us a unique insight into how important each of our input variables are to the overall model. 
+So, at a high level, in a Random Forest we can measure *importance* by asking, "How much would accuracy decrease if a specific input variable was removed or randomized?"
 
-As we’re using random samples of data, and input variables for each Decision Tree - there are many scenarios where certain input variables are being held back and this enables us a way to compare how accurate the models predictions are if that variable is or isn’t present.
+If the decrease in performance, or accuracy, is large, then we would consider that input variable to be quite important, and if the decrease in accuracy is small, then we would conclude that the variable is of less importance.
 
-So, at a high level, in a Random Forest we can measure *importance* by asking *How much would accuracy decrease if a specific input variable was removed or randomized?*
+There are two common ways to measure the performance. One is **Feature Importance**, in which we find all nodes in the Decision Trees of the forest where a particular input variable is used to split the data and compare the Mean Squared Error (for a Regression problem) before and after the split was made. We take the *average* of these improvements across all Decision Trees in the Random Forest to get a score that tells us how much better we are making the model by using that input variable. If we do this for each of the input variables, we can compare these scores and understand which is adding the most value to the predictive power of the model.
 
-If this decrease in performance, or accuracy, is large, then we’d deem that input variable to be quite important, and if we see only a small decrease in accuracy, then we’d conclude that the variable is of less importance.
+The other approach, **Permutation Importance**, uses some data that has gone *unused* when random samples were selected for each Decision Tree (this stage is called "bootstrap sampling" or "bootstrapping"). The observations that were not randomly selected for each Decision Tree are known as *Out of Bag* observations, and can be used for testing the accuracy of each particular Decision Tree. For each Decision Tree, all of the *Out of Bag* observations are gathered and then passed through the tree. Once all of these observations have been run through the Decision Tree, we obtain a classification accuracy score for these predictions.
 
-At a high level, there are two common ways to tackle this. The first, often just called **Feature Importance** is where we find all nodes in the Decision Trees of the forest where a particular input variable is used to split the data and assess what the gini impurity score (for a Classification problem) was before the split was made, and compare this to the gini impurity score after the split was made. We can take the *average* of these improvements across all Decision Trees in the Random Forest to get a score that tells us *how much better* we’re making the model by using that input variable.
+In order to understand the *importance*, we *randomize* the values within one of the input variables --- a process that essentially destroys any relationship that might exist between that input variable and the output variable --- and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
 
-If we do this for *each* of our input variables, we can compare these scores and understand which is adding the most value to the predictive power of the model!
-
-The other approach, often called **Permutation Importance** cleverly uses some data that has gone *unused* at when random samples are selected for each Decision Tree (this stage is called "bootstrap sampling" or "bootstrapping")
-
-These observations that were not randomly selected for each Decision Tree are known as *Out of Bag* observations and these can be used for testing the accuracy of each particular Decision Tree.
-
-For each Decision Tree, all of the *Out of Bag* observations are gathered and then passed through. Once all of these observations have been run through the Decision Tree, we obtain a classification accuracy score for these predictions.
-
-In order to understand the *importance*, we *randomize* the values within one of the input variables - a process that essentially destroys any relationship that might exist between that input variable and the output variable - and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
-
-*Permutation Importance* is often preferred over *Feature Importance* which can at times inflate the importance of numerical features. Both are useful, and in most cases will give fairly similar results.
-
-Let's put them both in place, and plot the results...
+The code below finds the feature importance and permutation importance and plots the results.
 
 ```python
 
-# calculate feature importance
+# Calculate feature importance
 feature_importance = pd.DataFrame(clf.feature_importances_)
 feature_names = pd.DataFrame(X.columns)
-feature_importance_summary = pd.concat([feature_names,feature_importance], axis = 1)
-feature_importance_summary.columns = ["input_variable","feature_importance"]
-feature_importance_summary.sort_values(by = "feature_importance", inplace = True)
+feature_importance_summary = pd.concat([feature_names, feature_importance], axis = 1)
+feature_importance_summary.columns = ['input_variable', 'feature_importance']
+feature_importance_summary.sort_values(by = 'feature_importance', inplace = True)
 
-# plot feature importance
-plt.barh(feature_importance_summary["input_variable"],feature_importance_summary["feature_importance"])
-plt.title("Feature Importance of Random Forest")
-plt.xlabel("Feature Importance")
+# Plot feature importance
+plt.barh(feature_importance_summary['input_variable'], feature_importance_summary['feature_importance'])
+plt.title('Feature Importance of Random Forest')
+plt.xlabel('Feature Importance')
 plt.tight_layout()
 plt.show()
 
-# calculate permutation importance
+# Calculate permutation importance
 result = permutation_importance(clf, X_test, y_test, n_repeats = 10, random_state = 42)
-permutation_importance = pd.DataFrame(result["importances_mean"])
+permutation_importance = pd.DataFrame(result['importances_mean'])
 feature_names = pd.DataFrame(X.columns)
-permutation_importance_summary = pd.concat([feature_names,permutation_importance], axis = 1)
-permutation_importance_summary.columns = ["input_variable","permutation_importance"]
-permutation_importance_summary.sort_values(by = "permutation_importance", inplace = True)
+permutation_importance_summary = pd.concat([feature_names, permutation_importance], axis = 1)
+permutation_importance_summary.columns = ['input_variable', 'permutation_importance']
+permutation_importance_summary.sort_values(by = 'permutation_importance', inplace = True)
 
-# plot permutation importance
-plt.barh(permutation_importance_summary["input_variable"],permutation_importance_summary["permutation_importance"])
-plt.title("Permutation Importance of Random Forest")
-plt.xlabel("Permutation Importance")
+# Plot permutation importance
+plt.barh(permutation_importance_summary['input_variable'], permutation_importance_summary['permutation_importance'])
+plt.title('Permutation Importance of Random Forest')
+plt.xlabel('Permutation Importance')
 plt.tight_layout()
 plt.show()
 
@@ -1192,7 +1180,7 @@ plt.show()
 
 <br>
 
-That code gives us the below plots - the first being for *Feature Importance* and the second for *Permutation Importance*!
+The code gives the following plots for *Feature Importance* and *Permutation Importance*.
 
 ![Random Forest Feature Importance Plot](/img/posts/rf-classification-feature-importance.png "Random Forest Feature Importance Plot")
 <br>
@@ -1201,11 +1189,9 @@ That code gives us the below plots - the first being for *Feature Importance* an
 
 <br>
 
-The overall story from both approaches is very similar, in that by far, the most important or impactful input variables are *distance_from_store* and *transaction_count*
+Both approaches find that the most impactful input variable is *distance_from_store*, and to a lesser extent *transaction_count*.
 
-Surprisingly, *average_cart_value* was not as important as hypothesized.
-
-There are slight differences in the order or "importance" for the remaining variables but overall they have provided similar findings.
+There are slight differences in the order of importance for the remaining variables.
 
 ___
 
