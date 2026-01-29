@@ -199,7 +199,7 @@ data_for_model['signup_flag'].value_counts(normalize = True)
 
 <br>
 
-From the last step in the above code, we see that **69%** of customers did not sign up and **31%** did. This tells us that while the data is not perfectly balanced at 50:50, it is not excessively imbalanced either. Because of this, we do not rely on classification accuracy alone when assessing result by also analyzing Precision, Recall, and F1-Score.
+From the last step in the above code, we see that **69%** of customers did not sign up and **31%** did. This tells us that while the data is not perfectly balanced at 50:50, it is not excessively imbalanced either. Because of this, we do not rely on classification accuracy alone when assessing results, but also analyze Precision, Recall, and F1-Score.
 
 <br>
 
@@ -979,7 +979,7 @@ Once we have done this, we split our data into training and test sets to ensure 
 X = data_for_model.drop(['signup_flag'], axis = 1)
 y = data_for_model['signup_flag']
 
-# split out training & test sets
+# Split out training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
 
 ```
@@ -1197,7 +1197,7 @@ ___
 
 # K Nearest Neighbours <a name="knn-title"></a>
 
-We utilize the scikit-learn library within Python to model our data using KNN. The code sections below are broken up into 5 key sections:
+We use the scikit-learn library within Python to model our data using KNN. The code sections below are broken up into five key sections:
 
 * Data Import
 * Data Preprocessing
@@ -1209,17 +1209,16 @@ We utilize the scikit-learn library within Python to model our data using KNN. T
 
 ### Data Import <a name="knn-import"></a>
 
-Again, since we saved our modeling data as a pickle file, we import it. We ensure we remove the id column, and we also ensure our data is shuffled.
-
-As with the other approaches, we also investigate the class balance of our dependent variable - which is important when assessing classification accuracy.
+We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data. As this is the exact same process we ran for both Logistic Regression and the Decision Tree, the code also investigates the class balance of the dependent variable *signup_flag*.
 
 ```python
 
-# import required packages
+# Import required packages
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 import numpy as np
+
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
@@ -1227,29 +1226,25 @@ from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, r
 from sklearn.preprocessing import OneHotEncoder, MinMaxScaler
 from sklearn.feature_selection import RFECV
 
-# import modeling data
-data_for_model = pickle.load(open("data/delivery_club_modeling.p", "rb"))
+# Import data
+data_for_model = pd.read_pickle('data/delivery_club_modeling.p')
 
-# drop unnecessary columns
-data_for_model.drop("customer_id", axis = 1, inplace = True)
+# Drop unnecessary columns
+data_for_model.drop('customer_id', axis = 1, inplace = True)
 
-# shuffle data
+# Shuffle data
 data_for_model = shuffle(data_for_model, random_state = 42)
 
-# assess class balance of dependent variable
-data_for_model["signup_flag"].value_counts(normalize = True)
+# Class balance - proportions of 1s and 0s
+data_for_model['signup_flag'].value_counts(normalize = True)
 
 ```
 
 <br>
 
-From the last step in the above code, we see that **69% of customers did not sign up and 31% did**. This tells us that while the data isn't perfectly balanced at 50:50, it isn't *too* imbalanced either. Because of this, and as you will see, we make sure to not rely on classification accuracy alone when assessing results - also analyzing Precision, Recall, and F1-Score.
-
-<br>
-
 ### Data Preprocessing <a name="knn-preprocessing"></a>
 
-For KNN, as it is a distance based algorithm, we have certain data preprocessing steps that need to be addressed, including:
+As KNN is a distance-based algorithm, the following data preprocessing steps need to be addressed:
 
 * Missing values in the data
 * The effect of outliers
@@ -1261,13 +1256,13 @@ For KNN, as it is a distance based algorithm, we have certain data preprocessing
 
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows
+The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows. This is exactly the same process that was done for all the previous models.
 
 ```python
 
-# remove rows where values are missing
+# Remove rows with missing values
 data_for_model.isna().sum()
-data_for_model.dropna(how = "any", inplace = True)
+data_for_model.dropna(how = 'any', inplace = True)
 
 ```
 
@@ -1275,11 +1270,9 @@ data_for_model.dropna(how = "any", inplace = True)
 
 ##### Outliers
 
-As KNN is a distance based algorithm, you could argue that if a data point is a long way away, then it will simply never be selected as one of the neighbours - and this is true - but outliers can still cause us problems here. The main issue we face is when we come to scale our input variables, a very important step for a distance based algorithm.
+As KNN is a distance-based algorithm, outliers can cause problems. The main issue with outliers comes in when we scale our input variables. We do not want any variables to be "bunched up" in proximity due to a single outlier value, as this will make it hard to compare their values to the other input variables. We should always investigate outliers rigorously, but in this case we will simply remove them as there are not many.
 
-We don't want any variables to be "bunched up" due to a single outlier value, as this will make it hard to compare their values to the other input variables. We should always investigate outliers rigorously - in this case we will simply remove them.
-
-In this code section, just like we saw when applying Logistic Regression, we use **.describe()** from Pandas to investigate the spread of values for each of our predictors. The results of this can be seen in the table below.
+In this code section, as in the outlier investigation for Logistic Regression, we use **.describe()** from Pandas to investigate the spread of values for each of the predictor variables. The results of this can be seen in the table below.
 
 | **metric** | **distance_from_store** | **credit_score** | **total_sales** | **total_items** | **transaction_count** | **product_area_count** | **average_cart_value** |
 |---|---|---|---|---|---|---|---|
@@ -1293,6 +1286,11 @@ In this code section, just like we saw when applying Logistic Regression, we use
 
 <br>
 
+Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 400 miles.
+
+We use the "boxplot approach" to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
+
+
 Again, based on this investigation, we see some *max* column values for several variables to be much higher than the *median* value.
 
 This is for columns *distance_from_store*, *total_sales*, and *total_items*
@@ -1305,21 +1303,21 @@ We do this using the "boxplot approach" where we remove any rows where the value
 
 ```python
 
+# Deal with outliers
 outlier_investigation = data_for_model.describe()
-outlier_columns = ["distance_from_store", "total_sales", "total_items"]
+outlier_columns = ['distance_from_store', 'total_sales', 'total_items']
 
-# boxplot approach
+# Boxplot approach
 for column in outlier_columns:
-    
     lower_quartile = data_for_model[column].quantile(0.25)
     upper_quartile = data_for_model[column].quantile(0.75)
-    iqr = upper_quartile - lower_quartile
-    iqr_extended = iqr * 2
+    iq_range = upper_quartile - lower_quartile
+    iqr_extended = iq_range * 2
     min_border = lower_quartile - iqr_extended
     max_border = upper_quartile + iqr_extended
     
     outliers = data_for_model[(data_for_model[column] < min_border) | (data_for_model[column] > max_border)].index
-    print(f"{len(outliers)} outliers detected in column {column}")
+    print(f'{len(outliers)} outliers detected in column {column}')
     
     data_for_model.drop(outliers, inplace = True)
 
@@ -1329,17 +1327,17 @@ for column in outlier_columns:
 
 ##### Split Out Data For Modeling
 
-In exactly the same way we've done for the other three models, in the next code block we do two things, we firstly split our data into an X object which contains only the predictor variables, and a y object that contains only our dependent variable.
+In the same way we did for Logistic Regression, Decision Tree, and Random Forest, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can fairly validate the accuracy of the predictions on data that was not used in training. In this case, we have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the stratify parameter to ensure that both our training and test sets have the same proportion of customers who did, and did not, sign up for the delivery club - meaning we can be more confident in our assessment of predictive performance.
+Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
-# split data into X and y objects for modeling
-X = data_for_model.drop(["signup_flag"], axis = 1)
-y = data_for_model["signup_flag"]
+# Split input variables & output variable
+X = data_for_model.drop(['signup_flag'], axis = 1)
+y = data_for_model['signup_flag']
 
-# split out training & test sets
+# Split out training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
 
 ```
@@ -1350,40 +1348,30 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 As we saw when applying the other algorithms, in our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
 
-The KNN algorithm can't deal with data in this format as it can't assign any numerical meaning to it when looking to assess the relationship between the variable and the dependent variable.
-
-As *gender* doesn't have any explicit *order* to it, in other words, Male isn't higher or lower than Female and vice versa - one appropriate approach is to apply One Hot Encoding to the categorical column.
-
-One Hot Encoding can be thought of as a way to represent categorical variables as binary vectors, in other words, a set of *new* columns for each categorical value with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into our model as input variables, and the original column is discarded.
-
-We also drop one of the new columns using the parameter *drop = "first"*. We do this to avoid the *dummy variable trap* where our newly created encoded columns perfectly predict each other - and we run the risk of breaking the assumption that there is no multicollinearity, a requirement or at least an important consideration for some models, Linear Regression being one of them! Multicollinearity occurs when two or more input variables are *highly* correlated with each other, it is a scenario we attempt to avoid as in short, while it won't necessarily affect the predictive accuracy of our model, it can make it difficult to trust the statistics around how well the model is performing, and how much each input variable is truly having.
-
-In the code, we also make sure to apply *fit_transform* to the training set, but only *transform* to the test set. This means the One Hot Encoding logic will *learn and apply* the "rules" from the training data, but only *apply* them to the test data. This is important in order to avoid *data leakage* where the test set *learns* information about the training data, and means we can't fully trust model performance metrics!
-
-For ease, after we have applied One Hot Encoding, we turn our training and test objects back into Pandas Dataframes, with the column names applied.
+Just like the previous models, KNN cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
 
 ```python
 
-# list of categorical variables that need encoding
-categorical_vars = ["gender"]
+# List of categorical variables
+categorical_vars = ['gender']
 
-# instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse=False, drop = "first")
+# Instantiate OHE class
+one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
 
-# apply OHE
+# Apply OHE
 X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
 X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
 
-# extract feature names for encoded columns
+# Extract feature names for encoded columns
 encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
 
-# turn objects back to pandas dataframe
+# Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
-X_train = pd.concat([X_train.reset_index(drop=True), X_train_encoded.reset_index(drop=True)], axis = 1)
+X_train = pd.concat([X_train.reset_index(drop = True), X_train_encoded.reset_index(drop = True)], axis = 1)
 X_train.drop(categorical_vars, axis = 1, inplace = True)
 
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
-X_test = pd.concat([X_test.reset_index(drop=True), X_test_encoded.reset_index(drop=True)], axis = 1)
+X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ```
@@ -1392,27 +1380,25 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ##### Feature Scaling
 
-As KNN is a *distance based* algorithm, in other words it is reliant on an understanding of how similar or different data points are across different dimensions in n-dimensional space, the application of *Feature Scaling* is extremely important.
+As KNN is a *distance-based* algorithm, i.e., it depends on how similar or different data points are across different dimensions in n-dimensional space, the application of *Feature Scaling* is extremely important.
 
-Feature Scaling is where we force the values from different columns to exist on the same scale, in order to enhance the learning capabilities of the model. There are two common approaches for this, Standardization, and Normalization.
+In Feature Scaling we force the values from different columns to exist on the same scale in order to enhance the learning capabilities of the model. There are two common approaches for this --- *Standardization* and *Normalization*.
 
-Standardization rescales data to have a mean of 0, and a standard deviation of 1 - meaning most datapoints will most often fall between values of around -4 and +4.
+Standardization rescales data to have a mean of 0, and a standard deviation of 1, meaning most datapoints will most often fall between values of around -4 and +4.
 
 Normalization rescales datapoints so that they exist in a range between 0 and 1.
 
-The below code uses the in-built *MinMaxScaler* functionality from scikit-learn to apply Normalization to all of our input variables. The reason we choose Normalization over Standardization is that our scaled data will all exist between 0 and 1, and these will then be compatible with any categorical variables that we have encoded as 1's and 0's. 
-
-In the code, we also make sure to apply *fit_transform* to the training set, but only *transform* to the test set. This means the scaling logic will learn and apply the scaling "rules" from the training data, but only apply them to the test data (or any other data we predict on in the future). This is important in order to avoid data leakage where the test set learns information about the training data, and means we can’t fully trust model performance metrics!
+The below code uses *MinMaxScaler* from scikit-learn to apply Normalization to all of our input variables. The reason we choose Normalization over Standardization is that the scaled data will all exist between 0 and 1, which will be compatible with any categorical variables that we have encoded as 1's and 0's. 
 
 ```python
 
-# create our scaler object
+# Create the scaler object
 scale_norm = MinMaxScaler()
 
-# normalize the training set (using fit_transform)
+# Normalize the training set
 X_train = pd.DataFrame(scale_norm.fit_transform(X_train), columns = X_train.columns)
 
-# normalize the test set (using transform only)
+# Normalize the test set
 X_test = pd.DataFrame(scale_norm.transform(X_test), columns = X_test.columns)
 
 ```
