@@ -102,6 +102,7 @@ The chosen the model is the Random Forest as a) it was the most consistently per
 
 While predictive accuracy was relatively high, other modeling approaches could be tested, especially those somewhat similar to Random Forest, to see if more accuracy could be gained.
 
+We could also tune the hyperparameters of the Random Forest, such as tree depth, as well as potentially train on a higher number of Decision Trees in the Random Forest.
 ___
 
 # Data Overview  <a name="data-overview"></a>
@@ -343,7 +344,7 @@ Feature Selection is the process used to select the input variables that are mos
 
 There are many ways to apply Feature Selection, ranging from simple methods such as a *Correlation Matrix* showing variable relationships, to *Univariate Testing* which helps us understand statistical relationships between variables, to more powerful approaches like *Recursive Feature Elimination (RFE)* --- an approach that starts with all input variables, and then iteratively removes variables with the weakest relationships with the output variable.
 
-For our task we applied a variation of Recursive Feature Elimination called *Recursive Feature Elimination With Cross Validation (RFECV)*. We split the data into many chunks, and the RFECV algorithm iteratively trains and validates models on each chunk separately. Each time we assess different models with different variables included or eliminated, the algorithm knows how accurate each of those models was. From the suite of model scenarios that are created, the algorithm can determine which provided the best accuracy, and from that we can infer the best set of input variables to use.
+For our task we applied a variation of Recursive Feature Elimination called *Recursive Feature Elimination With Cross Validation (RFECV)*. We split the data into many chunks, and the RFECV algorithm iteratively trains and validates models on each chunk separately. Each time we assess different models with different variables included or eliminated, the algorithm knows how accurate each of those models was. From the model scenarios that are created, the algorithm can determine which provided the best accuracy, and from that we can infer the best set of input variables to use.
 
 ```python
 
@@ -366,7 +367,7 @@ X_test = X_test.loc[:, feature_selector.get_support()]
 
 <br>
 
-The code below produces a plot that visualizes the cross-validated accuracy with each potential number of features.
+The code below produces a plot that visualizes the cross-validated classification accuracy with each potential number of features.
 
 ```python
 
@@ -1388,7 +1389,7 @@ Standardization rescales data to have a mean of 0, and a standard deviation of 1
 
 Normalization rescales datapoints so that they exist in a range between 0 and 1.
 
-The below code uses *MinMaxScaler* from scikit-learn to apply Normalization to all of our input variables. The reason we choose Normalization over Standardization is that the scaled data will all exist between 0 and 1, which will be compatible with any categorical variables that we have encoded as 1's and 0's. 
+The below code uses *MinMaxScaler* from scikit-learn to apply Normalization to all of our input variables. The reason we choose Normalization over Standardization is that the scaled data will all be between 0 and 1, which will be compatible with any categorical variables that we have encoded as 1's and 0's. 
 
 ```python
 
@@ -1407,29 +1408,27 @@ X_test = pd.DataFrame(scale_norm.transform(X_test), columns = X_test.columns)
 
 ##### Feature Selection
 
-As we discussed when applying Logistic Regression above - Feature Selection is the process used to select the input variables that are most important to your Machine Learning task. For more information around this, please see that section above.
+As we discussed when applying Logistic Regression above, Feature Selection is the process used to select the input variables that are most important to your Machine Learning task. For more information about this, please see that section above.
 
-When applying KNN, Feature Selection is an interesting topic. The algorithm is measuring the distance between data-points across all dimensions, where each dimension is one of our input variables. The algorithm treats each input variable as equally important, there isn't really a concept of "feature importance" so the spread of data within an unimportant variable could have an effect on judging other data points as either "close" or "far". If we had a lot of "unimportant" variables in our data, this *could* create a lot of noise for the algorithm to deal with, and we'd just see poor classification accuracy without really knowing why.
+The KNN algorithm measures the distance between data-points across all dimensions, where each dimension is one of our input variables. The algorithm treats each input variable as equally important. There no concept of "feature importance", so the spread of data within an unimportant variable could have an effect on judging other data points as either "close" or "far". If we had a lot of unimportant variables in our data, this could create a lot of noise for the algorithm to deal with --- we would see poor classification accuracy without really knowing why. Reducing dimensionality can be important from a computational perspective as well.
 
-Having a high number of input variables also means the algorithm has to process a lot more information when processing distances between all of the data-points, so any way to reduce dimensionality is important from a computational perspective as well.
-
-For our task here we are again going to apply *Recursive Feature Elimination With Cross Validation (RFECV)* which is an approach that starts with all input variables, and then iteratively removes those with the weakest relationships with the output variable. RFECV does this using Cross Validation, so splits the data into many "chunks" and iteratively trains and validates models on each "chunk" separately. This means that each time we assess different models with different variables included, or eliminated, the algorithm also knows how accurate each of those models was. From the suite of model scenarios that are created, the algorithm can determine which provided the best accuracy, and thus can infer the best set of input variables to use!
+Therefore, we again apply *Recursive Feature Elimination With Cross Validation (RFECV)*, as we did above for Logistic Regression. We split the data into many chunks, and the RFECV algorithm iteratively trains and validates models on each chunk separately. Each time we assess different models with different variables included or eliminated, the algorithm knows how accurate each of those models was. From the model scenarios that are created, the algorithm can determine which provided the best accuracy, and from that we can infer the best set of input variables to use.
 
 ```python
 
-# instantiate RFECV & the model type to be utilized
+# Instantiate RFECV and the model type to be used
 from sklearn.ensemble import RandomForestClassifier
 clf = RandomForestClassifier(random_state = 42)
 feature_selector = RFECV(clf)
 
-# fit RFECV onto our training & test data
-fit = feature_selector.fit(X_train,y_train)
+# Fit RFECV to the training data
+fit = feature_selector.fit(X_train, y_train)
 
-# extract & print the optimal number of features
+# Extract and print the optimal number of features
 optimal_feature_count = feature_selector.n_features_
-print(f"Optimal number of features: {optimal_feature_count}")
+print(f'Optimal number of features: {optimal_feature_count}')
 
-# limit our training & test sets to only include the selected variables
+# Limit our training and test sets to only include the selected varaibles
 X_train = X_train.loc[:, feature_selector.get_support()]
 X_test = X_test.loc[:, feature_selector.get_support()]
 
@@ -1437,15 +1436,15 @@ X_test = X_test.loc[:, feature_selector.get_support()]
 
 <br>
 
-The below code then produces a plot that visualizes the cross-validated classification accuracy with each potential number of features
+The code below produces a plot that visualizes the cross-validated classification accuracy with each potential number of features.
 
 ```python
 
-plt.style.use('seaborn-poster')
-plt.plot(range(1, len(fit.cv_results_['mean_test_score']) + 1), fit.cv_results_['mean_test_score'], marker = "o")
-plt.ylabel("Classification Accuracy")
-plt.xlabel("Number of Features")
-plt.title(f"Feature Selection using RFECV \n Optimal number of features is {optimal_feature_count} (at score of {round(max(fit.cv_results_['mean_test_score']),4)})")
+plt.style.use('seaborn-v0_8-poster')
+plt.plot(range(1, len(fit.cv_results_['mean_test_score']) + 1), fit.cv_results_['mean_test_score'], marker = 'o')
+plt.ylabel('Classification Accuracy')
+plt.xlabel('Number of Features')
+plt.title(f'Feature Selection using RFECV \n Optimal number of features is {optimal_feature_count} (at score of {round(max(fit.cv_results_["mean_test_score"]), 4)})')
 plt.tight_layout()
 plt.show()
 
@@ -1453,9 +1452,7 @@ plt.show()
 
 <br>
 
-This creates the below plot, which shows us that the highest cross-validated classification accuracy (0.9472) is when we include six of our original input variables - although there isn't much difference in predictive performance between using three variables through to eight variables - and this syncs with what we saw in the Random Forest section above where only three of the input variables scored highly when assessing Feature Importance and Permutation Importance.
-
-The variables that have been dropped are *total_items* and *credit score* - we will continue on with the remaining six!
+This creates the following plot, which shows us that the highest cross-validated classification accuracy (0.947) is achieved when we include six of our original input variables. There isn't much difference in predictive performance between using three variables through to eight variables, but we continue on with the remaining six variables. The variables that have been dropped in the feature elimination are *total_items* and *credit score*.
 
 ![KNN Feature Selection Plot](/img/posts/knn-feature-selection-plot.png "KNN Feature Selection Plot")
 
@@ -1463,17 +1460,17 @@ The variables that have been dropped are *total_items* and *credit score* - we w
 
 ### Model Training <a name="knn-model-training"></a>
 
-Instantiating and training our KNN model is done using the below code. At this stage we will just use the default parameters, meaning that the algorithm:
+The code below instantiates and trains the KNN model. By default, the algorithm:
 
-* Will use a value for k of 5, or in other words it will base classifications based upon the 5 nearest neighbours
-* Will use *uniform* weighting, or in other words an equal weighting to all 5 neighbours regardless of distance
+* Will use a value for k of 5 --- i.e., it will base classifications on the 5 nearest neighbours
+* Will use *uniform* weighting --- i.e., an equal weighting to all 5 neighbours regardless of distance
 
 ```python
 
-# instantiate our model object
+# Instantiate the model object
 clf = KNeighborsClassifier()
 
-# fit our model using our training & test sets
+# Fit the model using training sets
 clf.fit(X_train, y_train)
 
 ```
@@ -1484,15 +1481,15 @@ clf.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well our model is predicting on new data - we use the trained model object (here called *clf*) and ask it to predict the *signup_flag* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object (here called *clf*) to predict the *signup_flag* variable for the test set.
 
-In the code below we create one object to hold the binary 1/0 predictions, and another to hold the actual prediction probabilities for the positive class (which is based upon the majority class within the k nearest neighbours)
+In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up, based upon the majority class within the k nearest neighbours.
 
 ```python
 
-# predict on the test set
+# Predict on the test set
 y_pred_class = clf.predict(X_test)
-y_pred_prob = clf.predict_proba(X_test)[:,1]
+y_pred_prob = clf.predict_proba(X_test)[:, 1]
 
 ```
 
@@ -1500,24 +1497,24 @@ y_pred_prob = clf.predict_proba(X_test)[:,1]
 
 ##### Confusion Matrix
 
-As we've seen with all models so far, our Confusion Matrix provides us a visual way to understand how our predictions match up against the actual values for those test set observations.
+As with the previous models, a Confusion Matrix provides us a visual way to understand how the KNN predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from within scikit-learn and then plots it using matplotlib.
+The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 
-# create the confusion matrix
+# Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
-# plot the confusion matrix
-plt.style.use("seaborn-poster")
-plt.matshow(conf_matrix, cmap = "coolwarm")
+# Plot the confusion matrix
+plt.style.use('seaborn-v0_8-poster')
+plt.matshow(conf_matrix, cmap = 'coolwarm')
 plt.gca().xaxis.tick_bottom()
-plt.title("Confusion Matrix")
-plt.ylabel("Actual Class")
-plt.xlabel("Predicted Class")
+plt.title('Confusion Matrix')
+plt.ylabel('Actual Class')
+plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
-    plt.text(j, i, corr_value, ha = "center", va = "center", fontsize = 20)
+    plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
 
 ```
@@ -1528,11 +1525,11 @@ plt.show()
 
 <br>
 
-The aim is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
+As with the other models above, the goal is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
 
-The results here are interesting - all of the errors are where the model incorrectly classified Delivery Club signups as non-signups - the model made no errors when classifying non-signups non-signups.
+The results here are interesting --- all of the errors are where the model incorrectly classified Delivery Club signups as non-signups. The model made no errors when classifying actual non-signups.
 
-Since the proportion of signups in our data was around 30:70 we will next analyze not only Classification Accuracy, but also Precision, Recall, and F1-Score which will help us assess how well our model has performed in reality.
+Since the proportion of signups was around 30:70 we will next analyze not only Classification Accuracy, but also Precision, Recall, and F1-Score to assess how well the model has performed in reality.
 
 <br>
 
@@ -1540,22 +1537,22 @@ Since the proportion of signups in our data was around 30:70 we will next analyz
 
 **Accuracy, Precision, Recall, F1-Score**
 
-For details on these performance metrics, please see the above section on Logistic Regression. Using all four of these metrics in combination gives a really good overview of the performance of a classification model, and gives us an understanding of the different scenarios and considerations!
+For details on these performance metrics, please see the above section on Logistic Regression. Using all four of these metrics together gives a good overview of the performance of a classification model.
 
-In the code below, we utilize in-built functionality from scikit-learn to calculate these four metrics.
+In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
 
-# classification accuracy
+# Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
-# precision
+# Precision (how many of our positive predictions were correct?)
 precision_score(y_test, y_pred_class)
 
-# recall
+# Recall (how many of all positive observations did we predict to be positive?)
 recall_score(y_test, y_pred_class)
 
-# f1-score
+# F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
 
 ```
@@ -1565,48 +1562,45 @@ f1_score(y_test, y_pred_class)
 Running this code gives us:
 
 * Classification Accuracy = **0.936** meaning we correctly predicted the class of 93.6% of test set observations
-* Precision = **1.00** meaning that for our *predicted* delivery club signups, we were correct 100% of the time
+* Precision = **1.000** meaning that for our *predicted* delivery club signups, we were correct 100% of the time
 * Recall = **0.762** meaning that of all *actual* delivery club signups, we predicted correctly 76.2% of the time
 * F1-Score = **0.865**
 
-These are interesting. The KNN has obtained the highest overall Classification Accuracy and Precision, but the lower Recall score has penalized the F1-Score meaning that is actually lower than what was seen for both the Decision Tree and the Random Forest!
+The KNN model has obtained the highest overall Classification Accuracy and Precision compared to the previous models, but the lower Recall score has penalized the F1-Score, which is actually lower than what was seen for both the Decision Tree and the Random Forest.
 
 <br>
 
 ### Finding The Optimal Value For k <a name="knn-opt-k"></a>
 
-By default, the KNN algorithm within scikit-learn will use k = 5 meaning that classifications are based upon the five nearest neighbouring data-points in n-dimensional space.
+By default, the KNN algorithm within scikit-learn will use k = 5, meaning that classifications are based upon the five nearest neighbouring data-points in n-dimensional space. This default may not be optimal.
 
-Just because this is the default threshold *does not mean* it is the best one for our task.
-
-Here, we will test many potential values for k, and plot the Precision, Recall and F1-Score, and find an optimal solution!
+Below we test many potential values for k, plot the Precision, Recall and F1-Score, and find the optimal value for k.
 
 ```python
 
-# set up range for search, and empty list to append accuracy scores to
-k_list = list(range(2,25))
+# Set up range for search, and create empty list to append accuracy scores to
+k_list = list(range(2, 25))
 accuracy_scores = []
 
-# loop through each possible value of k, train and validate model, append test set f1-score
+# Loop through each possible value of k, train and validate the model, and record the f1-scores
 for k in k_list:
-    
     clf = KNeighborsClassifier(n_neighbors = k)
-    clf.fit(X_train,y_train)
+    clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
-    accuracy = f1_score(y_test,y_pred)
+    accuracy = f1_score(y_test, y_pred)
     accuracy_scores.append(accuracy)
-    
-# store max accuracy, and optimal k value    
+
+# Get the max accuracy and optimal k value
 max_accuracy = max(accuracy_scores)
 max_accuracy_idx = accuracy_scores.index(max_accuracy)
 optimal_k_value = k_list[max_accuracy_idx]
 
-# plot accuracy by max depth
-plt.plot(k_list,accuracy_scores)
-plt.scatter(optimal_k_value, max_accuracy, marker = "x", color = "red")
-plt.title(f"Accuracy (F1 Score) by k \n Optimal Value for k: {optimal_k_value} (Accuracy: {round(max_accuracy,4)})")
-plt.xlabel("k")
-plt.ylabel("Accuracy (F1 Score)")
+# Plot accuracy by k values
+plt.plot(k_list, accuracy_scores)
+plt.scatter(optimal_k_value, max_accuracy, marker = 'x', color = 'red')
+plt.title(f'Accuracy (F1-Score) by K \nOptimal Value for K: {optimal_k_value} (Accuracy: {round(max_accuracy, 4)})')
+plt.xlabel('k')
+plt.ylabel('Accuracy (F1-Score)')
 plt.tight_layout()
 plt.show()
 
@@ -1614,21 +1608,22 @@ plt.show()
 
 <br>
 
-That code gives us the below plot - which visualizes the results!
+The code gives the below plot.
 
 ![KNN Optimal k Value Plot](/img/posts/knn-optimal-k-value-plot.png "KNN Optimal k Value Plot")
 
 <br>
 
-In the plot we can see that the *maximum* F1-Score on the test set is found when applying a k value of 5 - which is exactly what we started with, so nothing needs to change!
+We can see that the *maximum* F1-Score on the test set is found when applying a k value of 5,  which is exactly what we started with, so nothing needs to change.
 
 ___
 
 # Modeling Summary  <a name="modeling-summary"></a>
 
-The goal for the project was to build a model that would accurately predict the customers that would sign up for the Delivery Club. This would allow for a much more targeted approach when running the next iteration of the campaign. A secondary goal was to understand what the drivers for this are, so the client can get closer to the customers that need or want this service, and enhance their messaging.
 
-Based upon these, the chosen the model is the Random Forest as it was a) the most consistently performant on the test set across classification accuracy, precision, recall, and f1-score, and b) the feature importance and permutation importance allows the client an understanding of the key drivers behind Delivery Club signups.
+The goal for the project was to build a model that would accurately predict the customers that would sign up for the Delivery Club. This would allow for a targeted approach when running the next iteration of the ad campaign. A secondary goal was to understand what the drivers are for customers choosing to sign up, so that the client can identify the customers that may need or want this service and then enhance their messaging.
+
+The chosen the model is the Random Forest as a) it was the most consistently performant on the test set across classification accuracy, precision, recall, and F1-score, and b) the feature importance and permutation importance allows the client an understanding of the key drivers behind Delivery Club signups.
 
 **Metric 1: Classification Accuracy**
 
@@ -1639,7 +1634,7 @@ Based upon these, the chosen the model is the Random Forest as it was a) the mos
 
 **Metric 2: Precision**
 
-* KNN = 1.00
+* KNN = 1.000
 * Random Forest = 0.887
 * Decision Tree = 0.885
 * Logistic Regression = 0.784
@@ -1649,7 +1644,7 @@ Based upon these, the chosen the model is the Random Forest as it was a) the mos
 * Random Forest = 0.904
 * Decision Tree = 0.885
 * KNN = 0.762
-* Logistic Regression = 0.69
+* Logistic Regression = 0.690
 
 **Metric 4: F1 Score**
 
@@ -1662,14 +1657,12 @@ ___
 
 # Application <a name="modeling-application"></a>
 
-We now have a model object, and a the required pre-processing steps to use this model for the next Delivery Club campaign. When this is ready to launch we can aggregate the necessary customer information and pass it through, obtaining predicted probabilities for each customer signing up.
-
-Based upon this, we can work with the client to discuss where their budget can stretch to, and contact only the customers with a high propensity to join. This will drastically reduce marketing costs, and result in a much improved ROI.
+We now have a (Random Forest) model object and the required pre-processing steps to use this model for the next Delivery Club campaign. When the campaign is ready to launch, we can aggregate the necessary customer information and pass it through the model to obtain the predicted probabilities for each customer signing up. Based on this, we can work with the client to discuss where their budget can stretch to. They can contact only the customers with a high propensity to join. This will significantly reduce marketing costs, and result in a much improved ROI.
 
 ___
 
 # Growth and Next Steps <a name="growth-next-steps"></a>
 
-While predictive accuracy was relatively high - other modeling approaches could be tested, especially those somewhat similar to Random Forest, for example XGBoost, LightGBM to see if even more accuracy could be gained.
+While predictive accuracy was relatively high, other modeling approaches could be tested, especially those somewhat similar to Random Forest, to see if more accuracy could be gained.
 
-We could even look to tune the hyperparameters of the Random Forest, notably regularization parameters such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
+We could also tune the hyperparameters of the Random Forest, such as tree depth, as well as potentially train on a higher number of Decision Trees in the Random Forest.
