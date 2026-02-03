@@ -338,9 +338,9 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 Feature Selection is the process used to select the input variables that are most important to your Machine Learning task. The potential benefits of Feature Selection are:
 
-* **Improved Model Accuracy** - eliminating noise can help true relationships stand out
-* **Lower Computational Cost** - the model becomes faster to train, and faster to make predictions
-* **Explainability** - understanding and explaining outputs for stakeholder and customers becomes much easier
+* **Improved Model Accuracy** --- eliminating noise can help true relationships stand out
+* **Lower Computational Cost** --- the model becomes faster to train, and faster to make predictions
+* **Explainability** --- understanding and explaining outputs for stakeholder and customers becomes much easier
 
 There are many ways to apply Feature Selection, ranging from simple methods such as a *Correlation Matrix* showing variable relationships, to *Univariate Testing* which helps us understand statistical relationships between variables, to more powerful approaches like *Recursive Feature Elimination (RFE)* --- an approach that starts with all input variables, and then iteratively removes variables with the weakest relationships with the output variable.
 
