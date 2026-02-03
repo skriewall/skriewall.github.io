@@ -279,7 +279,7 @@ for column in outlier_columns:
 
 In the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
@@ -300,7 +300,7 @@ In our dataset, we have one categorical variable *gender* which has values of "M
 
 The Logistic Regression algorithm needs this variable to be in numerical form in order to assess the relationship with the dependent variable. We apply One Hot Encoding to the categorical column.
 
-One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into our model as input variables, and the original column is discarded.
+One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into the model as input variables, and the original column is discarded.
 
 We also drop one of the new columns using the parameter *drop = "first"*. We do this because our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for regression models. Multicollinearity occurs when two or more input variables are highly correlated with each other, and when it is present we cannot trust the statistics around how well the model is performing and the effect each input variable is truly having.
 
@@ -518,7 +518,7 @@ Running this code gives us:
 * Recall = **0.690** --- meaning that of all *actual* delivery club signups, we predicted correctly 69.0% of the time
 * F1-Score = **0.734**
 
-Since our data is somewhat imbalanced, looking at these metrics rather than Classification Accuracy alone gives us a much better understanding of what our predictions mean. We will use these same metrics when applying other models for this task and can compare how they stack up.
+Since the data is somewhat imbalanced, looking at these metrics rather than Classification Accuracy alone gives us a much better understanding of what our predictions mean. We will use these same metrics when applying other models for this task and can compare how they stack up.
 
 <br>
 
@@ -590,7 +590,7 @@ ___
 
 # Decision Tree <a name="clftree-title"></a>
 
-We will again use the scikit-learn library in Python to model our data using a Decision Tree. The code sections below are broken up into six key sections:
+We will again use the scikit-learn library in Python to model the data using a Decision Tree. The code sections below are broken up into six key sections:
 
 * Data Import
 * Data Preprocessing
@@ -662,7 +662,7 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 In the same way we did for Logistic Regression, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
@@ -689,14 +689,14 @@ Just like the Logistic Regression algorithm, the Decision Tree cannot deal with 
 categorical_vars = ['gender']
 
 # Instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
+OHE = OneHotEncoder(sparse_output = False, drop = 'first')
 
 # Apply OHE
-X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
-X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
+X_train_encoded = OHE.fit_transform(X_train[categorical_vars])
+X_test_encoded = OHE.transform(X_test[categorical_vars])
 
 # Extract feature names for encoded columns
-encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 
 # Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
@@ -901,7 +901,7 @@ ___
 
 # Random Forest <a name="rf-title"></a>
 
-We will again use the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into four key sections:
+We will again use the scikit-learn library in Python to model the data using a Random Forest. The code sections below are broken up into four key sections:
 
 * Data Import
 * Data Preprocessing
@@ -972,7 +972,7 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 In the same way we did for Logistic Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
@@ -991,7 +991,7 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, rando
 
 In our dataset, we have one categorical variable *gender* which has values of "M" for Male, "F" for Female, and "U" for Unknown.
 
-Just like Linear Regression and Decision Trees, Random Forests cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
+Just like Logistic Regression and Decision Trees, Random Forests cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
 
 ```python
 
@@ -999,14 +999,14 @@ Just like Linear Regression and Decision Trees, Random Forests cannot deal with 
 categorical_vars = ['gender']
 
 # Instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
+OHE = OneHotEncoder(sparse_output = False, drop = 'first')
 
 # Apply OHE
-X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
-X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
+X_train_encoded = OHE.fit_transform(X_train[categorical_vars])
+X_test_encoded = OHE.transform(X_test[categorical_vars])
 
 # Extract feature names for encoded columns
-encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 
 # Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
@@ -1198,7 +1198,7 @@ ___
 
 # K Nearest Neighbours <a name="knn-title"></a>
 
-We use the scikit-learn library within Python to model our data using KNN. The code sections below are broken up into five key sections:
+We use the scikit-learn library in Python to model the data using KNN. The code sections below are broken up into five key sections:
 
 * Data Import
 * Data Preprocessing
@@ -1330,7 +1330,7 @@ for column in outlier_columns:
 
 In the same way we did for Logistic Regression, Decision Tree, and Random Forest, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 
@@ -1357,14 +1357,14 @@ Just like the previous models, KNN cannot deal with data in this format. We agai
 categorical_vars = ['gender']
 
 # Instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
+OHE = OneHotEncoder(sparse_output = False, drop = 'first')
 
 # Apply OHE
-X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
-X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
+X_train_encoded = OHE.fit_transform(X_train[categorical_vars])
+X_test_encoded = OHE.transform(X_test[categorical_vars])
 
 # Extract feature names for encoded columns
-encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 
 # Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
