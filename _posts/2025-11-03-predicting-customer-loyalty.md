@@ -139,8 +139,8 @@ regression_scoring = data_for_regression.loc[data_for_regression['customer_loyal
 regression_scoring.drop(['customer_loyalty_score'], axis = 1, inplace = True)
 
 # Save our datasets for future use
-pickle.dump(regression_modeling, open('data/abc_regression_modeling.p', 'wb'))
-pickle.dump(regression_scoring, open('data/abc_regression_scoring.p', 'wb'))
+pickle.dump(regression_modeling, open('data/customer_loyalty_modeling.p', 'wb'))
+pickle.dump(regression_scoring, open('data/customer_loyalty_scoring.p', 'wb'))
 
 ```
 
@@ -206,7 +206,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.feature_selection import RFECV
 
 # Import sample data
-data_for_model = pd.read_pickle('data/abc_regression_modeling.p')
+data_for_model = pd.read_pickle('data/customer_loyalty_modeling.p')
 
 # Drop unnecessary columns
 data_for_model.drop('customer_id', axis = 1, inplace = True)
@@ -231,7 +231,7 @@ For Linear Regression we have certain data preprocessing steps that need to be a
 
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows.
+The number of missing values in the data was extremely low, so instead of applying any imputation (e.g. mean, most common value) we will just remove those rows.
 
 ```python
 
@@ -293,7 +293,7 @@ for column in outlier_columns:
 
 In the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
 ```python
 
@@ -314,7 +314,7 @@ In our dataset, we have one categorical variable *gender* which has values of "M
 
 The Linear Regression algorithm needs this variable to be in numerical form in order to assess the relationship with the dependent variable. We apply One Hot Encoding to the categorical column.
 
-One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into our model as input variables, and the original column is discarded.
+One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into the model as input variables, and the original column is discarded.
 
 We also drop one of the new columns using the parameter *drop = "first"*. We do this because our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for linear regression. Multicollinearity occurs when two or more input variables are highly correlated with each other, and when it is present we cannot trust the statistics around how well the model is performing and the effect each input variable is truly having.
 
@@ -421,7 +421,7 @@ regressor.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well our model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
 
 ```python
 
@@ -456,9 +456,9 @@ The resulting $R^2$ score is **0.78**.
 
 An even more powerful and reliable way to assess model performance is to utilize Cross Validation.
 
-Instead of simply dividing our data into a single training set, and a single test set, with Cross Validation we break our data into a number of chunks and then iteratively train the model on all but one of the chunks, testing the model on the remaining chunk until each chunk has had a chance to be the test set.
+Instead of simply dividing the data into a single training set, and a single test set, with Cross Validation we break the data into a number of chunks and then iteratively train the model on all but one of the chunks, testing the model on the remaining chunk until each chunk has had a chance to be the test set.
 
-The result of this is that we are provided more than one set of validation results from the tests, and the average of these scores gives a more reliable view of how our model will perform on new data.
+The result of this is that we are provided more than one set of validation results from the tests, and the average of these scores gives a more reliable view of how the model will perform on new data.
 
 In the code below, we specify that we want 4 chunks. We pass in our regressor object, training set, and test set. We also specify the metric we want to assess with, in this case $R^2$.
 
@@ -543,7 +543,7 @@ ___
 
 # Decision Tree <a name="regtree-title"></a>
 
-We will again use the scikit-learn library within Python to model our data using a Decision Tree. The code sections below are broken up into four key sections:
+We will again use the scikit-learn library in Python to model the data using a Decision Tree. The code sections below are broken up into four key sections:
 
 * Data Import
 * Data Preprocessing
@@ -570,7 +570,7 @@ from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
 
 # Import modeling data
-data_for_model = pd.read_pickle('data/abc_regression_modeling.p')
+data_for_model = pd.read_pickle('data/customer_loyalty_modeling.p')
 
 # Drop unnecessary columns
 data_for_model.drop('customer_id', axis = 1, inplace = True)
@@ -593,7 +593,7 @@ While Linear Regression is susceptible to the effects of outliers and highly cor
 
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows.
+The number of missing values in the data was extremely low, so instead of applying any imputation (e.g. mean, most common value) we will just remove those rows.
 
 ```python
 
@@ -609,7 +609,7 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 In the same way we did for Linear Regression, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
 ```python
 
@@ -678,7 +678,7 @@ regressor.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well our model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
 
 ```python
 
@@ -709,9 +709,9 @@ The resulting $R^2$ score is **0.898**.
 
 As we did when testing Linear Regression, we will again use Cross Validation.
 
-Instead of simply dividing our data into a single training set, and a single test set, with Cross Validation we break our data into a number of chunks and then iteratively train the model on all but one of the chunks, testing the model on the remaining chunk until each chunk has had a chance to be the test set.
+Instead of simply dividing the data into a single training set, and a single test set, with Cross Validation we break the data into a number of chunks and then iteratively train the model on all but one of the chunks, testing the model on the remaining chunk until each chunk has had a chance to be the test set.
 
-The result of this is that we are provided more than one set of validation results from the tests, and the average of these scores gives a more reliable view of how our model will perform on new data.
+The result of this is that we are provided more than one set of validation results from the tests, and the average of these scores gives a more reliable view of how the model will perform on new data.
 
 In the code below, we again specify 4 chunks. We pass in our regressor object, training set, and test set, and specify $R^2$ for scoring.
 
@@ -820,7 +820,7 @@ tree = plot_tree(regressor,
                  feature_names = X.columns,
                  filled = True,
                  rounded = True,
-                 fontsize = 24)
+                 fontsize = 16)
 
 ```
 
@@ -840,7 +840,7 @@ ___
 
 # Random Forest <a name="rf-title"></a>
 
-We will again use the scikit-learn library within Python to model our data using a Random Forest. The code sections below are broken up into four key sections:
+We will again use the scikit-learn library in Python to model the data using a Random Forest. The code sections below are broken up into four key sections:
 
 * Data Import
 * Data Preprocessing
@@ -868,7 +868,7 @@ from sklearn.preprocessing import OneHotEncoder
 from sklearn.inspection import permutation_importance
 
 # Import modeling data
-data_for_model = pd.read_pickle('data/abc_regression_modeling.p')
+data_for_model = pd.read_pickle('data/customer_loyalty_modeling.p')
 
 # Drop unnecessary columns
 data_for_model.drop('customer_id', axis = 1, inplace = True)
@@ -891,7 +891,7 @@ While Linear Regression is susceptible to the effects of outliers and highly cor
 
 ##### Missing Values
 
-The number of missing values in the data was extremely low, so instead of applying any imputation (i.e. mean, most common value) we will just remove those rows.
+The number of missing values in the data was extremely low, so instead of applying any imputation (e.g. mean, most common value) we will just remove those rows.
 
 ```python
 
@@ -907,7 +907,7 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 In the same way we did for Linear Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
 
-Once we have done this, we split our data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
 ```python
 
@@ -978,7 +978,7 @@ regressor.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well our model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object to predict the *loyalty_score* variable for the test set.
 
 ```python
 
@@ -1047,7 +1047,7 @@ The resulting adjusted $R^2$ score is **0.955** which as expected is slightly lo
 
 ### Feature Importance <a name="rf-model-feature-importance"></a>
 
-In our Linear Regression model, to understand the relationships between input variables and the loyalty score, we examined the coefficients. With the Decision Tree we looked at what the earlier splits were. These allowed us some insight about which input variables were having the most impact.
+In the Linear Regression model, to understand the relationships between input variables and the loyalty score, we examined the coefficients. With the Decision Tree we looked at what the earlier splits were. These allowed us some insight about which input variables were having the most impact.
 
 Random Forests are an ensemble model, made up of many Decision Trees. Each Decision Tree is different due to the randomness of the data and the random selection of input variables available at each potential split point. Because of the random nature of all these Decision trees, the model gives us a unique insight into how important each of our input variables are to the overall model. Because we are using random samples of data and random input variables for each Decision Tree, there are many scenarios where certain input variables are being held back and this enables us a way to compare how accurate the model's predictions are if that variable is or is not present.
 
@@ -1196,6 +1196,7 @@ While predictive accuracy was relatively high, other modeling approaches could b
 We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
+
 
 
 
