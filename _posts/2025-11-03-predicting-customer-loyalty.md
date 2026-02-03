@@ -326,14 +326,14 @@ After we have applied One Hot Encoding, we turn our training and test objects ba
 categorical_vars = ['gender']
 
 # Instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
+OHE = OneHotEncoder(sparse_output = False, drop = 'first')
 
 # Apply OHE
-X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
-X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
+X_train_encoded = OHE.fit_transform(X_train[categorical_vars])
+X_test_encoded = OHE.transform(X_test[categorical_vars])
 
 # Extract feature names for encoded columns
-encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 
 # Turn objects back to pandas dataframe
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
@@ -352,9 +352,9 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 Feature Selection is the process used to select the input variables that are most important to your Machine Learning task. The potential benefits of Feature Selection are:
 
-* **Improved Model Accuracy** - eliminating noise can help true relationships stand out
-* **Lower Computational Cost** - the model becomes faster to train, and faster to make predictions
-* **Explainability** - understanding and explaining outputs for stakeholder and customers becomes much easier
+* **Improved Model Accuracy** --- eliminating noise can help true relationships stand out
+* **Lower Computational Cost** --- the model becomes faster to train, and faster to make predictions
+* **Explainability** --- understanding and explaining outputs for stakeholder and customers becomes much easier
 
 There are many ways to apply Feature Selection, ranging from simple methods such as a *Correlation Matrix* showing variable relationships, to *Univariate Testing* which helps us understand statistical relationships between variables, to more powerful approaches like *Recursive Feature Elimination (RFE)* --- an approach that starts with all input variables, and then iteratively removes variables with the weakest relationships with the output variable.
 
@@ -636,14 +636,14 @@ Just like the Linear Regression algorithm, the Decision Tree cannot deal with da
 categorical_vars = ['gender']
 
 # Instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
+OHE = OneHotEncoder(sparse_output = False, drop = 'first')
 
 # Apply OHE
-X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
-X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
+X_train_encoded = OHE.fit_transform(X_train[categorical_vars])
+X_test_encoded = OHE.transform(X_test[categorical_vars])
 
 # Extract feature names for encoded columns
-encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 
 # Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
@@ -934,14 +934,14 @@ Just like Linear Regression and Decision Trees, Random Forests cannot deal with 
 categorical_vars = ['gender']
 
 # Instantiate OHE class
-one_hot_encoder = OneHotEncoder(sparse_output = False, drop = 'first')
+OHE = OneHotEncoder(sparse_output = False, drop = 'first')
 
 # Apply OHE
-X_train_encoded = one_hot_encoder.fit_transform(X_train[categorical_vars])
-X_test_encoded = one_hot_encoder.transform(X_test[categorical_vars])
+X_train_encoded = OHE.fit_transform(X_train[categorical_vars])
+X_test_encoded = OHE.transform(X_test[categorical_vars])
 
 # Extract feature names for encoded columns
-encoder_feature_names = one_hot_encoder.get_feature_names_out(categorical_vars)
+encoder_feature_names = OHE.get_feature_names_out(categorical_vars)
 
 # Turn objects back to pandas dataframes
 X_train_encoded = pd.DataFrame(X_train_encoded, columns = encoder_feature_names)
@@ -1059,7 +1059,7 @@ There are two common ways to measure the performance. One is **Feature Importanc
 
 The other approach, **Permutation Importance**, uses some data that has gone *unused* when random samples were selected for each Decision Tree (this stage is called "bootstrap sampling" or "bootstrapping"). The observations that were not randomly selected for each Decision Tree are known as *Out of Bag* observations, and can be used for testing the accuracy of each particular Decision Tree. For each Decision Tree, all of the *Out of Bag* observations are gathered and then passed through the tree. Once all of these observations have been run through the Decision Tree, we obtain an accuracy score for these predictions, which in the case of a regression problem could be Mean Squared Error or $R^2$.
 
-In order to understand the *importance*, we *randomize* the values within one of the input variables - a process that essentially destroys any relationship that might exist between that input variable and the output variable - and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
+In order to understand the *importance*, we *randomize* the values within one of the input variables --- a process that essentially destroys any relationship that might exist between that input variable and the output variable --- and run that updated data through the Decision Tree again, obtaining a second accuracy score. The difference between the original accuracy and the new accuracy gives us a view on how important that particular variable is for predicting the output.
 
 *Permutation Importance* is often preferred over *Feature Importance* which can at times inflate the importance of numerical features. Both are useful, and in most cases will give fairly similar results.
 
@@ -1109,7 +1109,7 @@ The code gives the following plots for *Feature Importance* and *Permutation Imp
 
 <br>
 
-Both approaches find that the most impactful input variable is *distance_from_store*, which is the same result we had when when assessing the Linear Regression and Decision Tree models.
+Both approaches find that the most impactful input variable is *distance_from_store*, which is the same result we had when assessing the Linear Regression and Decision Tree models.
 
 There are slight differences in the order of importance for the remaining variables but overall the different modeling approaches have provided similar findings.
 
@@ -1196,6 +1196,7 @@ While predictive accuracy was relatively high, other modeling approaches could b
 We could also try tuning the hyperparameters of the Random Forest, such as tree depth, as well as potentially training on a higher number of Decision Trees in the Random Forest.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
+
 
 
 
