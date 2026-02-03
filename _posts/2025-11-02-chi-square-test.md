@@ -167,14 +167,14 @@ In the code below, we:
 
 ```python
 
-# IMPORT REQUIRED PACKAGES
+# Import required packages
 import pandas as pd
 from scipy.stats import chi2_contingency, chi2
 
-# IMPORT DATA
+# Import data
 campaign_data = ...
 
-# FILTER OUR DATA TO REMOVE CUSTOMERS IN THE CONTROL GROUP
+# Filter the data to remove customers in the control group
 campaign_data = campaign_data.loc[campaign_data['mailer_type'] != 'Control']
 
 ```
@@ -217,7 +217,7 @@ In the code below we code the hypotheses and significance level explicitly so th
 
 ```python
 
-# STATE HYPOTHESES & SET ACCEPTANCE CRITERIA
+# State hypotheses and set acceptance criterion
 null_hypothesis = 'There is no relationship between mailer type and sign-up rate. They are independent.'
 alternative_hypothesis = 'There is a relationship between mailer type and sign-up rate. They are dependent.'
 significance_level = 0.05
@@ -244,24 +244,24 @@ The below code:
 
 ```python
 
-# SUMMARISE TO GET OUR OBSERVED FREQUENCIES
+# Summarize to get observed frequencies
 observed_values = pd.crosstab(campaign_data['mailer_type'], campaign_data['signup_flag']).values
 
-# CALCULATE EXPECTED FREQUENCIES & CHI-SQUARED STATISTIC
+# Calculate expected frequencies and Chi-Squared statistic
 chi2_stat, p_value, dof, expected_values = chi2_contingency(observed_values, correction = False)
 
-# PRINT CHI-SQUARED STATISTIC
+# Print Chi-Squared statistic
 print(chi2_stat)
 >> 1.94
 
-# PRINT P-VALUE
+# Print p-value
 print(p_value)
 >> 0.16
 
-# FIND THE CRITICAL VALUE FOR OUR TEST
+# Find the critical value for the test
 critical_value = chi2.ppf(1 - acceptance_criteria, dof)
 
-# PRINT CRITICAL VALUE
+# Print critical value
 print(critical_value)
 >> 3.84
 
