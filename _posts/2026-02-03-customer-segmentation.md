@@ -1,7 +1,7 @@
 ---
 layout: post
 title: The "You Are What You Eat" Customer Segmentation
-image: "/img/posts/clustering-title-img.png"
+image: "../img/posts/clustering-title-img.png"
 tags: [Customer Segmentation, Machine Learning, Clustering, Python]
 ---
 
@@ -258,7 +258,7 @@ plt.show()
 
 The code gives us the below plot:
 
-![alt text](/img/posts/kmeans-optimal-k-value-plot.png "K-Means Optimal k Value Plot")
+![K-Means Optimal k Value Plot](/img/posts/kmeans-optimal-k-value-plot.png "K-Means Optimal k Value Plot")
 
 <br>
 
