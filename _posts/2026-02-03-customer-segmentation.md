@@ -5,9 +5,9 @@ image: "../img/posts/clustering-title-img.png"
 tags: [Customer Segmentation, Machine Learning, Clustering, Python]
 ---
 
-In this project I use *k*-means clustering to segment the customer base in order to increase business understanding and to enhance the relevancy of targeted messaging and customer communications.
+In this project I use *k*-means clustering to segment the customer base in order to increase business understanding, which can enhance the relevancy of targeted messaging and customer communications.
 
-# Table of contents
+# Table of Contents
 
 - [00. Data Source](#data-source)
 - [01. Project Overview](#overview-main)
@@ -60,11 +60,11 @@ Based upon iterative testing using WCSS we settled on a customer segmentation wi
 
 There were some interesting findings from profiling the clusters.
 
-For *Cluster 0* we saw a significant portion of spending being allocated to each of the four product areas --- showing customers without any particular dietary preference. 
+For *Cluster 1* we saw a significant portion of spending being allocated to each of the four product areas --- showing customers without any particular dietary preference. 
 
-For *Cluster 1* we saw quite high proportions of spend being allocated to Fruit and Vegetables, but very little to Dairy and Meat. It could be hypothesized that these customers are following a vegan diet. 
+For *Cluster 2* we saw high proportions of spending being allocated to Fruit and Vegetables, but very little to Dairy and Meat. It could be hypothesized that these customers are following a vegan diet. 
 
-Finally, customers in *Cluster 2* spent significant portions within Dairy, Fruit and Vegetables, but very little in the Meat product area --- so similarly, we would make an early hypothesis that these customers are more along the lines of those following a vegetarian diet.
+Finally, customers in *Cluster 0* spent significant portions within Dairy, Fruit and Vegetables, but very little in the Meat product area, so similarly, we could make a hypothesis that these customers are following a vegetarian diet.
 
 To help embed this segmentation into the business, we have proposed to call this the "You Are What You Eat" segmentation.
 
@@ -82,7 +82,7 @@ ___
 
 # Data Overview  <a name="data-overview"></a>
 
-We are primarily interested in segments of customers based on their transactions within *food*-based product areas, so we will need to only select data related to food purchases.
+We are primarily interested in segments of customers based on their transactions within *food*-based product areas, so we want to only select data related to food purchases.
 
 In the code below, we:
 
@@ -156,13 +156,11 @@ ___
 
 ### Concept Overview <a name="kmeans-overview"></a>
 
-As *k*-means is an *unsupervised learning* approach, meaning we are trying to understand patterns or trends rather than trying to predict outcomes, we use a process known as *Within Cluster Sum of Squares (WCSS)* to understand what a "good" number of clusters or segments is. We then apply the *k*-means algorithm to the product area data and profile the resulting customer segments to understand what the differentiating factors were.
-
-*K*-means is an *unsupervised learning* algorithm, meaning it tries to isolate patterns within unlabeled data rather than predicting known labels, values, or outcomes. The algorithm partitions data points into distinct groups (clusters) based on their *similarity* to each other. This similarity is most often based on the Euclidean (straight-line) distance between data points in n-dimensional space. Each variable that is included counts as another dimension in space. The number of clusters is determined by the value that is set for *k*.
+*K*-means is an *unsupervised learning* algorithm, meaning it tries to isolate patterns within unlabeled data rather than predicting known labels, values, or outcomes. The algorithm partitions data points into distinct groups (clusters/segments) based on their *similarity* to each other. This similarity is most often based on the Euclidean (straight-line) distance between data points in n-dimensional space. Each variable that is included counts as another dimension in space. The number of clusters is determined by the value that is set for *k*. We use a process known as *Within Cluster Sum of Squares (WCSS)* to understand what a "good" number for *k* (the number of clusters) is. We then apply the *k*-means algorithm to the product area data and profile the resulting customer segments to understand what the differentiating factors were.
 
 The algorithm does this iteratively over four key steps:
 
-1. It selects *k* random points in space (these points are known as centroids).
+1. It selects *k* random points (known as centroids) in space.
 2. It assigns each of the data points to the nearest centroid (based on Euclidean distance).
 3. It repositions the centroids to the *mean* of the values in its cluster.
 4. It reassigns each data point to the nearest centroid.
@@ -185,13 +183,13 @@ There are three vital preprocessing steps for *k*-means:
 
 Missing values can cause issues for *k*-means, as the algorithm will not be able to find the distance along the dimension where the value is not present. If we have observations with missing values, the most common options are to remove the observations or to use an imputer to fill or estimate what the missing values might be.
 
-As we aggregated the data for each customer, we actually do not have missing values and do not need to deal with that here.
+As we aggregated the data for each customer, we actually do not have missing values and do not need to address any missing values in this project.
 
 <br>
 
 ##### Outliers
 
-As *k*-means is a distance-based algorithm, outliers can cause problems. The main issue presented by outliers is when scaling is performed on the input variables. If variables are “bunched up” close to each other due to a single outlier value, it will make it hard to compare their values to the other input variables. We should always investigate outliers rigorously, but as we are dealing with percentages between 0 and 1, outliers are not an issue in this case.
+Outliers can cause problems in distance-based algorithms like *k*-means. The main issue presented by outliers is when scaling is performed on the input variables. If variables are “bunched up” close to each other due to a single outlier value, it will make it hard to compare their values to the other input variables. We should always investigate outliers rigorously, but as we are dealing with percentages between 0 and 1, outliers are not an issue in this case.
 
 <br>
 
@@ -205,7 +203,7 @@ Standardization rescales data to have a mean of 0, and a standard deviation of 1
 
 Normalization rescales datapoints so that they exist in a range between 0 and 1.
 
-Here, we will look to apply normalization as this will ensure all variables will end up having the same range, fixed between 0 and 1. The variables would also be compatible with any categorical variables that we have encoded as 1’s and 0’s (although there are not any categorical variables in our task here). Not that we have put our data in the form of percentages, so our values are already spread between 0 and 1. However, we still normalize the data because one of the product areas might commonly make up a large proportion of customer sales, and this may end up dominating the clustering space. If we normalize all of our variables, even product areas that make up smaller volumes will be spread proportionately between 0 and 1.
+Here, we normalize the data as this will ensure all variables will have the same range, fixed between 0 and 1. The variables would also be compatible with any categorical variables that we have encoded as 1’s and 0’s (although there are not any categorical variables in our task here). We have put the data in the form of percentages, so our values are already spread between 0 and 1. However, we still normalize the data because one of the product areas might commonly make up a large proportion of customer sales, and this may end up dominating the clustering space. If we normalize all of our variables, even product areas that make up smaller volumes will be spread proportionately between 0 and 1.
 
 The below code uses MinMaxScaler from scikit-learn to apply Normalization to all of the variables.
 
@@ -226,7 +224,7 @@ data_for_clustering_scaled = pd.DataFrame(scale_norm.fit_transform(data_for_clus
 
 At this point, the data is ready to be fed into the *k*-means clustering algorithm. But first we want to understand what number of clusters (*k*) to use in the algorithm. There is no right or wrong value for this --- it really depends on the data and what the goal is. For our client and the question at hand, having a high number of clusters might not be appropriate as it would be too hard for the business to understand the nuance of each in a way where they can apply the right strategies.
 
-We use a data-driven approach known as *Within Cluster Sum of Squares (WCSS)* to find a "good" value for *k*. WCSS measures the sum of the squared Euclidean distances of each data point from its closest centroid. Comparing WCSS for different values of *k* can help us identify the point where adding *more clusters* (increasing *k*) provides little extra benefit in terms of segmenting our data.
+We use a data-driven approach known as *Within Cluster Sum of Squares (WCSS)* to find a "good" value for *k*. WCSS measures the sum of the squared Euclidean distances of each data point from its closest centroid. Comparing WCSS for different values of *k* can help us identify the point where adding *more clusters* (increasing *k*) provides little additional benefit.
 
 By default, the *k*-means algorithm in scikit-learn will use k = 8, i.e., it will split the data into eight distinct clusters. In the code below multiple values for *k* are tested. We then plot how the WCSS metric changes for each value of *k*. As we increase the value for *k* the WCSS value will always decrease. However, the decreases will get smaller and smaller each time we add another centroid or cluster. We will be looking for a point in the plot where this decrease is quite prominent and significant right *before* we start to see diminishing returns.
 
@@ -262,7 +260,7 @@ The code gives us the below plot:
 
 <br>
 
-Based on the shape of the above plot, there appears to be a sharp bend at *k* = 3. Prior to that we see a significant drop in the WCSS score, but following the decreases are much smaller, so this is a point that suggests adding *more clusters* will provide little extra benefit in terms of separating our data. A small number of clusters can be beneficial when considering how easy it is for the business to understand each one, so we will continue fit the *k*-means clustering solution with *k* = 3.
+Based on the shape of the above plot, there appears to be a sharp bend at *k* = 3. Prior to that we see a significant drop in the WCSS score, but following *k* = 3 the decreases in WCSS are much smaller, so this is a point that suggests adding *more clusters* will provide little extra benefit in terms of separating our data. A small number of clusters can be beneficial when considering how easy it is for the business to understand each one, so we will fit the *k*-means clustering solution with *k* = 3.
 
 <br>
 
@@ -284,7 +282,7 @@ kmeans.fit(data_for_clustering_scaled)
 
 ### Append Clusters To Customers <a name="kmeans-append-clusters"></a>
 
-With the *k*-means algorithm fitted to our data, we tag each customer with the cluster number that they most closely fit into based on their sales data over each product area. In the code below we tag this cluster number onto the original dataframe.
+With the *k*-means algorithm fitted to our data, we tag each customer with the cluster number that they most closely fit into based on their sales data over each product area. In the code below we add the cluster numbers onto the original dataframe.
 
 ```python
 
@@ -298,8 +296,6 @@ data_for_clustering['cluster'] = kmeans.labels_
 ### Cluster Profiling <a name="kmeans-cluster-profiling"></a>
 
 Once the data is separated into distinct clusters, our client needs to understand *what* is driving the separation. This means the business can understand the customers within each cluster and the behaviors that make them unique.
-
-<br>
 
 ##### Cluster Sizes
 
@@ -347,7 +343,7 @@ The code results in the following table:
 
 <br>
 
-For *Cluster 1*, we see a reasonably significant portion of spending being allocated to each of the product areas. For *Cluster 2* there are high proportions of spending being allocated to Fruit and Vegetables, but very little to the Dairy and Meat product areas. It could be hypothesized that these customers are following a vegan diet. Finally customers in *Cluster 0* spend, on average, significant portions within Dairy, Fruit and Vegetables, but very little in the Meat product area. We could make an early hypothesis that these customers may be following a vegetarian diet. Of course, there could be other things that would explain these spending behaviors, or there could be a mix of behaviors that lead to similar patterns and thus land customers in the same cluster. But this is a good starting point for explaining the patterns we see in the different clusters.
+For *Cluster 1*, we see a reasonably significant portion of spending being allocated to each of the product areas. For *Cluster 2* there are high proportions of spending being allocated to Fruit and Vegetables, but very little to the Dairy and Meat product areas. It could be hypothesized that these customers are following a vegan diet. Finally, customers in *Cluster 0* spend, on average, significant portions within Dairy, Fruit and Vegetables, but very little in the Meat product area. We could make an early hypothesis that these customers may be following a vegetarian diet. Of course, there could be other things that would explain these spending behaviors, or there could be a mix of behaviors that lead to similar patterns and thus land customers in the same cluster. But this is a good starting point for explaining the patterns we see in the different clusters.
 
 ___
 
