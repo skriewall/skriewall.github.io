@@ -72,9 +72,9 @@ To help embed this segmentation into the business, we have proposed to call this
 
 ### Growth and Next Steps <a name="overview-growth"></a>
 
-It would be interesting to run this clustering/segmentation at a lower level of product areas. Rather than just the four areas of Meat, Dairy, Fruit, and Vegetables, we could cluster spending across the sub-categories *below* those categories. This would mean we could create more specific clusters, and get an even more granular understanding of dietary preferences within the customer base. If we had more data on other product categories, for example Bakery, Deli, Packaged Foods, we could also see if any additional spending patterns emerge.
+It would be interesting to run this clustering/segmentation at a lower level of product areas. Rather than just the four areas of Meat, Dairy, Fruit, and Vegetables, we could cluster spending across the sub-categories *below* those categories. This would mean we could create more specific clusters, and get a more granular understanding of dietary preferences within the customer base. If we had more data on other product categories (e.g., Bakery, Deli, Packaged Foods, etc.), we could also see if any additional spending patterns emerge.
 
-Also, for this analysis we have only focused on variables that are linked directly to sales. It could be interesting to also include customer metrics such as distance to store or gender to give an even more well-rounded customer segmentation.
+Also, for this analysis we have only focused on variables that are linked directly to sales. It could be interesting to include customer metrics such as distance to store or gender to give an even more well-rounded customer segmentation.
 
 We could also compare these results to other clustering approaches such as hierarchical clustering or DBSCAN.
 
@@ -320,7 +320,7 @@ Running this code shows us that the three clusters are different in size, with t
 * Cluster 0: **14.6%** of customers
 * Cluster 2: **11.8%** of customers
 
-Based on these results, it appears Cluster 1 is larger with Clusters 0 and 2 being proportionally smaller. This is showing us segments of the customer base that are exhibiting different behaviors, with some behaviors more common than others.
+Based on these results, it appears Cluster 1 is larger with Clusters 0 and 2 being proportionally smaller. This is showing us segments of the customer base that are exhibiting different behaviors or characteristics, with some behaviors more common than others.
 
 <br>
 
@@ -347,24 +347,20 @@ The code results in the following table:
 
 <br>
 
-For *Cluster 0*, we see a reasonably significant portion of spend being allocated to each of the product areas. For *Cluster 1* we see quite high proportions of spend being allocated to Fruit & Vegetables, but very little to the Dairy & Meat product areas. It could be hypothesized that these customers are following a vegan diet. Finally customers in *Cluster 2* spend, on average, significant portions within Dairy, Fruit & Vegetables, but very little in the Meat product area --- so similarly, we would make an early hypothesis that these customers are more along the lines of those following a vegetarian diet --- very interesting!
+For *Cluster 1*, we see a reasonably significant portion of spending being allocated to each of the product areas. For *Cluster 2* there are high proportions of spending being allocated to Fruit and Vegetables, but very little to the Dairy and Meat product areas. It could be hypothesized that these customers are following a vegan diet. Finally customers in *Cluster 0* spend, on average, significant portions within Dairy, Fruit and Vegetables, but very little in the Meat product area. We could make an early hypothesis that these customers may be following a vegetarian diet. Of course, there could be other things that would explain these spending behaviors, or there could be a mix of behaviors that lead to similar patterns and thus land customers in the same cluster. But this is a good starting point for explaining the patterns we see in the different clusters.
 
 ___
 
 # Application <a name="kmeans-application"></a>
 
-Even though this is a simple solution, based upon high level product areas it will help leaders in the business, and category managers gain a clearer understanding of the customer base.
-
-Tracking these clusters over time would allow the client to more quickly react to dietary trends, and adjust their messaging and inventory accordingly.
-
-Based upon these clusters, the client will be able to target customers more accurately --- promoting products & discounts to customers that are truly relevant to them --- overall enabling a more customer focused communication strategy.
+Although this is a simple solution based on high level product areas, it can help leaders in the business gain a clearer understanding of the customer base. Tracking these clusters over time would allow the client to react to dietary trends more quickly and adjust their messaging and inventory accordingly. The client will be able to target customers more accurately, promoting products and discounts to customers that are truly relevant to them.
 
 ___
 
 # Growth and Next Steps <a name="growth-next-steps"></a>
 
-It would be interesting to run this clustering/segmentation at a lower level of product areas, so rather than just the four areas of Meat, Dairy, Fruit, Vegetables --- clustering spend across the sub-categories *below* those categories. This would mean we could create more specific clusters, and get an even more granular understanding of dietary preferences within the customer base.
+It would be interesting to run this clustering/segmentation at a lower level of product areas. Rather than just the four areas of Meat, Dairy, Fruit, and Vegetables, we could cluster spending across the sub-categories *below* those categories. This would mean we could create more specific clusters, and get a more granular understanding of dietary preferences within the customer base. If we had more data on other product categories (e.g., Bakery, Deli, Packaged Foods, etc.), we could also see if any additional spending patterns emerge.
 
-Here we've just focused on variables that are linked directly to sales --- it could be interesting to also include customer metrics such as distance to store, gender etc to give an even more well-rounded customer segmentation.
+Also, for this analysis we have only focused on variables that are linked directly to sales. It could be interesting to include customer metrics such as distance to store or gender to give an even more well-rounded customer segmentation.
 
-It would be useful to test other clustering approaches such as hierarchical clustering or DBSCAN to compare the results.
+We could also compare these results to other clustering approaches such as hierarchical clustering or DBSCAN.
