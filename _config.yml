@@ -13,7 +13,7 @@ kramdown:
 #-------------------------------
 # General Site Settings
 title: Stephanie Kriewall
-description: "Hi, I'm Stephanie, and I'm excited to bring my strong programming foundation and statistical expertise to a Data Scientist role. My portfolio focuses on interesting projects I have undertaken, emphasizing business impact. Please visit my LinkedIn or download my Resume by using the links below!"
+description: "Hi, I'm Stephanie. I’m a data professional with a background in software development and a Master’s in Statistics. I'm passionate about solving problems and continually learning. My portfolio features recent data science projects, demonstrating how statistical analysis and machine learning can drive practical insights and decision-making."
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 
@@ -55,6 +55,7 @@ defaults:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
 
 
 
