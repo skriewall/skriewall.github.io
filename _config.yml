@@ -27,7 +27,7 @@ avatar_image: /img/profile.jpg
 #-------------------------------
 # Contact links
 linkedln: "https://linkedin.com/in/skriewall" # Add your linkedln handle
-github: "https://github.com/#"  # Add your github handle
+github: "https://github.com/skriewall"  # Add your github handle
 
 paginate: 6
 paginate_path: "/page/:num"
@@ -55,6 +55,7 @@ defaults:
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+
 
 
 
