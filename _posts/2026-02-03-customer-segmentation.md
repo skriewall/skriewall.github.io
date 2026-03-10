@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "You Are What You Eat" Customer Segmentation
+title: The "You Are What You Eat" Customer Segmentation
 image: "../img/posts/clustering-title-img.png"
 tags: [Customer Segmentation, Machine Learning, Clustering, Python]
 ---
