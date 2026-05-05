@@ -85,7 +85,7 @@ ___
 
 The data is made up of images of six different types of fruit (apple, avocado, banana, kiwi, lemon, and orange). All images are 300 x 200 pixels. I randomly split the images for each fruit into training (60%), validation (30%) and test (10%) sets. Examples of four images of each fruit class can be seen in the image below:
 
-![alt text](/img/posts/cnn-image-examples.png "CNN Fruit Classification Samples")
+![CNN Fruit Image Examples](/img/posts/cnn-image-examples.png "CNN Fruit Classification Samples")
 
 <br>
 
@@ -147,7 +147,7 @@ ___
 
 # Convolutional Neural Network Overview <a name="cnn-overview"></a>
 
-Convolutional Neural Networks (CNN) are an adaptation of Artificial Neural Networks (ANNs) and are primarily used for image-based tasks.
+Convolutional Neural Networks (CNNs) are an adaptation of Artificial Neural Networks (ANNs) and are primarily used for image-based tasks.
 
 To a computer, an image is simply made up of numbers --- the RGB color intensity values for each pixel. The intensity value for each color ranges from 0 to 255. These pixel values are the input for a CNN. The CNN needs to make sense of these values to make predictions about the image. The pixel values themselves don't hold much useful information on their own, so the network needs to turn them into *features*, much like humans do without knowing it when we look at a picture.
 
@@ -311,7 +311,7 @@ max(history.history['val_accuracy'])
 
 The two plots below in the image below show the **Loss** and the **Classification Accuracy** for both the training set (blue) and the validation set (orange).
 
-![alt text](/img/posts/cnn-baseline-accuracy-plot.png "CNN Baseline Accuracy Plot")
+![CNN Baseline Accuracy Plot](/img/posts/cnn-baseline-accuracy-plot.png "CNN Baseline Accuracy Plot")
 
 <br>
 
@@ -551,7 +551,7 @@ The same code is run to train this updated network as for the baseline network (
 
 The below image shows the same two plots we analyzed for the updated network, the first showing **Loss** and the second showing the **Classification Accuracy** for both the training set (blue) and the validation set (orange) for each epoch.
 
-![alt text](/img/posts/cnn-dropout-accuracy-plot.png "CNN Dropout Accuracy Plot")
+![CNN Dropout Accuracy Plot](/img/posts/cnn-dropout-accuracy-plot.png "CNN Dropout Accuracy Plot")
 
 <br>
 
@@ -678,7 +678,7 @@ It will be interesting to see whether the addition of Image Augmentation helps w
 
 The below image shows the same two plots we analyzed for the updated network, the first showing **Loss** and the second showing the **Classification Accuracy** for both the training set (blue) and the validation set (orange) for each epoch.
 
-![alt text](/img/posts/cnn-augmentation-accuracy-plot.png "CNN Augmentation Accuracy Plot")
+![CNN Augmentation Accuracy Plot](/img/posts/cnn-augmentation-accuracy-plot.png "CNN Augmentation Accuracy Plot")
 
 <br>
 
@@ -946,7 +946,7 @@ The same code will now be run to train this updated network as for the baseline 
 
 The below image shows the **Loss** and **Classification Accuracy** plots for the tuned network for both the training set (blue) and the validation set (orange) for each epoch.
 
-![alt text](/img/posts/cnn-tuned-accuracy-plot.png "CNN Tuned Accuracy Plot")
+![CNN Tuned Accuracy Plot](/img/posts/cnn-tuned-accuracy-plot.png "CNN Tuned Accuracy Plot")
 
 <br>
 
@@ -1177,7 +1177,7 @@ The same code is run to train this updated network as for the baseline network, 
 
 The below image shows the **Loss** and **Classification Accuracy** plots for the Transfer Learning network for both the training set (blue) and the validation set (orange) for each epoch.
 
-![alt text](/img/posts/cnn-vgg16-accuracy-plot.png "VGG16 Accuracy Plot")
+![VGG16 Accuracy Plot](/img/posts/cnn-vgg16-accuracy-plot.png "VGG16 Accuracy Plot")
 
 <br>
 
