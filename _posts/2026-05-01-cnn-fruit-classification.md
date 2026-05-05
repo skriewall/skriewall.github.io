@@ -278,7 +278,7 @@ history = model.fit(x = training_set,
 
 <br>
 
-The `ModelCheckpoint` callback saves the best network out of all 50 epochs, in terms of the CNNs performance on the validation set. At the end of each of the 50 epochs, Keras assesses the performance on predicting the validation set. If it is has not seen any improvement in performance it will do nothing. If there is an improvement it will update the network file that is saved on the hard-drive.
+The **`ModelCheckpoint`** callback saves the best network out of all 50 epochs, in terms of the CNNs performance on the validation set. At the end of each of the 50 epochs, Keras assesses the performance on predicting the validation set. If it is has not seen any improvement in performance it will do nothing. If there is an improvement it will update the network file that is saved on the hard-drive.
 
 <br>
 
