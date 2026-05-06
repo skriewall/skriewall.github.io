@@ -167,7 +167,7 @@ ___
 
 #### Network Architecture
 
-The baseline network is simple, but serves as a starting point that can be further refined. This network contains **2 Convolutional Layers**, each with **32 filters** and subsequent **Max Pooling** Layers. After flattening, there is a **single Dense (Fully Connected) layer** with **32 neurons**, followed by the output layer. I apply the `relu` activation function on all layers, with the `softmax` activation function for the output layer, and use the `adam` optimizer.
+The baseline network is simple, but serves as a starting point that can be further refined. This network contains **2 Convolutional Layers**, each with **32 filters** and subsequent **Max Pooling** Layers. After flattening, there is a **single Dense (Fully Connected) layer** with **32 neurons**, followed by the output layer. I apply the **`relu`** activation function on all layers, with the **`softmax`** activation function for the output layer, and use the **`adam`** optimizer.
 
 ```python
 
@@ -251,8 +251,8 @@ The below code:
 
 * Specifies the number of epochs for training
 * Sets a location for the trained network to be saved
-* Sets a `ModelCheckPoint` callback to save the best network at any point during training, based on validation accuracy
-* Trains the network and saves the results to an object called `history`
+* Sets a **`ModelCheckPoint`** callback to save the best network at any point during training, based on validation accuracy
+* Trains the network and saves the results to an object called **`history`**
 
 ```python
 
@@ -284,7 +284,7 @@ The **`ModelCheckpoint`** callback saves the best network out of all 50 epochs, 
 
 #### Analysis of Training Results
 
-As the training process was saved to the `history` object, the performance (Classification Accuracy and Loss) of the network can now be analyzed for each epoch.
+As the training process was saved to the **`history`** object, the performance (Classification Accuracy and Loss) of the network can now be analyzed for each epoch.
 
 ```python
 
@@ -405,7 +405,7 @@ predictions_df['correct'] = np.where(predictions_df['actual'] == predictions_df[
 
 <br>
 
-After running the code above, the Pandas DataFrame `predictions_df` contains prediction data for each image in the test set. A random sample of this can be seen in the table below:
+After running the code above, the Pandas DataFrame **`predictions_df`** contains prediction data for each image in the test set. A random sample of this can be seen in the table below:
 
 | **actual** | **predicted** | **prob** | **filename** | **correct** |
 |---|---|---|---|---|
@@ -626,13 +626,13 @@ Common transformation techniques are:
 * Horizontal/Vertical Flipping
 * Brightness Alteration
 
-When applying Image Augmentation using Keras' `ImageDataGenerator` class, the network does not train on the *original* training set image but instead on several *transformed* versions of the image. For each epoch during training, each image will be randomly transformed based on the specified parameters. This variation will allow the network to generalize better for many different scenarios.
+When applying Image Augmentation using Keras' **`ImageDataGenerator`** class, the network does not train on the *original* training set image but instead on several *transformed* versions of the image. For each epoch during training, each image will be randomly transformed based on the specified parameters. This variation will allow the network to generalize better for many different scenarios.
 
 <br>
 
 #### Implementing Image Augmentation
 
-Image augmentation is applied directly in the `ImageDataGenerator` class that already existed in the baseline data pipeline. This is only done for the training images, not for the validation or test sets. The validation and test data should be static, allowing the measuring of performance over time. If the images in these sets kept changing we could not tell whether the network was actually improving or if it was a random set of validation set transformations that made it perform better.
+Image augmentation is applied directly in the **`ImageDataGenerator`** class that already existed in the baseline data pipeline. This is only done for the training images, not for the validation or test sets. The validation and test data should be static, allowing the measuring of performance over time. If the images in these sets kept changing we could not tell whether the network was actually improving or if it was a random set of validation set transformations that made it perform better.
 
 In the code below, the Image Augmentation parameters are added in so that as images flow into the network for training, the transformations will be applied. The parameters limit the magnitudes that can be applied for each type of transformation:
 
@@ -654,9 +654,9 @@ validation_generator = ImageDataGenerator(rescale = 1./255)
 
 <br>
 
-The `rotation_range` of 20 is the maximum degrees of rotation that can be applied. A rotation value will be randomly selected for each image, each epoch, between negative and positive 20 degrees.
+The **`rotation_range`** of 20 is the maximum degrees of rotation that can be applied. A rotation value will be randomly selected for each image, each epoch, between negative and positive 20 degrees.
 
-The `width_shift_range` and a `height_shift_range` of 0.2 are the fraction of the total width and height that the image can shift horizontally and vertically. The `zoom_range` of 0.1 allows a maximum of 10% inward or outward zoom. Because `horizontal_flip` is True, each image has a 50/50 chance of being flipped. The `brightness_range` between 0.5 and 1.5 means images can become brighter or darker. Finally, `fill_mode` set to `'nearest'` means that when images are shifted and/or rotated, the *nearest pixel* will be used to fill in any missing pixels.
+The **`width_shift_range`** and a **`height_shift_range`** of 0.2 are the fraction of the total width and height that the image can shift horizontally and vertically. The **`zoom_range`** of 0.1 allows a maximum of 10% inward or outward zoom. Because **`horizontal_flip`** is True, each image has a 50/50 chance of being flipped. The **`brightness_range`** between 0.5 and 1.5 means images can become brighter or darker. Finally, **`fill_mode`** set to **`'nearest'`** means that when images are shifted and/or rotated, the *nearest pixel* will be used to fill in any missing pixels.
 
 <br>
 
@@ -798,7 +798,7 @@ validation_set = validation_generator.flow_from_directory(directory = validation
 
 #### Application Of Keras Tuner
 
-The code below specifies what Keras Tuner should test. The `build_model` function builds the network architecture based on randomized parameters. These parameters include:
+The code below specifies what Keras Tuner should test. The **`build_model`** function builds the network architecture based on randomized parameters. These parameters include:
 
 * Convolutional Layer Count --- between 1 and 3
 * Convolutional Layer Filter Count --- between 32 and 256 with a step size of 32 (can be different for each convolutional layer)
@@ -856,11 +856,11 @@ def build_model(hp):
 
 The code below sets the following parameters for the tuner search:
 
-* `hypermodel` --- function with the logic for building a network to test, in this case the `build_model` function defined above
-* `objective` --- metric to optimize (in this case, accuracy is being optimized)
-* `max_trials` --- maximum number of random network configurations to test
-* `executions_per_trial` --- or the number of times to run each tested configuration (the results will be averaged)
-* `directory`, `project_name`, and `overwrite` --- parameters related to the logging of the trial results
+* **`hypermodel`** --- function with the logic for building a network to test, in this case the `build_model` function defined above
+* **`objective`** --- metric to optimize (in this case, accuracy is being optimized)
+* **`max_trials`** --- maximum number of random network configurations to test
+* **`executions_per_trial`** --- or the number of times to run each tested configuration (the results will be averaged)
+* **`directory`**, **`project_name`**, and **`overwrite`** --- parameters related to the logging of the trial results
 
 ```python
 
@@ -877,7 +877,7 @@ tuner = RandomSearch(hypermodel = build_model,
 
 <br>
 
-With the tuner search parameters defined, the next lines of code below execute the search trials with the training and validation sets, with a specific number of `epochs` for each tested configuration and an in-epoch `batch_size`.
+With the tuner search parameters defined, the next lines of code below execute the search trials with the training and validation sets, with a specific number of **`epochs`** for each tested configuration and an in-epoch **`batch_size`**.
 
 ```python
 
@@ -1068,7 +1068,7 @@ validation_set = validation_generator.flow_from_directory(directory = validation
 
 To build the Transfer Learning network in Keras, the code below will download the "bottom" of the VGG16 network (everything up to the Dense Layers), then add the "top" of the model as it applies to this problem of fruit classification.
 
-The code specifies *not* to retrain the imported layers from VGG16, as their parameter values should be frozen. Then two Dense Layers with 128 neurons each are added in, followed by the output layer.
+The code specifies not to retrain the imported layers from VGG16, as their parameter values should be frozen. Then two Dense Layers with 128 neurons each are added in, followed by the output layer.
 
 ```python
 
