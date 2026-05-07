@@ -29,7 +29,7 @@ avatar_image: /img/profile.jpg
 linkedln: "https://linkedin.com/in/skriewall" # Add your linkedln handle
 github: "https://github.com/skriewall"  # Add your github handle
 
-paginate: 6
+paginate: 10
 paginate_path: "/page/:num"
 
 sass:
