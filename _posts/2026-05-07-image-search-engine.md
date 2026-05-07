@@ -292,12 +292,9 @@ pickle.dump(filename_store, open('models/filename_store.p', 'wb'))
 pickle.dump(feature_vector_store, open('models/feature_vector_store.p', 'wb'))
 
 ```
-
 ___
 
 # Execute Search <a name="execute-search"></a>
-
-<br>
 
 #### Setup
 
