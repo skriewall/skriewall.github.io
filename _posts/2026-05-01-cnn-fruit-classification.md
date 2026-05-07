@@ -16,13 +16,13 @@ In this project I build and optimize a Convolutional Neural Network (CNN) to cla
     - [Growth and Next Steps](#overview-growth)
 - [01. Data Overview](#data-overview)
 - [02. Data Pipeline](#data-pipeline)
-- [03. CNN Overview](#cnn-overview)
+- [03. Convolutional Neural Network Overview](#cnn-overview)
 - [04. Baseline Network](#cnn-baseline)
 - [05. Combatting Overfitting with Dropout](#cnn-dropout)
 - [06. Image Augmentation](#cnn-augmentation)
-- [07. Hyper-Parameter Tuning](#cnn-tuning)
+- [07. Hyperparameter Tuning](#cnn-tuning)
 - [08. Transfer Learning](#cnn-transfer-learning)
-- [09. Overall Results Discussion](#cnn-results)
+- [09. Results Discussion](#cnn-results)
 - [10. Growth and Next Steps](#growth-next-steps)
 
 ___
@@ -71,9 +71,9 @@ Using Transfer Learning with the VGG16 architecture was quite successful. In 15 
 
 In this case, since Transfer Learning is not more accurate, the Baseline network with image augmentation so far seems sufficient for this task.
 
-___
+<br>
 
-# Growth and Next Steps <a name="growth-next-steps"></a>
+### Growth and Next Steps <a name="overview-growth"></a>
 
 This project had very accurate predictions for images, although on a small number of classes. The best networks above could be tested on a larger number of image classes to gain more insight into the different networks' performance and to see whether they still perform well.
 
@@ -736,7 +736,7 @@ All classes here are being predicted *at least* as well as with the baseline net
 
 ___
 
-# Hyper-Parameter Tuning <a name="cnn-tuning"></a>
+# Hyperparameter Tuning <a name="cnn-tuning"></a>
 
 #### Keras Tuner Overview
 
@@ -1233,7 +1233,7 @@ The above classes are being predicted about as well as the best custom networks 
 
 ___
 
-# Overall Results Discussion <a name="cnn-results"></a>
+# Results Discussion <a name="cnn-results"></a>
 
 The baseline network had accuracy problems due to overfitting, but the addition of both Dropout and Image Augmentation eliminated overfitting almost entirely.
 
