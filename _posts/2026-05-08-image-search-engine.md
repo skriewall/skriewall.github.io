@@ -2,7 +2,7 @@
 layout: post
 title: Creating An Image Search Engine Using Deep Learning
 image: "/posts/dl-search-engine-title-img.png"
-tags: [Deep Learning, CNN, Data Science, Computer Vision, Python]
+tags: [Deep Learning, CNN, Data Science, Computer Vision, Python, TensorFlow/Keras]
 ---
 
 In this project I build an Image Search Engine built on Deep Learning that could have many applications, one being to help an online business' customers find similar products to ones they want.
