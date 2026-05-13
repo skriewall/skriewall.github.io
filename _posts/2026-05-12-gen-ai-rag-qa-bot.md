@@ -13,26 +13,26 @@ I extend the assistant by adding conversational memory, which allows the model t
 
 # Table of Contents
 
-- [00. Project Overview](#overview-main)
+- [Project Overview](#overview-main)
     - [Context](#overview-context)
     - [Actions](#overview-actions)
     - [Results](#overview-results)
     - [Growth and Next Steps](#overview-growth)
-- [01. Data Overview](#data-overview)
-- [02. RAG Overview](#rag-overview)
-- [03. Building the Core RAG System](#rag-core)
+- [Data Overview](#data-overview)
+- [RAG Overview](#rag-overview)
+- [Building the Core RAG System](#rag-core)
     - [Secure API Handling](#rag-api)
     - [Document Loading](#rag-docs)
     - [Document Chunking](#rag-chunking)
-    - [Embeddings & Vector Store](#rag-embeddings)
+    - [Embeddings and Vector Store](#rag-embeddings)
     - [LLM Setup](#rag-llm)
     - [Prompt Template](#rag-prompt)
     - [Retriever Setup](#rag-retriever)
     - [Full RAG Pipeline](#rag-pipeline)
-- [04. Enhancing the Assistant With Memory](#rag-memory)
-- [05. Application and Examples](#rag-application)
-- [06. Inspecting the Retrieved Context](#rag-inspection)
-- [07. Growth and Next Steps](#growth-next-steps)
+- [Enhancing the Assistant With Memory](#rag-memory)
+- [Application and Examples](#rag-application)
+- [Inspecting the Retrieved Context](#rag-inspection)
+- [Growth and Next Steps](#growth-next-steps)
 
 ___
 
@@ -43,6 +43,8 @@ ___
 Our "client" ABC Grocery, a grocery retailer, operates a busy customer help desk that answers queries about topics including store hours, product availability, delivery services, loyalty cards, payments, and general store operations.
 
 They need an **AI assistant** that can answer these questions accurately, consistently, and safely, using only approved internal information.
+
+<br>
 
 ### Actions <a name="overview-actions"></a>
 
@@ -59,6 +61,8 @@ The addition of **conversational memory** enabled more natural multi-turn intera
 
 We added monitoring, tracing, and evaluation using **LangSmith** during development.
 
+<br>
+
 ### Results <a name="overview-results"></a>
 
 The final AI assistant:
@@ -68,6 +72,8 @@ The final AI assistant:
 * Rejects unsupported questions with a safe fallback message
 * Maintains short-term conversational history for better interaction
 * Prevents hallucinations using strict grounding rules
+
+<br>
 
 ### Growth and Next Steps <a name="overview-growth"></a>
 
@@ -123,9 +129,7 @@ One could simply feed the entire help desk document into the model on every quer
 * It dramatically increases the risk of hallucination
 * It doesn’t scale as documents grow into hundreds of pages
 
-RAG solves all of these issues.
-
-With RAG:
+RAG solves all of these issues. With RAG:
 
 1. Documents are embedded into a vector database.
 2. When a user asks a question, it retrieves *only the most relevant chunks*.
@@ -162,8 +166,6 @@ docs = loader.load()
 text = docs[0].page_content
 ```
 
-<br>
-
 This document loader standardizes the data into LangChain *Document* objects, which makes later steps like chunking and embedding seamless.
 
 <br>
@@ -183,8 +185,6 @@ splitter = MarkdownHeaderTextSplitter(
 chunked_docs = splitter.split_text(text)
 print(len(chunked_docs), "Q/A chunks")
 ```
-
-<br>
 
 Chunking ensures retrieval uses the specific Q & A pair that relates to a user query. Chunking dramatically improves retrieval accuracy.
 
@@ -209,8 +209,6 @@ vectorstore = Chroma.from_documents(
     persist_directory="abc_vector_db_chroma",
     collection_name="abc_help_qa")
 ```
-
-<br>
 
 To load the embeddings later, the following code can be used. It uses the **`persist_directory`** that was created in the code above.
 
@@ -237,8 +235,6 @@ abc_assistant_llm = ChatOpenAI(model="gpt-5",
                                max_retries=1)
 ```
 
-<br>
-
 A **`temperature`** of 0 ensures the LLM will not attempt to get creative with answers, which can lead to factual errors or widely different answers from one user to another. This is essential for help desk systems where consistency and accuracy matter far more than creativity.
 
 <br>
@@ -264,8 +260,6 @@ Answer:
 )
 ```
 
-<br>
-
 Prompt templates are the instructions that govern how the LLM behaves. They can help ensure the assistant is safe, grounded, and consistent. The instructions here are simple, but include an important instruction for the LLM: if the answer is not in the context, the LLM should say that it does not have that information and should encourage the customer to email customerservice@abc-grocery.com.
 
 <br>
@@ -279,8 +273,6 @@ retriever = vectorstore.as_retriever(
     search_type="similarity_score_threshold",
     search_kwargs={"k": 6, "score_threshold": 0.25})
 ```
-
-<br>
 
 This sets the retrieval up so that it will retrieve *up to* 6 documents, but only if they meet the specified relevance score threshold of 0.25. This keeps the context focused and prevents irrelevant content from confusing the LLM.
 
@@ -316,8 +308,6 @@ rag_answer_chain = (
 )
 ```
 
-<br>
-
 This is the system's end-to-end mechanism that retrieves, processes, and returns an answer to the prompt.
 
 ___
@@ -349,8 +339,6 @@ chain_with_history = RunnableWithMessageHistory(
     history_messages_key="history"
 )
 ```
-
-<br>
 
 After adding conversation memory, the system prompt is also updated to include a placeholder where memory is to be injected. The system instructions also include information about how to make use of this memory, i.e., to only use it for personalization.
 
@@ -408,21 +396,15 @@ response = rag_answer_chain.invoke({"input": query})
 print(response)
 ```
 
-<br>
-
 The resulting response:
 
 **Query:** What time can I come into the store today?  
 **Response:** Most locations are open 7am-10pm today. If it's a holiday, hours may vary - please check the Store Locator for your specific store's hours.
 
-<br>
-
 An example of a query that is not answerable and the resulting response is:
 
 **Query:** What is a baby dolphin called?  
 **Response:** I don't have that information in the provided context. Please email customerservice@abc-grocery.com and our team can help.
-
-<br>
 
 The latter query demonstrates a behavior that is mandated in the system instructions. This was a question that was not answerable using the business-specific context documents, so the LLM did not make up an answer but answered with the fallback response.
 
@@ -456,8 +438,6 @@ user_prompt = ("What time can I come into the store today?")
 response = rag_with_context.invoke({"input": user_prompt})
 print(response["answer"].content)
 ```
-
-<br>
 
 **`RunnableParallel`** runs multiple pieces of logic at once. In this case, **`answer`** runs the full RAG pipeline previously defined, **`context`** runs the retriever on its own in order to capture the returned chunks of context, and **`input`** returns the original user query. Invoking this returns a dictionary containing everything needed to inspect what drove the answer.
 
