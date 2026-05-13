@@ -79,13 +79,11 @@ Our results here also do not say that there *definitely isn't a difference betwe
 
 Gathering more data and then re-running this test may provide us and the client more insight. Further A/B testing could also be performed on any new types of mailers the client wants to try out in the future.
 
-<br>
-
 ___
 
 # Concept Overview  <a name="concept-overview"></a>
 
-#### A/B Testing
+### A/B Testing
 
 An A/B Test is a randomized experiment containing two groups, A and B, that receive different experiences. Within an A/B Test, we seek to understand and measure the response of each group. The information from this helps drive future business decisions.
 
@@ -93,25 +91,19 @@ Applications of A/B testing can range from comparing different online ad strateg
 
 <br>
 
-#### Hypothesis Testing
+### Hypothesis Testing
 
 A Hypothesis Test is used to assess the likelihood of our assumed viewpoint based on available evidence (sample data).
 
 There are many different scenarios we can run Hypothesis Tests on, and they all have slightly different techniques and formulas. However, they all have some shared, fundamental steps and logic that underpin how they work.
 
-<br>
-
 **The Null Hypothesis**
 
 In any Hypothesis Test, we start with the Null Hypothesis. The Null Hypothesis is where we state our initial viewpoint. In statistics our initial viewpoint or Null Hypothesis is always that the result is purely by chance, i.e., that there is no relationship or association between two outcomes or groups.
 
-<br>
-
 **The Alternative Hypothesis**
 
 The aim of the Hypothesis Test is to look for evidence to either support or reject the Null Hypothesis. If we reject the Null Hypothesis, that would mean we have found enough evidence to support the Alternative Hypothesis. The Alternative Hypothesis is essentially the opposite viewpoint to the Null Hypothesis --- that the result is *not* by chance, or that there *is* a relationship between two outcomes or groups. If we reject the Null Hypothesis, we do not accept the Alternative Hypothesis outright, but conclude the weight of the evidence supports the Alternative Hypothesis.
-
-<br>
 
 **The Significance Level and p-values**
 
@@ -123,8 +115,6 @@ Conventionally, we set our Significance Level to 0.05. If we need to be more con
 
 To summarize, in a Hypothesis Test we test the Null Hypothesis using a p-value and then make a decision about the Null Hypothesis based on the Significance Level.
 
-<br>
-
 **Types of Hypothesis Tests**
 
 There are many different types of Hypothesis Tests, each of which is appropriate for use in different scenarios depending on a) the type of data that you’re testing, and b) the question that you’re asking of that data.
@@ -133,7 +123,7 @@ In the case of our task here, where we are looking to understand the difference 
 
 <br>
 
-#### Chi-Squared Test for Independence
+### Chi-Squared Test for Independence
 
 The Chi-Squared Test For Independence is a type of Hypothesis Test that assumes observed frequencies for categorical variables (as opposed to numerical variables) will match the expected frequencies.
 
@@ -163,10 +153,7 @@ In the code below, we:
 * Import the required data from the *campaign_data* table.
 * Exclude customers in the control group, giving us a dataset with Mailer 1 & Mailer 2 customers only.
 
-<br>
-
 ```python
-
 # Import required packages
 import pandas as pd
 from scipy.stats import chi2_contingency, chi2
@@ -176,14 +163,9 @@ campaign_data = ...
 
 # Filter the data to remove customers in the control group
 campaign_data = campaign_data.loc[campaign_data['mailer_type'] != 'Control']
-
 ```
 
-<br>
-
 A sample of this data (the first 10 rows) can be seen below:
-<br>
-<br>
 
 | **customer_id** | **campaign_name** | **mailer_type** | **signup_flag** |
 |---|---|---|---|
@@ -199,7 +181,6 @@ A sample of this data (the first 10 rows) can be seen below:
 | 405 | delivery_club | Mailer1 | 0 |
 | 435 | delivery_club | Mailer2 | 0 |
 
-<br>
 In the DataFrame we have:
 
 * customer_id
@@ -211,22 +192,20 @@ ___
 
 # Applying the Chi-Squared Test for Independence <a name="chi-squared-application"></a>
 
-#### State Hypotheses and Significance Level for the Test
+### State Hypotheses and Significance Level for the Test
 
 In the code below we code the hypotheses and significance level explicitly so that we can use them later to explain the results. We specify the common significance level value of 0.05.
 
 ```python
-
 # State hypotheses and set acceptance criterion
 null_hypothesis = 'There is no relationship between mailer type and sign-up rate. They are independent.'
 alternative_hypothesis = 'There is a relationship between mailer type and sign-up rate. They are dependent.'
 significance_level = 0.05
-
 ```
 
 <br>
 
-#### Calculate Observed Frequencies and Expected Frequencies
+### Calculate Observed Frequencies and Expected Frequencies
 
 As mentioned in the section above, in a Chi-Squared Test For Independence, the *observed frequencies* are the actual rates per group in the data itself. The *expected frequencies* are what we would *expect* to see based on *all* of the data combined.
 
@@ -243,7 +222,6 @@ The below code:
 * Prints out the Critical Value.
 
 ```python
-
 # Summarize to get observed frequencies
 observed_values = pd.crosstab(campaign_data['mailer_type'], campaign_data['signup_flag']).values
 
@@ -264,10 +242,7 @@ critical_value = chi2.ppf(1 - acceptance_criteria, dof)
 # Print critical value
 print(critical_value)
 >> 3.84
-
 ```
-
-<br>
 
 Based on the observed values, we get the following sign-up rates:
 
