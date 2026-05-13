@@ -375,12 +375,8 @@ The search image and search results are below:
 **Search Image** <br>
 ![Search 1: Search Image](/img/posts/search-engine-search1.jpg "Search 1: Search Image")
 
-<br>
-
 **Search Results** <br>
 ![Search 1: Search Results](/img/posts/search-engine-search1-results.png "Search 1: Search Results")
-
-<br>
 
 Out of the 300 images in the base set, these are the eight that have been found to be *most similar*, and they indeed look quite similar to the search image.
 
@@ -389,12 +385,8 @@ Checking a second search image to see if it also looks good gives the following:
 **Search Image** <br>
 ![Search 2: Search Image](/img/posts/search-engine-search2.jpg "Search 2: Search Image")
 
-<br>
-
 **Search Results** <br>
 ![Search 2: Search Results](/img/posts/search-engine-search2-results.png "Search 2: Search Results")
-
-<br>
 
 These have turned out well, so the features from VGG16 combined with Cosine Similarity have done well with this problem.
 
