@@ -83,20 +83,16 @@ ___
 
 The initial dataset contains 3,500 transactions, each of which shows the alcohol products that were present in that transaction. 
 
-In the code below, we import *pandas*, as well as the Apriori algorithm from the *apyori* library, and we import the raw data.
+In the code below, we import **`pandas`**, as well as the Apriori algorithm from the **`apyori`** library, and we import the raw data.
 
 ```python
-
 # Import required packages
 from apyori import apriori
 import pandas as pd
 
 # Import data
 alcohol_transactions = pd.read_csv('data/sample_data_apriori.csv')
-
 ```
-
-<br>
 
 The first 10 transactions in the data can be seen below. There are 45 product columns in the data; to simplify, only the first 5 product columns are shown. Blank columns indicate a product was not in the transaction.
 
@@ -114,15 +110,13 @@ The first 10 transactions in the data can be seen below. There are 45 product co
 | 10 | White Uk | Spirits Mixers | Sparkling | German | Australian Red | ... |
 | ... | ... | ... | ... | ... | ... | ... |
 
-<br>
-
-The *apyori* library needs the data to be passed in as a *list of lists*, so we will modify the format of this data. The code and logic for this can be found in the Data Preparation section below.
+The **`apyori`** library needs the data to be passed in as a list of lists, so we will modify the format of this data. The code and logic for this can be found in the Data Preparation section below.
 
 ___
 
 # Apriori Overview  <a name="apriori-overview"></a>
 
-*Association Rule Learning* is an approach that discovers the strength of relationships between different datapoints. It is commonly used to understand which products are frequently (or infrequently) purchased together.
+**Association Rule Learning** is an approach that discovers the strength of relationships between different datapoints. It is commonly used to understand which products are frequently (or infrequently) purchased together.
 
 This can provide useful information that helps to optimize:
 
@@ -194,7 +188,6 @@ The code below does the following:
 * Prints out the first 10 lists from the master list
 
 ```python
-
 # Drop ID column
 alcohol_transactions.drop('transaction_id', axis = 1, inplace = True)
 
@@ -217,10 +210,7 @@ print(transactions[:10])
 ['Brandy/Cognac'],
 ['Small Sizes White', 'Bottled Ale'],
 ['White Uk', 'Spirits Mixers', 'Sparkling', 'German', 'Australian Red', 'American Red']]
-
 ```
-
-<br>
 
 Each transaction from the initial DataFrame is now contained within a list, all transactions together making up the master list.
 
@@ -238,7 +228,6 @@ We set the following association rules for the algorithm:
 * A minimum and maximum length of 2 to limit the algorithm to considering product *pairs* rather than larger sets
 
 ```python
-
 # Apply the Apriori algorithm
 apriori_rules = apriori(transactions, 
                         min_support = 0.003,
@@ -254,15 +243,11 @@ apriori_rules = list(apriori_rules)
 apriori_rules[0]
 
 RelationRecord(items=frozenset({'America White', 'American Rose'}), support=0.020745724698626296, ordered_statistics=[OrderedStatistic(items_base=frozenset({'American Rose'}), items_add=frozenset({'America White'}), confidence=0.5323741007194245, lift=3.997849299507762)])
-
 ```
-
-<br>
 
 The code below converts the output from the algorithm to a list to make it easier to manipulate and analyze. Based on the parameters we set when applying the algorithm, we get 132 product pairs.
 
 ```python
-
 # "List comprehension" - extract the information from the rules
 product1 = [list(rule[2][0][0])[0] for rule in apriori_rules]
 product2 = [list(rule[2][0][1])[0] for rule in apriori_rules]
@@ -277,10 +262,7 @@ apriori_rules_df = pd.DataFrame({'product1' : product1,
                                  'confidence' : confidence,
                                  'lift' : lift
                                  })
-
 ```
-
-<br>
 
 A sample of this data (the first 5 product pairs --- not in any order) can be seen below:
 
@@ -293,8 +275,6 @@ A sample of this data (the first 5 product pairs --- not in any order) can be se
 | American Rose | American Red | 0.016 | 0.403 | 3.575 |
 | … | … | … | … | … |
 
-<br>
-
 In the DataFrame we have the two products in the pair being considered, and the three key metrics of Support, Confidence, and Lift. 
 
 ___
@@ -306,13 +286,9 @@ ___
 Now that the data and Apriori results are in a usable format, we can look at the product pairs with the strongest relationships by sorting the Lift column in descending order.
 
 ```python
-
 # Sort pairs by descending lift
 apriori_rules_df.sort_values(by = 'lift', ascending = False, inplace = True)
-
 ```
-
-<br>
 
 The table below shows the ten highest product relationships, based on Lift.
 
@@ -329,8 +305,6 @@ The table below shows the ten highest product relationships, based on Lift.
 | French White Rhone | French White 2 | 0.005 | 0.760 | 6.661 |
 | Small Sizeswhite Oth | Small Sizes Red | 0.003 | 0.324 | 6.306 |
 
-<br>
-
 The strongest relationship exists between two products labeled as "gifts". The store's category managers may want to ensure that gift products are available in one section of the aisle, rather than being spread out among their respective product types. We also see some strong relationships between French wines and other French wines, indicating that grouping wine in sections by country rather than by type may make it easier for customers to find what they are looking for.
 
 Another interesting association is between products labeled "small". At this point, we do not know exactly what that means since we are not given any more information about the data, but it is something to tell the client as they may be able to make sense of it and turn it into an actionable insight. Perhaps customers are looking for a few different types of wine in smaller bottles than the standard size.
@@ -344,13 +318,9 @@ With the data stored as a DataFrame, we can also propose building a simple searc
 The code below uses a string function to get all rows in the DataFrame where *product1* contains the words "New Zealand".
 
 ```python
-
 # Search for associations based on products containing text - New Zealand products
 apriori_rules_df[apriori_rules_df['product1'].str.contains('New Zealand')]
-
 ```
-
-<br>
 
 The results of this search, in order of descending Lift are as follows:
 
@@ -371,8 +341,6 @@ The results of this search, in order of descending Lift are as follows:
 | New Zealand Red | French Red 2 | 0.010 | 0.514 | 3.360 |
 | New Zealand Red | South America White | 0.007 | 0.343 | 3.314 |
 | New Zealand Red | Australia White | 0.007 | 0.371 | 3.216 |
-
-<br>
 
 There appears to be *some* relationship between New Zealand wines and other New Zealand wines. Many New Zealand wines seem to be more closely associated with French, Spanish (Iberian), and South American wines than they are with Australian wines (interesting given the relative proximity of New Zealand to Australia). New Zealand and Australia are often grouped together, but in terms of wine this does not seem to make sense --- possibly different climates matter much more than geographical proximity, as it can affect how similar the wines taste. This is only a hypothesis, but good information to share with the client.
 
