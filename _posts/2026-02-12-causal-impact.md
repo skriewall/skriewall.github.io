@@ -26,6 +26,7 @@ ___
 ### Data Source <a name="data-source"></a>
 
 Dataset provided as part of a data science training program. The data is designed to reflect a real-world business scenario.
+
 ___
 
 # Project Overview  <a name="overview-main"></a>
