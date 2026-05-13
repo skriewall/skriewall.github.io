@@ -9,17 +9,17 @@ In this project I build an Image Search Engine built on Deep Learning that could
 
 # Table of Contents
 
-- [Project Overview](#overview-main)
+- [00. Project Overview](#overview-main)
     - [Context](#overview-context)
     - [Actions](#overview-actions)
     - [Results](#overview-results)
     - [Discussion and Next Steps](#overview-growth)
-- [Sample Data Overview](#sample-data-overview)
-- [Transfer Learning Overview](#transfer-learning-overview)
-- [Setting Up VGG16](#vgg16-setup)
-- [Image Preprocessing and Featurization](#image-preprocessing)
-- [Execute Search](#execute-search)
-- [Discussion and Next Steps](#growth-next-steps)
+- [01. Sample Data Overview](#sample-data-overview)
+- [02. Transfer Learning Overview](#transfer-learning-overview)
+- [03. Setting Up VGG16](#vgg16-setup)
+- [04. Image Preprocessing and Featurization](#image-preprocessing)
+- [05. Execute Search](#execute-search)
+- [06. Discussion and Next Steps](#growth-next-steps)
 
 ___
 
