@@ -46,6 +46,16 @@ To achieve this, we built out a model that finds relationships between customer 
 
 <br>
 
+### Key Definition  <a name="overview-definition"></a>
+
+The *loyalty score* metric measures the % of grocery spend (market-level) that each customer allocates to the client vs. all of the client's competitors. 
+
+Example 1: Customer A has spent $100 total on groceries, and all of this was spent with our client. Customer A has a *loyalty score* of **1.0**.
+
+Example 2: Customer B has spent $200 total, but only 20% was spent with our client. The remaining 80% was spent with competitors. Customer B has a *customer loyalty score* of **0.2**.
+
+<br>
+
 ### Actions <a name="overview-actions"></a>
 
 We first gathered the necessary data from tables in the database, including key customer metrics that may help predict the dependent variable *loyalty score*, and appending the dependent variable. We then separated the data into two chunks --- one for customers who did have a *loyalty score* present and one for customers who did not have a *loyalty score*.
@@ -83,16 +93,6 @@ As the most important outcome for this project was predictive accuracy, rather t
 While predictive accuracy was relatively high, other modeling approaches could be tested, especially those somewhat similar to Random Forest, to see if even more accuracy could be gained.
 
 From a data point of view, further variables could be collected, and further feature engineering could be undertaken to ensure that we have as much useful information available as possible for predicting customer loyalty.
-
-<br>
-
-### Key Definition  <a name="overview-definition"></a>
-
-The *loyalty score* metric measures the % of grocery spend (market-level) that each customer allocates to the client vs. all of the client's competitors. 
-
-Example 1: Customer A has spent $100 total on groceries, and all of this was spent with our client. Customer A has a *loyalty score* of **1.0**.
-
-Example 2: Customer B has spent $200 total, but only 20% was spent with our client. The remaining 80% was spent with competitors. Customer B has a *customer loyalty score* of **0.2**.
 
 ___
 
@@ -185,7 +185,7 @@ We use the scikit-learn library in Python to model the data using Linear Regress
 
 ### Data Import <a name="linreg-import"></a>
 
-We import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data in case there was any particular order to the data in the database.
+We import the modeling data from the pickle file we saved. We remove the *id* column, and we also shuffle the data in case there was any particular order to the data in the database.
 
 ```python
 # Import required packages
@@ -253,7 +253,7 @@ In this code section, we use **.describe()** from Pandas to investigate the spre
 
 Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 44 miles.
 
-We use the "boxplot approach" to remove any rows where the values within those predictor variable columns are outside of the interquartile range multiplied by 2.
+We use the boxplot approach to remove any rows where the values within those predictor variable columns are outside of the interquartile range multiplied by 2.
 
 ```python
 # Deal with outliers
@@ -279,7 +279,7 @@ for column in outlier_columns:
 
 ##### Split Out Data For Modeling
 
-In the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
@@ -302,7 +302,7 @@ The Linear Regression algorithm needs this variable to be in numerical form in o
 
 One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into the model as input variables, and the original column is discarded.
 
-We also drop one of the new columns using the parameter *drop = "first"*. We do this because our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for linear regression. Multicollinearity occurs when two or more input variables are highly correlated with each other, and when it is present we cannot trust the statistics around how well the model is performing and the effect each input variable is truly having.
+We also drop one of the new columns using the parameter **`drop = "first"`**. We do this because our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for linear regression. Multicollinearity occurs when two or more input variables are highly correlated with each other, and when it is present we cannot trust the statistics around how well the model is performing and the effect each input variable is truly having.
 
 After we have applied One Hot Encoding, we turn our training and test objects back into Pandas dataframes, with the column names applied.
 
@@ -408,7 +408,7 @@ y_pred = regressor.predict(X_test)
 
 $R^2$ is a metric that gives the percentage of variance in the output variable *y* that is being explained by the input variable(s) *x*. The value can range between 0 and 1, with a higher value showing a higher level of explained variance. For example, an $R^2$ of 0.8 would mean that 80% of the variation in our output variable is being explained by our input variables, and another variable(s) not in the model accounts for the other 20%.
 
-To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (y_pred), as well as the *actual* outputs for the test set (y_test):
+To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (**`y_pred`**), as well as the *actual* outputs for the test set (**`y_test`**):
 
 ```python
 # Calculate R-Squared for our test set predictions
@@ -428,7 +428,7 @@ Instead of simply dividing the data into a single training set, and a single tes
 
 The result of this is that we are provided more than one set of validation results from the tests, and the average of these scores gives a more reliable view of how the model will perform on new data.
 
-In the code below, we specify that we want 4 chunks. We pass in our regressor object, training set, and test set. We also specify the metric we want to assess with, in this case $R^2$.
+In the code below, we specify that we want 4 chunks. We pass in our **`regressor`** object, training set, and test set. We also specify the metric we want to assess with, in this case $R^2$.
 
 Finally, we take a mean of all four test set results.
 
@@ -508,7 +508,7 @@ We will again use the scikit-learn library in Python to model the data using a D
 
 ### Data Import <a name="regtree-import"></a>
 
-We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
+We again import the modeling data from the pickle file we saved. We remove the *id* column, and we also shuffle the data.
 
 ```python
 # Import required packages
@@ -557,7 +557,7 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 ##### Split Out Data For Modeling
 
-In the same way we did for Linear Regression, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the same way we did for Linear Regression, in the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
@@ -606,7 +606,7 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="regtree-model-training"></a>
 
-The below code instantiates and trains our Decision Tree model. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
+The below code instantiates and trains our Decision Tree model. We use the **`random_state`** parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
 
 ```python
 # Instantiate the model object
@@ -633,7 +633,7 @@ y_pred = regressor.predict(X_test)
 
 ##### Calculate $R^2$
 
-To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (y_pred), as well as the *actual* outputs for the test set (y_test):
+To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (**`y_pred`**), as well as the *actual* outputs for the test set (**`y_test`**):
 
 ```python
 # Calculate R-Squared for test set predictions
@@ -726,13 +726,13 @@ The code gives us the below plot to visualize the result:
 
 ![Decision Tree Max Depth Plot](/img/posts/regression-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
 
-In the plot we can see that the *maximum* classification accuracy on the test set is found when applying a *max_depth* value of 7. However, we lose very little accuracy with a value of 4, and this would result in a simpler model that can generalize even better on new data. We make the decision to re-train our Decision Tree with a maximum depth of 4.
+In the plot we can see that the *maximum* classification accuracy on the test set is found when applying a **`max_depth`** value of 7. However, we lose very little accuracy with a value of 4, and this would result in a simpler model that can generalize even better on new data. We make the decision to re-train our Decision Tree with a maximum depth of 4.
 
 <br>
 
 ### Visualize Our Decision Tree <a name="regtree-visualize"></a>
 
-To see the decisions that have been made in the (re-fitted) tree, we can use the **plot_tree** functionality that we imported from scikit-learn. To do this, we use the below code:
+To see the decisions that have been made in the (re-fitted) tree, we can use the **`plot_tree`** functionality that we imported from scikit-learn. To do this, we use the below code:
 
 ```python
 # Re-fit using max depth of 4
@@ -769,7 +769,7 @@ We will again use the scikit-learn library in Python to model the data using a R
 
 ### Data Import <a name="rf-import"></a>
 
-We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data.
+We again import the modeling data from the pickle file we saved. We remove the *id* column, and we also shuffle the data.
 
 ```python
 # Import required packages
@@ -819,7 +819,7 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 ##### Split Out Data For Modeling
 
-In the same way we did for Linear Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the same way we did for Linear Regression and the Decision Tree, in the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation.
 
@@ -868,7 +868,7 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="rf-model-training"></a>
 
-The code below instantiates and trains a Random Forest model. The *random_state* parameter ensures we get reproducible results and helps us understand any improvements in performance with changes to model hyperparameters.
+The code below instantiates and trains a Random Forest model. The **`random_state`** parameter ensures we get reproducible results and helps us understand any improvements in performance with changes to model hyperparameters.
 
 We leave the other parameters at their default values, meaning that we will just be building 100 Decision Trees in this Random Forest.
 
@@ -897,7 +897,7 @@ y_pred = regressor.predict(X_test)
 
 ##### Calculate $R^2$
 
-To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (y_pred), as well as the *actual* outputs for the test set (y_test):
+To calculate $R^2$, we use the following code where we pass in our *predicted* outputs for the test set (**`y_pred`**), as well as the *actual* outputs for the test set (**`y_test`**):
 
 ```python
 # Calculate R-Squared
