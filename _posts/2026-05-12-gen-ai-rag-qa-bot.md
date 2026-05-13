@@ -138,7 +138,7 @@ ___
 
 # Building the Core RAG System <a name="rag-core"></a>
 
-## Secure API Handling <a name="rag-api"></a>
+### Secure API Handling <a name="rag-api"></a>
 
 The following code loads API keys from a .env file, so that credentials are not being hard-coded directly in the script.
 
@@ -147,9 +147,9 @@ from dotenv import load_dotenv
 load_dotenv()
 ```
 
----
+<br>
 
-## Document Loading <a name="rag-docs"></a>
+### Document Loading <a name="rag-docs"></a>
 
 The following code uses LangChain’s **`TextLoader`** to import the help desk markdown file.
 
@@ -166,9 +166,9 @@ text = docs[0].page_content
 
 This document loader standardizes the data into LangChain *Document* objects, which makes later steps like chunking and embedding seamless.
 
----
+<br>
 
-## Document Chunking <a name="rag-chunking"></a>
+### Document Chunking <a name="rag-chunking"></a>
 
 .In the markdown file, each header (**`###`**) introduces a new Q & A pair. The following code splits the markdown by header.
 
@@ -188,9 +188,9 @@ print(len(chunked_docs), "Q/A chunks")
 
 Chunking ensures retrieval uses the specific Q & A pair that relates to a user query. Chunking dramatically improves retrieval accuracy.
 
----
+<br>
 
-## Embeddings and Vector Store <a name="rag-embeddings"></a>
+### Embeddings and Vector Store <a name="rag-embeddings"></a>
 
 Embeddings convert text into numeric vectors that represent the meaning of the text. Documents with similar meaning will end up closer together in vector space.
 
@@ -221,9 +221,9 @@ vectorstore = Chroma(
     embedding_function=embeddings)
 ```
 
----
+<br>
 
-## LLM Setup <a name="rag-llm"></a>
+### LLM Setup <a name="rag-llm"></a>
 
 The code below instantiates the model that will generate the final answer to the user question:
 
@@ -241,9 +241,9 @@ abc_assistant_llm = ChatOpenAI(model="gpt-5",
 
 A **`temperature`** of 0 ensures the LLM will not attempt to get creative with answers, which can lead to factual errors or widely different answers from one user to another. This is essential for help desk systems where consistency and accuracy matter far more than creativity.
 
----
+<br>
 
-## Prompt Template <a name="rag-prompt"></a>
+### Prompt Template <a name="rag-prompt"></a>
 
 The prompt template below instructs the model to answer only using retrieved context, and to avoid hallucination.
 
@@ -268,9 +268,9 @@ Answer:
 
 Prompt templates are the instructions that govern how the LLM behaves. They can help ensure the assistant is safe, grounded, and consistent. The instructions here are simple, but include an important instruction for the LLM: if the answer is not in the context, the LLM should say that it does not have that information and should encourage the customer to email customerservice@abc-grocery.com.
 
----
+<br>
 
-## Retriever Setup <a name="rag-retriever"></a>
+### Retriever Setup <a name="rag-retriever"></a>
 
 The following configures how to select relevant chunks from the vector database:
 
@@ -284,9 +284,9 @@ retriever = vectorstore.as_retriever(
 
 This sets the retrieval up so that it will retrieve *up to* 6 documents, but only if they meet the specified relevance score threshold of 0.25. This keeps the context focused and prevents irrelevant content from confusing the LLM.
 
----
+<br>
 
-## Full RAG Pipeline <a name="rag-pipeline"></a>
+### Full RAG Pipeline <a name="rag-pipeline"></a>
 
 This pipeline connects all of the key components of the RAG system, namely:
 
@@ -318,7 +318,7 @@ rag_answer_chain = (
 
 <br>
 
-This is the system's end-to-end mechanism that retrieves, processes, and answers.
+This is the system's end-to-end mechanism that retrieves, processes, and returns an answer to the prompt.
 
 ___
 
@@ -349,6 +349,8 @@ chain_with_history = RunnableWithMessageHistory(
     history_messages_key="history"
 )
 ```
+
+<br>
 
 After adding conversation memory, the system prompt is also updated to include a placeholder where memory is to be injected. The system instructions also include information about how to make use of this memory, i.e., to only use it for personalization.
 
