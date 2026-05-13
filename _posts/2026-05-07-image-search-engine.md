@@ -9,17 +9,17 @@ In this project I build an Image Search Engine built on Deep Learning that could
 
 # Table of Contents
 
-- [00. Project Overview](#overview-main)
+- [Project Overview](#overview-main)
     - [Context](#overview-context)
     - [Actions](#overview-actions)
     - [Results](#overview-results)
     - [Discussion and Next Steps](#overview-growth)
-- [01. Sample Data Overview](#sample-data-overview)
-- [02. Transfer Learning Overview](#transfer-learning-overview)
-- [03. Setting Up VGG16](#vgg16-setup)
-- [04. Image Preprocessing and Featurization](#image-preprocessing)
-- [05. Execute Search](#execute-search)
-- [06. Discussion and Next Steps](#growth-next-steps)
+- [Sample Data Overview](#sample-data-overview)
+- [Transfer Learning Overview](#transfer-learning-overview)
+- [Setting Up VGG16](#vgg16-setup)
+- [Image Preprocessing and Featurization](#image-preprocessing)
+- [Execute Search](#execute-search)
+- [Discussion and Next Steps](#growth-next-steps)
 
 ___
 
@@ -71,15 +71,13 @@ For this proof of concept I am working with images of women's shoes. Suppose the
 
 ![Deep Learning Search Engine - Image Examples](/img/posts/search-engine-image-examples.png "Deep Learning Search Engine - Image Examples")
 
-<br>
-
 Using deep learning, I will extract the "features" of this base image set and compare them to the "features" in any given search image. The prdouct images with the closest match would be shown to the customer.
 
 ___
 
 # Transfer Learning Overview  <a name="transfer-learning-overview"></a>
 
-#### Overview
+### Overview
 
 
 **Transfer Learning** is a powerful way to use pre-built, pre-trained networks and apply them to solve specific Deep Learning tasks. It involves leveraging features learned on one problem for a new, similar problem.
@@ -94,7 +92,7 @@ For this task I use a well-known network called **VGG16**. It was designed in 20
 
 <br>
 
-#### Application
+### Application
 
 When using Transfer Learning for image classification tasks, it is common to import the architecture up to the final Max Pooling layer, prior to flattening, the Dense layers, and the Output layer. The frozen parameter values from the bottom of the network are used and instead of keeping the final Max Pooling layer, it is replaced with a Global Average Pooling layer.
 
@@ -114,7 +112,6 @@ The code below does the following:
 * Saves the network architecture and weights for use in the search engine
 
 ```python
-
 # Import required packages
 from tensorflow.keras.models import Model, load_model
 from tensorflow.keras.applications.vgg16 import VGG16, preprocess_input
@@ -138,15 +135,11 @@ model = Model(inputs = vgg.input, outputs = vgg.layers[-1].output)
 
 # Save the model file
 model.save('models/vgg16_search_engine.h5')
-
 ```
-
-<br>
 
 The architecture is summarized below:
 
 ```
-
 _________________________________________________________________
 Layer (type)                 Output Shape              Param #   
 =================================================================
@@ -194,10 +187,7 @@ Total params: 14,714,688
 Trainable params: 14,714,688
 Non-trainable params: 0
 _________________________________________________________________
-
 ```
-
-<br>
 
 If the last parameter of **`pooling = avg`** was not there, then the final layer would have been the Max Pooling layer of shape 7 by 7 by 512. Instead, since the parameter was there, it ends up with a single array of size 512. Basically, all of the feature maps from the final Max Pooling layer are summarized into one vector of 512 numbers, and these numbers will represent each image's features. This feature vector is what will be used to compare the base set of images to any given search image to find similarities.
 
@@ -205,12 +195,11 @@ ___
 
 # Image Preprocessing and Featurization <a name="image-preprocessing"></a>
 
-#### Helper Functions
+### Helper Functions
 
 The following code creates two functions --- the first for preprocessing images prior to entering the network, and the second for "featurizing" the image, i.e., passing the image through the VGG16 network and outputting a single vector of 512 numeric values.
 
 ```python
-
 # Image preprocessing function
 def preprocess_image(filepath):
     image = load_img(filepath, target_size = (img_width, img_height))
@@ -223,10 +212,7 @@ def preprocess_image(filepath):
 def featurize_image(image):
     feature_vector = model.predict(image)
     return feature_vector
-
 ```
-
-<br>
 
 The **`preprocess_image`** function does the following:
 
@@ -244,7 +230,7 @@ The **`featurize_image`** function does the following:
 
 <br>
 
-#### Setup
+### Setup
 
 The code below:
 
@@ -253,24 +239,21 @@ The code below:
 * Sets up an empty array **`feature_vector_store`** to append the base set feature vectors
 
 ```python
-
 # Source directory for images
 source_dir = 'data/'
 
 # Empty objects to append to
 filename_store = []
 feature_vector_store = np.empty((0, 512))
-
 ```
 
 <br>
 
-#### Preprocess and Featurize Base Set Images
+### Preprocess and Featurize Base Set Images
 
 The following code preprocesses and featurizes all 300 images in the base set by executing a loop and applying the two functions created above. For each image, it appends the filename and the feature vector. It saves these stores which will be used when a search is executed.
 
 ```python
-
 # Featurize the base image set
 for image in listdir(source_dir):
     print(image)
@@ -290,13 +273,12 @@ for image in listdir(source_dir):
 # Save key objects for future use
 pickle.dump(filename_store, open('models/filename_store.p', 'wb'))
 pickle.dump(feature_vector_store, open('models/feature_vector_store.p', 'wb'))
-
 ```
 ___
 
 # Execute Search <a name="execute-search"></a>
 
-#### Setup
+### Setup
 
 With the base set featurized, the code will now run a search on a new image. The code below does the following:
 
@@ -306,7 +288,6 @@ With the base set featurized, the code will now run a search on a new image. The
 * Specifies the number of search results to find (these will be the n most similar results to the search image)
 
 ```python
-
 # Load in required objects
 model = load_model('models/vgg16_search_engine.h5', compile = False)
 filename_store = pickle.load(open('models/filename_store.p', 'rb'))
@@ -315,10 +296,7 @@ feature_vector_store = pickle.load(open('models/feature_vector_store.p', 'rb'))
 # Search parameters
 search_results_n = 8
 search_image = 'search_image_02.jpg'
-
 ```
-
-<br>
 
 The search image being tested is below:
 
@@ -326,21 +304,19 @@ The search image being tested is below:
 
 <br>
 
-#### Preprocess and Featurize Search Image
+### Preprocess and Featurize Search Image
 
 Using the same helper functions from above, the following code preprocesses and featurizes the search image. The output is a vector containing 512 numeric values.
 
 ```python
-
 # Preprocess and featurize search image
 image = preprocess_image(search_image)
 search_feature_vector = featurize_image(image)
-
 ```
 
 <br>
 
-#### Locate Most Similar Images Using Cosine Similarity
+### Locate Most Similar Images Using Cosine Similarity
 
 Now that the search image exists as a 512 length feature vector, that feature vector needs to be compared to the feature vectors of all the base images. We need a way to understand which eight base image feature vectors are most like the feature vector of the search image. Therefore, I use the **`NearestNeighbors`** class from **scikit-learn** and apply the **Cosine Distance** metric to calculate the angle of difference between the feature vectors.
 
@@ -357,7 +333,6 @@ The code below:
 * Creates a list of filenames for the eight most similar images
 
 ```python
-
 # Instantiate nearest neighbors logic
 image_neighbors = NearestNeighbors(n_neighbors = search_results_n,
                                    metric = 'cosine')       # get angle between vectors
@@ -374,17 +349,15 @@ image_distances = list(image_distances[0])
 
 # Get a list of filenames for search results
 search_result_files = [filename_store[i] for i in image_indices]
-
 ```
 
 <br>
 
-#### Plot Search Results
+### Plot Search Results
 
 Given the eight most similar images to the search image, the following code plots them in order from most to least similar and includes the cosine distance score for reference (smaller is more similar).
 
 ```python
-
 # Plot the results
 plt.figure(figsize=(20,15))
 for counter, result_file in enumerate(search_result_files):    
@@ -395,33 +368,30 @@ for counter, result_file in enumerate(search_result_files):
     ax.get_xaxis().set_visible(False)
     ax.get_yaxis().set_visible(False)
 plt.show()
-
 ```
-
-<br>
 
 The search image and search results are below:
 
-**Search Image**
+**Search Image** <br>
 ![Search 1: Search Image](/img/posts/search-engine-search1.jpg "Search 1: Search Image")
 
 <br>
 
-**Search Results**
+**Search Results** <br>
 ![Search 1: Search Results](/img/posts/search-engine-search1-results.png "Search 1: Search Results")
 
 <br>
 
 Out of the 300 images in the base set, these are the eight that have been found to be *most similar*, and they indeed look quite similar to the search image.
 
-Checking a second search image to see if it also looks good, I get the following:
+Checking a second search image to see if it also looks good gives the following:
 
-**Search Image**
+**Search Image** <br>
 ![Search 2: Search Image](/img/posts/search-engine-search2.jpg "Search 2: Search Image")
 
 <br>
 
-**Search Results**
+**Search Results** <br>
 ![Search 2: Search Results](/img/posts/search-engine-search2-results.png "Search 2: Search Results")
 
 <br>
