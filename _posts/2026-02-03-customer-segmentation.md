@@ -95,7 +95,6 @@ In the code below, we:
 * Change the values from raw dollars into a percentage of spending for each customer to ensure each customer is comparable
 
 ```python
-
 # Import required Python packages
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import MinMaxScaler
@@ -129,10 +128,7 @@ transaction_summary_pivot = transaction_summary_pivot.div(transaction_summary_pi
 
 # Drop the "Total" column
 data_for_clustering = transaction_summary_pivot.drop(['Total'], axis = 1)
-
 ```
-
-<br>
 
 After the data pre-processing using Pandas, the dataset for clustering looks like the below sample:
 
@@ -145,8 +141,6 @@ After the data pre-processing using Pandas, the dataset for clustering looks lik
 | 5 | 0.213 | 0.250 | 0.430 | 0.107  |
 | 6 | 0.180 | 0.178 | 0.546 | 0.095  |
 | 7 | 0.000 | 0.517 | 0.000 | 0.483  |
-
-<br>
 
 The data is at the customer level, and we have a column for each of the highest level food product areas. Within each of those columns for the food product areas, we have the percentage of spending that each customer allocated to that product area over the past six months.
 
@@ -208,14 +202,12 @@ Here, we normalize the data as this will ensure all variables will have the same
 The below code uses MinMaxScaler from scikit-learn to apply Normalization to all of the variables.
 
 ```python
-
 # Create the scaler object
 scale_norm = MinMaxScaler()
 
 # Normalize the data
 data_for_clustering_scaled = pd.DataFrame(scale_norm.fit_transform(data_for_clustering),
                                           columns = data_for_clustering.columns)
-
 ```
 
 <br>
@@ -231,7 +223,6 @@ By default, the *k*-means algorithm in scikit-learn will use k = 8, i.e., it wil
 We specify *n_init* = 10, meaning the *k*-means algorithm will run 10 different times. The *k* centroids' values will be different from run to run since they are randomized (see Step 1 above). The WCSS that we record for each *k* will be from whichever run resulted in the best (lowest) WCSS.
 
 ```python
-
 # Set up range for search, create empty list to track WCSS
 k_values = list(range(1, 10))
 wcss_list = []
@@ -249,16 +240,11 @@ plt.xlabel('k')
 plt.ylabel('WCSS Score')
 plt.tight_layout()
 plt.show()
-
 ```
-
-<br>
 
 The code gives us the below plot:
 
 ![K-Means Optimal k Value Plot](/img/posts/kmeans-optimal-k-value-plot.png "K-Means Optimal k Value Plot")
-
-<br>
 
 Based on the shape of the above plot, there appears to be a sharp bend at *k* = 3. Prior to that we see a significant drop in the WCSS score, but following *k* = 3 the decreases in WCSS are much smaller, so this is a point that suggests adding *more clusters* will provide little extra benefit in terms of separating our data. A small number of clusters can be beneficial when considering how easy it is for the business to understand each one, so we will fit the *k*-means clustering solution with *k* = 3.
 
@@ -269,13 +255,11 @@ Based on the shape of the above plot, there appears to be a sharp bend at *k* = 
 The below code will instantiate our *k*-means object with *k* = 3. We fit this object to the scaled dataset to separate the data into three distinct segments or clusters.
 
 ```python
-
 # Instantiate k-means object
 kmeans = KMeans(n_clusters = 3, n_init = 10, random_state = 42)
 
 # Fit to the data
 kmeans.fit(data_for_clustering_scaled)
-
 ```
 
 <br>
@@ -285,10 +269,8 @@ kmeans.fit(data_for_clustering_scaled)
 With the *k*-means algorithm fitted to our data, we tag each customer with the cluster number that they most closely fit into based on their sales data over each product area. In the code below we add the cluster numbers onto the original dataframe.
 
 ```python
-
 # Add cluster labels to the original data
 data_for_clustering['cluster'] = kmeans.labels_
-
 ```
 
 <br>
@@ -302,15 +284,11 @@ Once the data is separated into distinct clusters, our client needs to understan
 First we assess how many customers fall into each cluster:
 
 ```python
-
 # Check cluster sizes
 data_for_clustering["cluster"].value_counts(normalize=True)
-
 ```
 
-<br>
-
-Running this code shows us that the three clusters are different in size, with the following proportions:
+Running this code shows that the three clusters are different in size, with the following proportions:
 
 * Cluster 1: **73.6%** of customers
 * Cluster 0: **14.6%** of customers
@@ -325,13 +303,9 @@ Based on these results, it appears Cluster 1 is larger with Clusters 0 and 2 bei
 To understand what these different behaviors or characteristics are, we can analyze the attributes of each cluster in terms of the variables we fed into the *k*-means algorithm.
 
 ```python
-
 # Profile the clusters
 cluster_summary = data_for_clustering.groupby('cluster')[['Dairy', 'Fruit', 'Meat', 'Vegetables']].mean().reset_index()
-
 ```
-
-<br>
 
 The code results in the following table:
 
@@ -340,8 +314,6 @@ The code results in the following table:
 | 0 | 36.4% | 39.4% | 2.9% | 21.3%  |
 | 1 | 22.1% | 26.5% | 37.7% | 13.8%  |
 | 2 | 0.2% | 63.8% | 0.4% | 35.6%  |
-
-<br>
 
 For *Cluster 1*, we see a reasonably significant portion of spending being allocated to each of the product areas. For *Cluster 2* there are high proportions of spending being allocated to Fruit and Vegetables, but very little to the Dairy and Meat product areas. It could be hypothesized that these customers are following a vegan diet. Finally, customers in *Cluster 0* spend, on average, significant portions within Dairy, Fruit and Vegetables, but very little in the Meat product area. We could make an early hypothesis that these customers may be following a vegetarian diet. Of course, there could be other things that would explain these spending behaviors, or there could be a mix of behaviors that lead to similar patterns and thus land customers in the same cluster. But this is a good starting point for explaining the patterns we see in the different clusters.
 
