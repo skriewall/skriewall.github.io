@@ -103,6 +103,7 @@ The chosen the model is the Random Forest as a) it was the most consistently per
 While predictive accuracy was relatively high, other modeling approaches could be tested, especially those somewhat similar to Random Forest, to see if more accuracy could be gained.
 
 We could also tune the hyperparameters of the Random Forest, such as tree depth, as well as potentially train on a higher number of Decision Trees in the Random Forest.
+
 ___
 
 # Data Overview  <a name="data-overview"></a>
@@ -113,15 +114,7 @@ The key variables hypothesized to predict the sign-up flag will come from the cl
 
 We aggregated customer data from the 3 months prior to the last campaign using the Pandas library in Python.
 
-```python
-
-# Add code
-
-```
-
-<br>
-
-After this data pre-processing in Python, we have a dataset for modeling that contains the following fields...
+After this data pre-processing in Python, we have a dataset for modeling that contains the following fields:
 
 | **Variable Name** | **Variable Type** | **Description** |
 |---|---|---|
@@ -170,7 +163,6 @@ We import the modeling data from the pickle file we saved. We remove the id colu
 We also investigate the class balance of our dependent variable, which is important when assessing classification accuracy.
 
 ```python
-
 # Import required packages
 import pandas as pd
 import pickle
@@ -195,10 +187,7 @@ data_for_model = shuffle(data_for_model, random_state = 42)
 
 # Assess class balance of dependent variable
 data_for_model['signup_flag'].value_counts(normalize = True)
-
 ```
-
-<br>
 
 From the last step in the above code, we see that **69%** of customers did not sign up and **31%** did. This tells us that while the data is not perfectly balanced at 50:50, it is not excessively imbalanced either. Because of this, we do not rely on classification accuracy alone when assessing results, but also analyze Precision, Recall, and F1-Score.
 
@@ -220,11 +209,9 @@ For Logistic Regression there are certain data preprocessing steps that need to 
 The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows.
 
 ```python
-
 # Remove rows with missing values
 data_for_model.isna().sum()
 data_for_model.dropna(how = 'any', inplace = True)
-
 ```
 
 <br>
@@ -245,14 +232,11 @@ In this code section, we use **.describe()** from Pandas to investigate the spre
 | 75% | 2.92 | 0.67 | 1121.53 | 170.50 | 28.00 | 5.00 | 46.43  |
 | max | 400.97 | 0.88 | 7372.06 | 910.00 | 75.00 | 5.00 | 141.05  |
 
-<br>
-
 Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 400 miles.
 
 We use the "boxplot approach" to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
 
 ```python
-
 # Deal with outliers
 outlier_investigation = data_for_model.describe()
 outlier_columns = ['distance_from_store', 'total_sales', 'total_items']
@@ -270,7 +254,6 @@ for column in outlier_columns:
     print(f'{len(outliers)} outliers detected in column {column}')
     
     data_for_model.drop(outliers, inplace = True)
-
 ```
 
 <br>
@@ -282,14 +265,12 @@ In the next code block we split the data into an **X** object which contains onl
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
-
 # Split input variables & output variable
 X = data_for_model.drop(['signup_flag'], axis = 1)
 y = data_for_model['signup_flag']
 
 # Split out training & test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
-
 ```
 
 <br>
@@ -302,12 +283,11 @@ The Logistic Regression algorithm needs this variable to be in numerical form in
 
 One Hot Encoding is a way to represent categorical variables as binary vectors --- a set of *new* columns for each categorical value (in our case for "M", "F", and "U") with either a 1 or a 0 saying whether that value is true or not for that observation. These new columns would go into the model as input variables, and the original column is discarded.
 
-We also drop one of the new columns using the parameter *drop = "first"*. We do this because our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for regression models. Multicollinearity occurs when two or more input variables are highly correlated with each other, and when it is present we cannot trust the statistics around how well the model is performing and the effect each input variable is truly having.
+We also drop one of the new columns using the parameter **`drop = "first"`**. We do this because our newly created encoded columns perfectly predict each other, which violates the assumption that there is no multicollinearity, an important consideration for regression models. Multicollinearity occurs when two or more input variables are highly correlated with each other, and when it is present we cannot trust the statistics around how well the model is performing and the effect each input variable is truly having.
 
 After we have applied One Hot Encoding, we turn our training and test objects back into Pandas dataframes, with the column names applied.
 
 ```python
-
 # List of categorical variables for encoding
 categorical_vars = ['gender']
 
@@ -329,7 +309,6 @@ X_train.drop(categorical_vars, axis = 1, inplace = True)
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
 X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
-
 ```
 
 <br>
@@ -347,7 +326,6 @@ There are many ways to apply Feature Selection, ranging from simple methods such
 For our task we applied a variation of Recursive Feature Elimination called *Recursive Feature Elimination With Cross Validation (RFECV)*. We split the data into many chunks, and the RFECV algorithm iteratively trains and validates models on each chunk separately. Each time we assess different models with different variables included or eliminated, the algorithm knows how accurate each of those models was. From the model scenarios that are created, the algorithm can determine which provided the best accuracy, and from that we can infer the best set of input variables to use.
 
 ```python
-
 # Instantiate RFECV and the model type to be used
 clf = LogisticRegression(random_state = 42, max_iter = 1000)
 feature_selector = RFECV(clf)
@@ -362,15 +340,11 @@ print(f'Optimal number of features: {optimal_feature_count}')
 # Limit our training and test sets to only include the selected varaibles
 X_train = X_train.loc[:, feature_selector.get_support()]
 X_test = X_test.loc[:, feature_selector.get_support()]
-
 ```
-
-<br>
 
 The code below produces a plot that visualizes the cross-validated classification accuracy with each potential number of features.
 
 ```python
-
 plt.style.use('seaborn-v0_8-poster')
 plt.plot(range(1, len(fit.cv_results_['mean_test_score']) + 1), fit.cv_results_['mean_test_score'], marker = 'o')
 plt.ylabel('Classification Accuracy')
@@ -378,10 +352,7 @@ plt.xlabel('Number of Features')
 plt.title(f'Feature Selection using RFECV \n Optimal number of features is {optimal_feature_count} (at score of {round(max(fit.cv_results_["mean_test_score"]), 4)})')
 plt.tight_layout()
 plt.show()
-
 ```
-
-<br>
 
 This creates the following plot, which shows us that the highest cross-validated classification accuracy (0.904) is achieved when we include seven of our original input variables. The variable that has been dropped is *total_sales*, but from the plot we can see that the difference is negligible. However, we will continue on with the selected seven.
 
@@ -394,13 +365,11 @@ This creates the following plot, which shows us that the highest cross-validated
 Instantiating and training our Logistic Regression model is done using the below code. We use the *random_state* parameter to ensure reproducible results, meaning any refinements can be compared to past results. We also specify *max_iter = 1000* to allow the solver more attempts at finding an optimal regression line, as the default value of 100 was not enough.
 
 ```python
-
 # Instantiate the model object
 clf = LogisticRegression(random_state = 42, max_iter = 1000)
 
 # Fit the model using the training sets
 clf.fit(X_train, y_train)
-
 ```
 
 <br>
@@ -414,11 +383,9 @@ To assess how well the model is predicting for new data, we use the trained mode
 In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up.
 
 ```python
-
 # Predict on the test set
 y_pred_class = clf.predict(X_test)                      # predicts 0s or 1s
 y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it being a 1
-
 ```
 
 <br>
@@ -430,7 +397,6 @@ A Confusion Matrix provides us a visual way to understand how the predictions ma
 The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
-
 # Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
@@ -444,14 +410,11 @@ plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
     plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
-
 ```
 
 <br>
 
 ![Logistic Regression Confusion Matrix](/img/posts/log-reg-confusion-matrix.png "Logistic Regression Confusion Matrix")
-
-<br>
 
 The goal is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
 
@@ -494,7 +457,6 @@ Using all of these metrics together gives a good overview of the performance of 
 In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
-
 # Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
@@ -506,10 +468,7 @@ recall_score(y_test, y_pred_class)
 
 # F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
-
 ```
-
-<br>
 
 Running this code gives us:
 
@@ -529,7 +488,6 @@ By default, most pre-built classification models and algorithms use a 50% probab
 The code below tests many potential classification probability thresholds, plots the Precision, Recall and F1-Score, and finds the optimal threshold.
 
 ```python
-
 # Set up the list of thresholds to loop through
 thresholds = np.arange(0, 1, 0.01)
 
@@ -554,15 +512,11 @@ for threshold in thresholds:
 # Find the optimal f1-score and its index
 max_f1 = max(f1_scores)
 max_f1_idx = f1_scores.index(max_f1)
-
 ```
-
-<br>
 
 The code below plots the results.
 
 ```python
-
 plt.style.use('seaborn-v0_8-poster')
 plt.plot(thresholds, precision_scores, label = 'Precision', linestyle = '--')
 plt.plot(thresholds, recall_scores, label = 'Recall', linestyle = '--')
@@ -573,14 +527,11 @@ plt.ylabel('Assessment Score')
 plt.legend(loc = 'lower left')
 plt.tight_layout()
 plt.show()
-
 ```
 
 <br>
 
 ![Logistic Regression Optimal Threshold Plot](/img/posts/log-reg-optimal-threshold-plot.png "Logistic Regression Optimal Threshold Plot")
-
-<br>
 
 Along the *x*-axis of the above plot we have the different classification thresholds that we are testing. Along the *y*-axis we have the performance score for each of the three metrics. In the plot we can see the trade-offs between Precision and Recall and that the point where Precision and Recall meet is where the F1-Score is maximized.
 
@@ -606,7 +557,6 @@ We will again use the scikit-learn library in Python to model the data using a D
 We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data. As we did in the Logistic Regression approach above, the code also investigates the class balance of the dependent variable *signup_flag*.
 
 ```python
-
 # Import required packages
 import pandas as pd
 import pickle
@@ -630,7 +580,6 @@ data_for_model = shuffle(data_for_model, random_state = 42)
 
 # Class balance - proportions of 1s and 0s
 data_for_model['signup_flag'].value_counts(normalize = True)
-
 ```
 
 <br>
@@ -649,11 +598,9 @@ While Logistic Regression is susceptible to the effects of outliers and highly c
 The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows.
 
 ```python
-
 # Remove rows with missing values
 data_for_model.isna().sum()
 data_for_model.dropna(how = 'any', inplace = True)
-
 ```
 
 <br>
@@ -665,14 +612,12 @@ In the same way we did for Logistic Regression, in the next code block we split 
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
-
 # Split input variables & output variable
 X = data_for_model.drop(['signup_flag'], axis = 1)
 y = data_for_model['signup_flag']
 
 # Split out training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
-
 ```
 
 <br>
@@ -684,7 +629,6 @@ In our dataset, we have one categorical variable *gender* which has values of "M
 Just like the Logistic Regression algorithm, the Decision Tree cannot deal with data in this format as it can't assign any numerical meaning to it when assessing the relationship between the variable and the dependent variable. We again apply One Hot Encoding to the categorical column.
 
 ```python
-
 # List of categorical variables
 categorical_vars = ['gender']
 
@@ -706,8 +650,6 @@ X_train.drop(categorical_vars, axis = 1, inplace = True)
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
 X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
-
-
 ```
 
 <br>
@@ -717,13 +659,11 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 The below code instantiates and trains the Decision Tree model. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
 
 ```python
-
 # Instantiate the model object
 clf = DecisionTreeClassifier(random_state = 42, max_depth = 5)
 
 # Fit the model using training sets
 clf.fit(X_train, y_train)
-
 ```
 
 <br>
@@ -737,11 +677,9 @@ To assess how well the model is predicting for new data, we use the trained mode
 In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up.
 
 ```python
-
 # Predict on the test set
 y_pred_class = clf.predict(X_test)                      # predicts 0s or 1s
 y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it being a 1
-
 ```
 
 <br>
@@ -753,7 +691,6 @@ As mentioned in the above section on Logistic Regression, a Confusion Matrix pro
 The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
-
 # Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
@@ -767,14 +704,11 @@ plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
     plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
-
 ```
 
 <br>
 
 ![Decision Tree Confusion Matrix](/img/posts/clf-tree-confusion-matrix.png "Decision Tree Confusion Matrix")
-
-<br>
 
 The goal is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
 
@@ -791,7 +725,6 @@ For details on these performance metrics, please see the above section on Logist
 In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
-
 # Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
@@ -803,10 +736,7 @@ recall_score(y_test, y_pred_class)
 
 # F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
-
 ```
-
-<br>
 
 Running this code gives us:
 
@@ -824,7 +754,6 @@ These are all higher than what we saw when applying Logistic Regression, even af
 To see the decisions that have been made in the tree, we can use the **plot_tree** functionality that we imported from scikit-learn. To do this, we use the below code:
 
 ```python
-
 # Plot the nodes of the decision tree
 plt.figure(figsize=(25, 15))
 tree = plot_tree(clf, 
@@ -832,16 +761,11 @@ tree = plot_tree(clf,
                  filled = True,
                  rounded = True,
                  fontsize = 16)
-
 ```
-
-<br>
 
 That code gives us the below plot:
 
 ![Decision Tree Max Depth Plot](/img/posts/clf-tree-nodes-plot.png "Decision Tree Max Depth Plot")
-
-<br>
 
 This is a visual that can be shown to stakeholders in the business to ensure they understand exactly what is driving the predictions. For example, one thing that could be noted is that the very first split uses the variable *distance_from_store*, implying this is an important variable when it comes to predicting signups to the delivery club.
 
@@ -856,7 +780,6 @@ One effective method of avoiding this over-fitting is to apply a *max depth* to 
 The model was initially trained with a placeholder depth of 5, but to find the best number of splits to use, the below code over a variety of values for max depth. We will assess which gives us the best predictive performance.
 
 ```python
-
 # Finding the best max_depth
 
 # Set up range for search, and empty list to append accuracy scores to
@@ -884,16 +807,11 @@ plt.xlabel('Max Depth')
 plt.ylabel('Accuracy')
 plt.tight_layout()
 plt.show()
-
 ```
-
-<br>
 
 The code gives us the below plot to visualize the result:
 
 ![Decision Tree Max Depth Plot](/img/posts/clf-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
-
-<br>
 
 In the plot we can see that the *maximum* F1-Score on the test set is found when applying a *max_depth* value of 9, which takes our F1-Score up to 0.925. So we would actually increase the max_depth from above to further improve the model.
 
@@ -915,7 +833,6 @@ We will again use the scikit-learn library in Python to model the data using a R
 We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data. As this is the exact same process we ran for both Logistic Regression and the Decision Tree, the code also investigates the class balance of the dependent variable *signup_flag*.
 
 ```python
-
 # Import required packages
 import pandas as pd
 import pickle
@@ -940,7 +857,6 @@ data_for_model = shuffle(data_for_model, random_state = 42)
 
 # Class balance - proportions of 1s and 0s
 data_for_model['signup_flag'].value_counts(normalize = True)
-
 ```
 
 <br>
@@ -959,11 +875,9 @@ While Logistic Regression is susceptible to the effects of outliers and highly c
 The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows. This is exactly the same process that was done for Logistic Regression and the Decision Tree.
 
 ```python
-
 # Remove rows with missing values
 data_for_model.isna().sum()
 data_for_model.dropna(how = 'any', inplace = True)
-
 ```
 
 <br>
@@ -975,14 +889,12 @@ In the same way we did for Logistic Regression and the Decision Tree, in the nex
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
-
 # Split input variables & output variable
 X = data_for_model.drop(['signup_flag'], axis = 1)
 y = data_for_model['signup_flag']
 
 # Split out training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
-
 ```
 
 <br>
@@ -994,7 +906,6 @@ In our dataset, we have one categorical variable *gender* which has values of "M
 Just like Logistic Regression and Decision Trees, Random Forests cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
 
 ```python
-
 # List of categorical variables
 categorical_vars = ['gender']
 
@@ -1016,7 +927,6 @@ X_train.drop(categorical_vars, axis = 1, inplace = True)
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
 X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
-
 ```
 
 <br>
@@ -1030,13 +940,11 @@ We specify that we are building 500 Decision Trees in this Random Forest (more t
 Lastly, since the default scikit-learn implementation of Random Forests does not limit the number of randomly selected variables for splitting at each split point in each Decision Tree, we put a limit in place using the *max_features* parameter. This can always be refined later through testing, or through an approach such as gridsearch.
 
 ```python
-
 # Instantiate the model object
 clf = RandomForestClassifier(random_state = 42, n_estimators = 500, max_features = 5)
 
 # Fit the model using training sets
 clf.fit(X_train, y_train)
-
 ```
 
 <br>
@@ -1050,11 +958,9 @@ To assess how well the model is predicting for new data, we use the trained mode
 In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up.
 
 ```python
-
 # Predict on the test set
 y_pred_class = clf.predict(X_test)                      # predicts 0s or 1s
 y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it being a 1
-
 ```
 
 <br>
@@ -1066,7 +972,6 @@ As discussed in the above sections, a Confusion Matrix provides us a visual way 
 The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
-
 # Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
@@ -1080,10 +985,7 @@ plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
     plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
-
 ```
-
-<br>
 
 ![Random Forest Confusion Matrix](/img/posts/rf-confusion-matrix.png "Random Forest Confusion Matrix")
 
@@ -1102,7 +1004,6 @@ For details on these performance metrics, please see the above section on Logist
 In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
-
 # Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
@@ -1114,10 +1015,7 @@ recall_score(y_test, y_pred_class)
 
 # F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
-
 ```
-
-<br>
 
 Running this code gives us:
 
@@ -1147,7 +1045,6 @@ In order to understand the *importance*, we *randomize* the values within one of
 The code below finds the feature importance and permutation importance and plots the results.
 
 ```python
-
 # Calculate feature importance
 feature_importance = pd.DataFrame(clf.feature_importances_)
 feature_names = pd.DataFrame(X.columns)
@@ -1176,10 +1073,7 @@ plt.title('Permutation Importance of Random Forest')
 plt.xlabel('Permutation Importance')
 plt.tight_layout()
 plt.show()
-
 ```
-
-<br>
 
 The code gives the following plots for *Feature Importance* and *Permutation Importance*.
 
@@ -1187,8 +1081,6 @@ The code gives the following plots for *Feature Importance* and *Permutation Imp
 <br>
 <br>
 ![Random Forest Permutation Importance Plot](/img/posts/rf-classification-permutation-importance.png "Random Forest Permutation Importance Plot")
-
-<br>
 
 Both approaches find that the most impactful input variable is *distance_from_store*, and to a lesser extent *transaction_count*.
 
@@ -1213,7 +1105,6 @@ We use the scikit-learn library in Python to model the data using KNN. The code 
 We again import the modeling data from the pickle file we saved. We remove the id column, and we also shuffle the data. As this is the exact same process we ran for both Logistic Regression and the Decision Tree, the code also investigates the class balance of the dependent variable *signup_flag*.
 
 ```python
-
 # Import required packages
 import pandas as pd
 import pickle
@@ -1238,7 +1129,6 @@ data_for_model = shuffle(data_for_model, random_state = 42)
 
 # Class balance - proportions of 1s and 0s
 data_for_model['signup_flag'].value_counts(normalize = True)
-
 ```
 
 <br>
@@ -1260,11 +1150,9 @@ As KNN is a distance-based algorithm, the following data preprocessing steps nee
 The number of missing values in the data was extremely low, so instead of applying any imputation (e.g., mean, most common value) we will just remove those rows. This is exactly the same process that was done for all the previous models.
 
 ```python
-
 # Remove rows with missing values
 data_for_model.isna().sum()
 data_for_model.dropna(how = 'any', inplace = True)
-
 ```
 
 <br>
@@ -1285,25 +1173,17 @@ In this code section, as in the outlier investigation for Logistic Regression, w
 | 75% | 2.92 | 0.67 | 1121.53 | 170.50 | 28.00 | 5.00 | 46.43  |
 | max | 400.97 | 0.88 | 7372.06 | 910.00 | 75.00 | 5.00 | 141.05  |
 
-<br>
-
 Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 400 miles.
 
 We use the "boxplot approach" to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
 
-
-Again, based on this investigation, we see some *max* column values for several variables to be much higher than the *median* value.
-
-This is for columns *distance_from_store*, *total_sales*, and *total_items*
-
-For example, the median *distance_to_store* is 1.64 miles, but the maximum is over 400 miles!
+Again, based on this investigation, we see some *max* column values for several variables to be much higher than the *median* value. This is for columns *distance_from_store*, *total_sales*, and *total_items*. For example, the median *distance_to_store* is 1.64 miles, but the maximum is over 400 miles.
 
 Because of this, we apply some outlier removal in order to facilitate generalization across the full dataset.
 
 We do this using the "boxplot approach" where we remove any rows where the values within those columns are outside of the interquartile range multiplied by 2.
 
 ```python
-
 # Deal with outliers
 outlier_investigation = data_for_model.describe()
 outlier_columns = ['distance_from_store', 'total_sales', 'total_items']
@@ -1321,7 +1201,6 @@ for column in outlier_columns:
     print(f'{len(outliers)} outliers detected in column {column}')
     
     data_for_model.drop(outliers, inplace = True)
-
 ```
 
 <br>
@@ -1333,14 +1212,12 @@ In the same way we did for Logistic Regression, Decision Tree, and Random Forest
 Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
-
 # Split input variables & output variable
 X = data_for_model.drop(['signup_flag'], axis = 1)
 y = data_for_model['signup_flag']
 
 # Split out training and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 42, stratify = y)
-
 ```
 
 <br>
@@ -1352,7 +1229,6 @@ As we saw when applying the other algorithms, in our dataset, we have one catego
 Just like the previous models, KNN cannot deal with data in this format. We again apply One Hot Encoding to the categorical gender column.
 
 ```python
-
 # List of categorical variables
 categorical_vars = ['gender']
 
@@ -1374,7 +1250,6 @@ X_train.drop(categorical_vars, axis = 1, inplace = True)
 X_test_encoded = pd.DataFrame(X_test_encoded, columns = encoder_feature_names)
 X_test = pd.concat([X_test.reset_index(drop = True), X_test_encoded.reset_index(drop = True)], axis = 1)
 X_test.drop(categorical_vars, axis = 1, inplace = True)
-
 ```
 
 <br>
@@ -1392,7 +1267,6 @@ Normalization rescales datapoints so that they exist in a range between 0 and 1.
 The below code uses *MinMaxScaler* from scikit-learn to apply Normalization to all of our input variables. The reason we choose Normalization over Standardization is that the scaled data will all be between 0 and 1, which will be compatible with any categorical variables that we have encoded as 1's and 0's. 
 
 ```python
-
 # Create the scaler object
 scale_norm = MinMaxScaler()
 
@@ -1401,7 +1275,6 @@ X_train = pd.DataFrame(scale_norm.fit_transform(X_train), columns = X_train.colu
 
 # Normalize the test set
 X_test = pd.DataFrame(scale_norm.transform(X_test), columns = X_test.columns)
-
 ```
 
 <br>
@@ -1415,7 +1288,6 @@ The KNN algorithm measures the distance between data-points across all dimension
 Therefore, we again apply *Recursive Feature Elimination With Cross Validation (RFECV)*, as we did above for Logistic Regression. We split the data into many chunks, and the RFECV algorithm iteratively trains and validates models on each chunk separately. Each time we assess different models with different variables included or eliminated, the algorithm knows how accurate each of those models was. From the model scenarios that are created, the algorithm can determine which provided the best accuracy, and from that we can infer the best set of input variables to use.
 
 ```python
-
 # Instantiate RFECV and the model type to be used
 from sklearn.ensemble import RandomForestClassifier
 clf = RandomForestClassifier(random_state = 42)
@@ -1431,15 +1303,11 @@ print(f'Optimal number of features: {optimal_feature_count}')
 # Limit our training and test sets to only include the selected varaibles
 X_train = X_train.loc[:, feature_selector.get_support()]
 X_test = X_test.loc[:, feature_selector.get_support()]
-
 ```
-
-<br>
 
 The code below produces a plot that visualizes the cross-validated classification accuracy with each potential number of features.
 
 ```python
-
 plt.style.use('seaborn-v0_8-poster')
 plt.plot(range(1, len(fit.cv_results_['mean_test_score']) + 1), fit.cv_results_['mean_test_score'], marker = 'o')
 plt.ylabel('Classification Accuracy')
@@ -1447,10 +1315,7 @@ plt.xlabel('Number of Features')
 plt.title(f'Feature Selection using RFECV \n Optimal number of features is {optimal_feature_count} (at score of {round(max(fit.cv_results_["mean_test_score"]), 4)})')
 plt.tight_layout()
 plt.show()
-
 ```
-
-<br>
 
 This creates the following plot, which shows us that the highest cross-validated classification accuracy (0.947) is achieved when we include six of our original input variables. There isn't much difference in predictive performance between using three variables through to eight variables, but we continue on with the remaining six variables. The variables that have been dropped in the feature elimination are *total_items* and *credit score*.
 
@@ -1466,13 +1331,11 @@ The code below instantiates and trains the KNN model. By default, the algorithm:
 * Will use *uniform* weighting --- i.e., an equal weighting to all 5 neighbours regardless of distance
 
 ```python
-
 # Instantiate the model object
 clf = KNeighborsClassifier()
 
 # Fit the model using training sets
 clf.fit(X_train, y_train)
-
 ```
 
 <br>
@@ -1486,11 +1349,9 @@ To assess how well the model is predicting for new data, we use the trained mode
 In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up, based upon the majority class within the k nearest neighbours.
 
 ```python
-
 # Predict on the test set
 y_pred_class = clf.predict(X_test)
 y_pred_prob = clf.predict_proba(X_test)[:, 1]
-
 ```
 
 <br>
@@ -1502,7 +1363,6 @@ As with the previous models, a Confusion Matrix provides us a visual way to unde
 The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
 
 ```python
-
 # Confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred_class)
 
@@ -1516,14 +1376,11 @@ plt.xlabel('Predicted Class')
 for (i, j), corr_value in np.ndenumerate(conf_matrix):
     plt.text(j, i, corr_value, ha = 'center', va = 'center', fontsize = 20)
 plt.show()
-
 ```
 
 <br>
 
 ![KNN Confusion Matrix](/img/posts/knn-confusion-matrix.png "KNN Confusion Matrix")
-
-<br>
 
 As with the other models above, the goal is to have a high proportion of observations falling into the top left cell (predicted non-signup and actual non-signup) and the bottom right cell (predicted signup and actual signup).
 
@@ -1542,7 +1399,6 @@ For details on these performance metrics, please see the above section on Logist
 In the code below, we use built-in functionality from scikit-learn to calculate these four metrics.
 
 ```python
-
 # Accuracy (the number of correct classifications out of all attempted classifications)
 accuracy_score(y_test, y_pred_class)
 
@@ -1554,10 +1410,7 @@ recall_score(y_test, y_pred_class)
 
 # F1 Score (harmonic mean of precision and recall)
 f1_score(y_test, y_pred_class)
-
 ```
-
-<br>
 
 Running this code gives us:
 
@@ -1577,7 +1430,6 @@ By default, the KNN algorithm within scikit-learn will use k = 5, meaning that c
 Below we test many potential values for k, plot the Precision, Recall and F1-Score, and find the optimal value for k.
 
 ```python
-
 # Set up range for search, and create empty list to append accuracy scores to
 k_list = list(range(2, 25))
 accuracy_scores = []
@@ -1603,16 +1455,11 @@ plt.xlabel('k')
 plt.ylabel('Accuracy (F1-Score)')
 plt.tight_layout()
 plt.show()
-
 ```
-
-<br>
 
 The code gives the below plot.
 
 ![KNN Optimal k Value Plot](/img/posts/knn-optimal-k-value-plot.png "KNN Optimal k Value Plot")
-
-<br>
 
 We can see that the *maximum* F1-Score on the test set is found when applying a k value of 5,  which is exactly what we started with, so nothing needs to change.
 
