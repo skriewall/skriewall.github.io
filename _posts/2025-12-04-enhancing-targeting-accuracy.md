@@ -234,7 +234,7 @@ In this code section, we use **.describe()** from Pandas to investigate the spre
 
 Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 400 miles.
 
-We use the "boxplot approach" to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
+We use the boxplot approach to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
 
 ```python
 # Deal with outliers
@@ -260,9 +260,9 @@ for column in outlier_columns:
 
 ##### Split Out Data For Modeling
 
-In the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
-Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the **`stratify`** parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 # Split input variables & output variable
@@ -362,7 +362,7 @@ This creates the following plot, which shows us that the highest cross-validated
 
 ### Model Training <a name="logreg-model-training"></a>
 
-Instantiating and training our Logistic Regression model is done using the below code. We use the *random_state* parameter to ensure reproducible results, meaning any refinements can be compared to past results. We also specify *max_iter = 1000* to allow the solver more attempts at finding an optimal regression line, as the default value of 100 was not enough.
+Instantiating and training our Logistic Regression model is done using the below code. We use the **`random_state`** parameter to ensure reproducible results, meaning any refinements can be compared to past results. We also specify **`max_iter = 1000`** to allow the solver more attempts at finding an optimal regression line, as the default value of 100 was not enough.
 
 ```python
 # Instantiate the model object
@@ -378,7 +378,7 @@ clf.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well the model is predicting for new data, we use the trained model object (here called *clf*) to predict the *signup_flag* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object (here called **`clf`**) to predict the *signup_flag* variable for the test set.
 
 In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up.
 
@@ -394,7 +394,7 @@ y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it bein
 
 A Confusion Matrix provides us a visual way to understand how the predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
+The below code creates the Confusion Matrix using the **`confusion_matrix`** functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 # Confusion matrix
@@ -440,7 +440,7 @@ Recall is a metric that tells us *of all positive observations, how many did we 
 
 It is impossible to optimize both Precision and Recall. If you try to increase Precision, Recall decreases, and vice versa. Sometimes it will make more sense to try to elevate one of them at the expense of the other. In the case of the rare disease example, perhaps it would be more important to optimize for Recall as we want to classify as many positive cases as possible. However, we do not want to just classify every patient as having the disease, as that is not useful or precise.
 
-There is one more metric that is actually a *combination* of both Precision and Recall.
+There is one more metric that is a combination of both Precision and Recall.
 
 <br>
 
@@ -607,9 +607,9 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 ##### Split Out Data For Modeling
 
-In the same way we did for Logistic Regression, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the same way we did for Logistic Regression, in the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
-Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. We make sure to add in the **`stratify`** parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 # Split input variables & output variable
@@ -656,7 +656,7 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="clftree-model-training"></a>
 
-The below code instantiates and trains the Decision Tree model. We use the *random_state* parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
+The below code instantiates and trains the Decision Tree model. We use the **`random_state`** parameter to ensure we get reproducible results, and this helps us understand any improvements in performance with changes to model hyperparameters.
 
 ```python
 # Instantiate the model object
@@ -688,7 +688,7 @@ y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it bein
 
 As mentioned in the above section on Logistic Regression, a Confusion Matrix provides us a visual way to understand how the predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
+The below code creates the Confusion Matrix using the **`confusion_matrix`** functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 # Confusion matrix
@@ -813,7 +813,7 @@ The code gives us the below plot to visualize the result:
 
 ![Decision Tree Max Depth Plot](/img/posts/clf-tree-max-depth-plot.png "Decision Tree Max Depth Plot")
 
-In the plot we can see that the *maximum* F1-Score on the test set is found when applying a *max_depth* value of 9, which takes our F1-Score up to 0.925. So we would actually increase the max_depth from above to further improve the model.
+In the plot we can see that the *maximum* F1-Score on the test set is found when applying a **`max_depth`** value of 9, which takes our F1-Score up to 0.925. So we would actually increase the max depth from above to further improve the model.
 
 ___
 
@@ -884,9 +884,9 @@ data_for_model.dropna(how = 'any', inplace = True)
 
 ##### Split Out Data For Modeling
 
-In the same way we did for Logistic Regression and the Decision Tree, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the same way we did for Logistic Regression and the Decision Tree, in the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
-Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the **`stratify`** parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 # Split input variables & output variable
@@ -933,11 +933,11 @@ X_test.drop(categorical_vars, axis = 1, inplace = True)
 
 ### Model Training <a name="rf-model-training"></a>
 
-The code below instantiates and trains a Random Forest model. The *random_state* parameter ensures we get reproducible results and helps us understand any improvements in performance with changes to model hyperparameters.
+The code below instantiates and trains a Random Forest model. The **`random_state`** parameter ensures we get reproducible results and helps us understand any improvements in performance with changes to model hyperparameters.
 
 We specify that we are building 500 Decision Trees in this Random Forest (more than the default of 100).
 
-Lastly, since the default scikit-learn implementation of Random Forests does not limit the number of randomly selected variables for splitting at each split point in each Decision Tree, we put a limit in place using the *max_features* parameter. This can always be refined later through testing, or through an approach such as gridsearch.
+Lastly, since the default scikit-learn implementation of Random Forests does not limit the number of randomly selected variables for splitting at each split point in each Decision Tree, we put a limit in place using the **`max_features`** parameter. This can always be refined later through testing, or through an approach such as gridsearch.
 
 ```python
 # Instantiate the model object
@@ -969,7 +969,7 @@ y_pred_prob = clf.predict_proba(X_test)[:, 1]           # probability of it bein
 
 As discussed in the above sections, a Confusion Matrix provides us a visual way to understand how the predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
+The below code creates the Confusion Matrix using the **`confusion_matrix`** functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 # Confusion matrix
@@ -1175,13 +1175,13 @@ In this code section, as in the outlier investigation for Logistic Regression, w
 
 Based on this investigation, we see some *max* column values for *distance_from_store*, *total_sales*, and *total_items* are much higher than the *median* value. For example, the median *distance_from_store* is 1.65 miles, but the maximum is over 400 miles.
 
-We use the "boxplot approach" to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
+We use the boxplot approach to remove any rows where the values within those predictor variables are outside of the interquartile range multiplied by 2.
 
 Again, based on this investigation, we see some *max* column values for several variables to be much higher than the *median* value. This is for columns *distance_from_store*, *total_sales*, and *total_items*. For example, the median *distance_to_store* is 1.64 miles, but the maximum is over 400 miles.
 
 Because of this, we apply some outlier removal in order to facilitate generalization across the full dataset.
 
-We do this using the "boxplot approach" where we remove any rows where the values within those columns are outside of the interquartile range multiplied by 2.
+We do this using the boxplot approach where we remove any rows where the values within those columns are outside of the interquartile range multiplied by 2.
 
 ```python
 # Deal with outliers
@@ -1207,9 +1207,9 @@ for column in outlier_columns:
 
 ##### Split Out Data For Modeling
 
-In the same way we did for Logistic Regression, Decision Tree, and Random Forest, in the next code block we split the data into an **X** object which contains only the independent variables and a **y** object that contains only the dependent variable.
+In the same way we did for Logistic Regression, Decision Tree, and Random Forest, in the next code block we split the data into an **`X`** object which contains only the independent variables and a **`y`** object that contains only the dependent variable.
 
-Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the *stratify* parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
+Once we have done this, we split the data into training and test sets to ensure we can validate the accuracy of the predictions on data that was not used in training. We have allocated 80% of the data for training, and the remaining 20% for validation. Again, we make sure to add in the **`stratify`** parameter to ensure that the training and test sets have the same proportion of customers who did and did not sign up for the Delivery Club so that we can be more confident in our assessment of predictive performance.
 
 ```python
 # Split input variables & output variable
@@ -1317,7 +1317,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-This creates the following plot, which shows us that the highest cross-validated classification accuracy (0.947) is achieved when we include six of our original input variables. There isn't much difference in predictive performance between using three variables through to eight variables, but we continue on with the remaining six variables. The variables that have been dropped in the feature elimination are *total_items* and *credit score*.
+This creates the following plot, which shows us that the highest cross-validated classification accuracy (0.947) is achieved when we include six of our original input variables. There isn't much difference in predictive performance between using three variables through to eight variables, but we continue on with the remaining six variables. The variables that have been dropped in the feature elimination are *total_items* and *credit_score*.
 
 ![KNN Feature Selection Plot](/img/posts/knn-feature-selection-plot.png "KNN Feature Selection Plot")
 
@@ -1344,7 +1344,7 @@ clf.fit(X_train, y_train)
 
 ##### Predict On The Test Set
 
-To assess how well the model is predicting for new data, we use the trained model object (here called *clf*) to predict the *signup_flag* variable for the test set.
+To assess how well the model is predicting for new data, we use the trained model object (here called **`clf`**) to predict the *signup_flag* variable for the test set.
 
 In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up, based upon the majority class within the k nearest neighbours.
 
@@ -1360,7 +1360,7 @@ y_pred_prob = clf.predict_proba(X_test)[:, 1]
 
 As with the previous models, a Confusion Matrix provides us a visual way to understand how the KNN predictions match up against the actual values for the test set observations.
 
-The below code creates the Confusion Matrix using the *confusion_matrix* functionality from scikit-learn and plots it using matplotlib.
+The below code creates the Confusion Matrix using the **`confusion_matrix`** functionality from scikit-learn and plots it using matplotlib.
 
 ```python
 # Confusion matrix
