@@ -13,14 +13,14 @@ I extend the assistant by adding conversational memory, which allows the model t
 
 # Table of Contents
 
-- [Project Overview](#overview-main)
+- [00. Project Overview](#overview-main)
     - [Context](#overview-context)
     - [Actions](#overview-actions)
     - [Results](#overview-results)
     - [Growth and Next Steps](#overview-growth)
-- [Data Overview](#data-overview)
-- [RAG Overview](#rag-overview)
-- [Building the Core RAG System](#rag-core)
+- [01. Data Overview](#data-overview)
+- [02. RAG Overview](#rag-overview)
+- [03. Building the Core RAG System](#rag-core)
     - [Secure API Handling](#rag-api)
     - [Document Loading](#rag-docs)
     - [Document Chunking](#rag-chunking)
@@ -29,10 +29,10 @@ I extend the assistant by adding conversational memory, which allows the model t
     - [Prompt Template](#rag-prompt)
     - [Retriever Setup](#rag-retriever)
     - [Full RAG Pipeline](#rag-pipeline)
-- [Enhancing the Assistant With Memory](#rag-memory)
-- [Application and Examples](#rag-application)
-- [Inspecting the Retrieved Context](#rag-inspection)
-- [Growth and Next Steps](#growth-next-steps)
+- [04. Enhancing the Assistant With Memory](#rag-memory)
+- [05. Application and Examples](#rag-application)
+- [06. Inspecting the Retrieved Context](#rag-inspection)
+- [07. Growth and Next Steps](#growth-next-steps)
 
 ___
 
