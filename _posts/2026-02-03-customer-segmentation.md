@@ -197,6 +197,8 @@ Standardization rescales data to have a mean of 0, and a standard deviation of 1
 
 Normalization rescales datapoints so that they exist in a range between 0 and 1.
 
+<br>
+
 Here, we normalize the data as this will ensure all variables will have the same range, fixed between 0 and 1. The variables would also be compatible with any categorical variables that we have encoded as 1’s and 0’s (although there are not any categorical variables in our task here). We have put the data in the form of percentages, so our values are already spread between 0 and 1. However, we still normalize the data because one of the product areas might commonly make up a large proportion of customer sales, and this may end up dominating the clustering space. If we normalize all of our variables, even product areas that make up smaller volumes will be spread proportionately between 0 and 1.
 
 The below code uses MinMaxScaler from scikit-learn to apply Normalization to all of the variables.
@@ -220,7 +222,7 @@ We use a data-driven approach known as *Within Cluster Sum of Squares (WCSS)* to
 
 By default, the *k*-means algorithm in scikit-learn will use k = 8, i.e., it will split the data into eight distinct clusters. In the code below multiple values for *k* are tested. We then plot how the WCSS metric changes for each value of *k*. As we increase the value for *k* the WCSS value will always decrease. However, the decreases will get smaller and smaller each time we add another centroid or cluster. We will be looking for a point in the plot where this decrease is quite prominent and significant right *before* we start to see diminishing returns.
 
-We specify *n_init* = 10, meaning the *k*-means algorithm will run 10 different times. The *k* centroids' values will be different from run to run since they are randomized (see Step 1 above). The WCSS that we record for each *k* will be from whichever run resulted in the best (lowest) WCSS.
+We specify **`n_init = 10`**, meaning the *k*-means algorithm will run 10 different times. The values for the *k* centroids will be different from run to run since they are randomized (see Step 1 above). The WCSS that we record for each *k* will be from whichever run resulted in the best (lowest) WCSS.
 
 ```python
 # Set up range for search, create empty list to track WCSS
@@ -246,7 +248,7 @@ The code gives us the below plot:
 
 ![K-Means Optimal k Value Plot](/img/posts/kmeans-optimal-k-value-plot.png "K-Means Optimal k Value Plot")
 
-Based on the shape of the above plot, there appears to be a sharp bend at *k* = 3. Prior to that we see a significant drop in the WCSS score, but following *k* = 3 the decreases in WCSS are much smaller, so this is a point that suggests adding *more clusters* will provide little extra benefit in terms of separating our data. A small number of clusters can be beneficial when considering how easy it is for the business to understand each one, so we will fit the *k*-means clustering solution with *k* = 3.
+Based on the shape of the above plot, there appears to be a sharp bend at *k* = 3. Prior to that we see a significant drop in the WCSS score, but following *k* = 3 the decreases in WCSS are much smaller, so this is a point that suggests adding more clusters will provide little extra benefit in terms of separating our data. A small number of clusters can be beneficial when considering how easy it is for the business to understand each one, so we will fit the *k*-means clustering solution with *k* = 3.
 
 <br>
 
