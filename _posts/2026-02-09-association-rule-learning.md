@@ -44,7 +44,7 @@ They have provided a sample of 3,500 alcohol transactions to see if we can find 
 
 Based on the two open-ended tasks, we apply a specific type of Association Rule Learning called *Apriori* to examine and analyze the strength of various relationships between different products represented in the transactional data.
 
-We installed the *apyori* package in Python, which contains the required functionality for this association rule learning task.
+We installed the **`apyori`** package in Python, which contains the required functionality for this association rule learning task.
 
 We imported the sample data, and got it into the right format for the Apriori algorithm to deal with.
 
@@ -179,7 +179,7 @@ ___
 
 # Data Preparation  <a name="apriori-data-prep"></a>
 
-As mentioned in the Data Overview section above, the *apyori* algorithm needs the data passed in as a *list of lists*. The following code modifies it: 
+As mentioned in the Data Overview section above, the **`apyori`** algorithm needs the data passed in as a *list of lists*. The following code modifies it: 
 
 The code below does the following:
 
@@ -218,7 +218,7 @@ ___
 
 # Applying The Apriori Algorithm <a name="apriori-fit"></a>
 
-In the code below we apply the Apriori algorithm from the apyori library.
+In the code below we apply the Apriori algorithm from the **`apyori``** library.
 
 We set the following association rules for the algorithm:
 
