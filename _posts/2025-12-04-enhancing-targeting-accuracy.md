@@ -56,7 +56,7 @@ As we are predicting a binary output (sign up or not), we tested four classifica
 * Logistic Regression
 * Decision Tree
 * Random Forest
-* K Nearest Neighbours (KNN)
+* K Nearest Neighbors (KNN)
 
 For each model, we will import the data in the same way but will need to pre-process the data based on the requirements of each particular algorithm. We will train and test each model, refine each model to provide optimal performance, and then measure each model's predictive performance based on several metrics. Based on those metrics, we will determine which model is the overall best in predicting sign up rates.
 
@@ -1088,7 +1088,7 @@ There are slight differences in the order of importance for the remaining variab
 
 ___
 
-# K Nearest Neighbours <a name="knn-title"></a>
+# K Nearest Neighbors <a name="knn-title"></a>
 
 We use the scikit-learn library in Python to model the data using KNN. The code sections below are broken up into five key sections:
 
@@ -1327,8 +1327,8 @@ This creates the following plot, which shows us that the highest cross-validated
 
 The code below instantiates and trains the KNN model. By default, the algorithm:
 
-* Will use a value for k of 5 --- i.e., it will base classifications on the 5 nearest neighbours
-* Will use *uniform* weighting --- i.e., an equal weighting to all 5 neighbours regardless of distance
+* Will use a value for k of 5 --- i.e., it will base classifications on the 5 nearest neighbors
+* Will use *uniform* weighting --- i.e., an equal weighting to all 5 neighbors regardless of distance
 
 ```python
 # Instantiate the model object
@@ -1346,7 +1346,7 @@ clf.fit(X_train, y_train)
 
 To assess how well the model is predicting for new data, we use the trained model object (here called **`clf`**) to predict the *signup_flag* variable for the test set.
 
-In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up, based upon the majority class within the k nearest neighbours.
+In the code below we create one object to hold the binary *1* or *0* predictions, and another to hold the predicted probabilities of being in the positive (*1*) class, i.e., signing up, based upon the majority class within the k nearest neighbors.
 
 ```python
 # Predict on the test set
@@ -1425,7 +1425,7 @@ The KNN model has obtained the highest overall Classification Accuracy and Preci
 
 ### Finding The Optimal Value For k <a name="knn-opt-k"></a>
 
-By default, the KNN algorithm within scikit-learn will use k = 5, meaning that classifications are based upon the five nearest neighbouring data-points in n-dimensional space. This default may not be optimal.
+By default, the KNN algorithm within scikit-learn will use k = 5, meaning that classifications are based upon the five nearest neighboring data-points in n-dimensional space. This default may not be optimal.
 
 Below we test many potential values for k, plot the Precision, Recall and F1-Score, and find the optimal value for k.
 
