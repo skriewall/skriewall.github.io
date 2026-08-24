@@ -48,7 +48,7 @@ We installed the **`apyori`** package in Python, which contains the required fun
 
 We imported the sample data, and got it into the right format for the Apriori algorithm to deal with.
 
-The we applied the Apriori algorithm to provide us with the following metrics:
+Then we applied the Apriori algorithm to provide us with the following metrics:
 
 * Support
 * Confidence
