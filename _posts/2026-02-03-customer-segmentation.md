@@ -86,7 +86,7 @@ We are primarily interested in segments of customers based on their transactions
 
 In the code below, we:
 
-* Import the required python packages and libraries
+* Import the required Python packages and libraries
 * Import the tables from the database
 * Merge the tables to tag on *product_area_name*, which only exists in the *product_areas* table
 * Drop the non-food categories
