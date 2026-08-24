@@ -218,7 +218,7 @@ ___
 
 # Applying The Apriori Algorithm <a name="apriori-fit"></a>
 
-In the code below we apply the Apriori algorithm from the **`apyori``** library.
+In the code below we apply the Apriori algorithm from the **`apyori`** library.
 
 We set the following association rules for the algorithm:
 
